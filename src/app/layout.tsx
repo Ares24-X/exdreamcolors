@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://arescolors.com',
+    url: 'https://exdreamcolors.win',
     siteName: 'exdreamcolors',
     title: 'exdreamcolors - Free Online Color Tools',
     description: 'Free color tools for developers and designers. Color picker, palette generator, gradient maker, and more.',
@@ -36,6 +36,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* Google Analytics 4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QMFH9M0HNR"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-QMFH9M0HNR');
+            `,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   )
