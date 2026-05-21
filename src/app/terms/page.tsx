@@ -14,7 +14,7 @@ export default function TermsPage() {
         <p>2026-05-21</p>
         
         <h2>Contact Information</h2>
-        <p>If you have any questions about this Terms of Service, please contact us at:</p>
+        <p>If you have any questions about this terms of service, please contact us at:</p>
         <p>Email: contact@exdreamcolors.win</p>
       </div>
     </div>

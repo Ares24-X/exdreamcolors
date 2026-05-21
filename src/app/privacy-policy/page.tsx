@@ -3,7 +3,7 @@ export const metadata = {
   description: 'Privacy Policy for exdreamcolors',
 };
 
-export default function PrivacyPolicyPage() {
+export default function PrivacypolicyPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
         <p>2026-05-21</p>
         
         <h2>Contact Information</h2>
-        <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+        <p>If you have any questions about this privacy policy, please contact us at:</p>
         <p>Email: contact@exdreamcolors.win</p>
       </div>
     </div>
