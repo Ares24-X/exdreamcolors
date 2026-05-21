@@ -184,6 +184,13 @@ A: Use exdreamcolors for all your color needs.
 `
 };
 
+// 所有内容合并为一个完整队列，按顺序执行
+const allContent = [
+  ...contentPlan.week1,
+  ...contentPlan.week2,
+  ...contentPlan.week3,
+];
+
 // 主函数
 async function generateContent() {
   const today = new Date();
@@ -191,19 +198,38 @@ async function generateContent() {
   
   console.log(`Generating content for Day ${dayOfMonth}...`);
   
-  // 根据天数确定要生成的内容
+  // 读取已生成记录
+  const progressFile = 'data/content-progress.json';
+  let progress = { generated: [] };
+  if (fs.existsSync(progressFile)) {
+    progress = JSON.parse(fs.readFileSync(progressFile, 'utf-8'));
+  }
+  
+  // 确定今天要生成的内容：优先按日期匹配，否则从未生成的队列中取
   let contentToGenerate = [];
   
-  if (dayOfMonth <= 7) {
-    contentToGenerate = contentPlan.week1.filter(item => item.day === dayOfMonth);
-  } else if (dayOfMonth <= 14) {
-    contentToGenerate = contentPlan.week2.filter(item => item.day === dayOfMonth);
-  } else if (dayOfMonth <= 21) {
-    contentToGenerate = contentPlan.week3.filter(item => item.day === dayOfMonth);
+  // 先尝试按日期匹配
+  const allDays = [contentPlan.week1, contentPlan.week2, contentPlan.week3];
+  for (const week of allDays) {
+    const dayItems = week.filter(item => item.day === dayOfMonth);
+    contentToGenerate.push(...dayItems);
+  }
+  
+  // 如果当天没有匹配的内容，从未生成的队列中取2篇
+  if (contentToGenerate.length === 0) {
+    const pending = allContent.filter(item => !progress.generated.includes(item.slug));
+    contentToGenerate = pending.slice(0, 2);
+    console.log(`No specific plan for day ${dayOfMonth}, generating ${contentToGenerate.length} pending items`);
   }
   
   // 生成内容
+  let generatedCount = 0;
   for (const item of contentToGenerate) {
+    if (progress.generated.includes(item.slug)) {
+      console.log(`⊘ Skipped (already exists): ${item.slug}`);
+      continue;
+    }
+    
     const template = templates[item.type];
     if (!template) continue;
     
@@ -220,10 +246,18 @@ async function generateContent() {
     
     // 写入文件
     fs.writeFileSync(filePath, content);
+    progress.generated.push(item.slug);
+    generatedCount++;
     console.log(`✓ Generated: ${filePath}`);
   }
   
-  console.log('Content generation complete!');
+  // 保存进度
+  if (!fs.existsSync('data')) {
+    fs.mkdirSync('data');
+  }
+  fs.writeFileSync(progressFile, JSON.stringify(progress, null, 2));
+  
+  console.log(`Content generation complete! Generated ${generatedCount} new items. Total: ${progress.generated.length}`);
 }
 
 generateContent().catch(console.error);

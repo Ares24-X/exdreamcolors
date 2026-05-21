@@ -1,11 +1,9 @@
-name: Auto Content Generation & Deployment
+name: Auto Content Generation & SEO
 
 on:
   schedule:
-    # 每天 UTC 02:00 执行内容生成
+    # 每天 UTC 02:00 执行（北京时间 10:00）
     - cron: '0 2 * * *'
-    # 每天 UTC 08:00 执行数据监控
-    - cron: '0 8 * * *'
   workflow_dispatch:
     inputs:
       task_type:
@@ -16,8 +14,7 @@ on:
         options:
           - content
           - seo
-          - monitor
-          - deploy
+          - all
 
 env:
   NODE_VERSION: '18'
@@ -28,11 +25,13 @@ env:
 jobs:
   # 任务1: 内容生成
   generate-content:
-    if: github.event.schedule == '0 2 * * *' || github.event.inputs.task_type == 'content'
+    if: github.event.inputs.task_type == 'content' || github.event.inputs.task_type == 'all' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -44,26 +43,23 @@ jobs:
 
       - name: Generate daily content
         run: node scripts/generate-content.js
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          CONTENT_TYPE: ${{ secrets.CONTENT_TYPE }}
 
       - name: Commit and push content
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .
-          git commit -m "Auto-generate content: $(date +%Y-%m-%d)" || exit 0
-          git push
+          git diff --cached --quiet || (git commit -m "Auto-generate content: $(date +%Y-%m-%d)" && git push)
 
   # 任务2: SEO优化
   optimize-seo:
-    if: github.event.schedule == '0 2 * * *' || github.event.inputs.task_type == 'seo'
-    needs: generate-content
+    if: github.event.inputs.task_type == 'seo' || github.event.inputs.task_type == 'all'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -81,69 +77,4 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .
-          git commit -m "Auto-optimize SEO: $(date +%Y-%m-%d)" || exit 0
-          git push
-
-  # 任务3: 构建和部署
-  build-and-deploy:
-    if: github.event.inputs.task_type == 'deploy' || success()
-    needs: [generate-content, optimize-seo]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: exdreamcolors
-          directory: out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
-  # 任务4: 数据监控
-  monitor-data:
-    if: github.event.schedule == '0 8 * * *' || github.event.inputs.task_type == 'monitor'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Fetch GA4 data
-        run: node scripts/fetch-ga4.js
-        env:
-          GA4_CREDENTIALS: ${{ secrets.GA4_CREDENTIALS }}
-          GA4_PROPERTY_ID: ${{ env.GA4_PROPERTY_ID }}
-
-      - name: Fetch GSC data
-        run: node scripts/fetch-gsc.js
-        env:
-          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
-
-      - name: Generate report
-        run: node scripts/generate-report.js
-
-      - name: Upload report
-        uses: actions/upload-artifact@v4
-        with:
-          name: daily-report-${{ github.run_id }}
-          path: reports/
+          git diff --cached --quiet || (git commit -m "Auto-optimize SEO: $(date +%Y-%m-%d)" && git push)
