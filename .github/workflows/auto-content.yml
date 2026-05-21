@@ -22,6 +22,9 @@ env:
   GA4_MEASUREMENT_ID: 'G-QMFH9M0HNR'
   SITE_URL: 'https://exdreamcolors.win'
 
+permissions:
+  contents: write
+
 jobs:
   # 任务1: 内容生成
   generate-content:
