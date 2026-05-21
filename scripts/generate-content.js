@@ -1,6 +1,6 @@
 /**
  * 自动内容生成脚本
- * 根据30天计划自动生成博客文章
+ * 根据30天计划自动生成页面内容
  */
 
 const fs = require('fs');
@@ -39,152 +39,159 @@ const contentPlan = {
   ]
 };
 
-// 内容模板
+// React组件模板
 const templates = {
-  policy: (title) => `---
-title: "${title}"
-description: "${title} for exdreamcolors"
----
+  policy: (title, slug) => `export const metadata = {
+  title: '${title} | exdreamcolors',
+  description: '${title} for exdreamcolors',
+};
 
-# ${title}
+export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.replace(/-/g, '').slice(1)}Page() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-6">${title}</h1>
+      <div className="prose prose-lg max-w-none">
+        <p>This page contains the ${title.toLowerCase()} for exdreamcolors.</p>
+        
+        <h2>Last Updated</h2>
+        <p>${new Date().toISOString().split('T')[0]}</p>
+        
+        <h2>Contact Information</h2>
+        <p>If you have any questions about this ${title.toLowerCase()}, please contact us at:</p>
+        <p>Email: contact@exdreamcolors.win</p>
+      </div>
+    </div>
+  );
+}`,
 
-This page contains the ${title.toLowerCase()} for exdreamcolors.
+  page: (title, slug) => `export const metadata = {
+  title: '${title} | exdreamcolors',
+  description: '${title} for exdreamcolors',
+};
 
-Last updated: ${new Date().toISOString().split('T')[0]}
-`,
+export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.replace(/-/g, '').slice(1)}Page() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-6">${title}</h1>
+      <div className="prose prose-lg max-w-none">
+        <p>Welcome to the ${title} page.</p>
+        <p>Last updated: ${new Date().toISOString().split('T')[0]}</p>
+      </div>
+    </div>
+  );
+}`,
 
-  tutorial: (title, slug) => `---
-title: "${title} - Complete Guide"
-description: "Learn how to use ${title} effectively. Step-by-step tutorial with examples."
-keywords: ["${slug}", "color tools", "tutorial"]
----
+  tutorial: (title, slug) => `export const metadata = {
+  title: '${title} - Complete Guide | exdreamcolors',
+  description: 'Learn how to use ${title} effectively. Step-by-step tutorial with examples.',
+};
 
-# ${title}
-
-## Introduction
-
-Welcome to the complete guide for ${title}.
-
-## How to Use
-
-### Step 1: Access the Tool
-Navigate to the tool page.
-
-### Step 2: Select Your Colors
-Use the color picker to choose your base color.
-
-### Step 3: Generate Results
-Click the generate button to see results.
-
-### Step 4: Copy Code
-Copy the generated code for your project.
-
-## Examples
-
-### Example 1: Basic Usage
-\`\`\`css
-/* Example CSS */
-.color-primary {
+export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.replace(/-/g, '').slice(1)}Page() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-6">${title}</h1>
+      
+      <div className="prose prose-lg max-w-none">
+        <h2>Introduction</h2>
+        <p>Welcome to the complete guide for ${title}.</p>
+        
+        <h2>How to Use</h2>
+        <h3>Step 1: Access the Tool</h3>
+        <p>Navigate to the tool page.</p>
+        
+        <h3>Step 2: Select Your Colors</h3>
+        <p>Use the color picker to choose your base color.</p>
+        
+        <h3>Step 3: Generate Results</h3>
+        <p>Click the generate button to see results.</p>
+        
+        <h3>Step 4: Copy Code</h3>
+        <p>Copy the generated code for your project.</p>
+        
+        <h2>Examples</h2>
+        <pre className="bg-gray-100 p-4 rounded">
+{/* Example CSS */}
+.color-primary {'{'}
   color: #3B82F6;
-}
-\`\`\`
+{'}'}
+        </pre>
+        
+        <h2>Tips and Tricks</h2>
+        <ul>
+          <li>Save your favorite colors</li>
+          <li>Use keyboard shortcuts</li>
+          <li>Export in multiple formats</li>
+        </ul>
+        
+        <h2>Related Tools</h2>
+        <ul>
+          <li><a href="/color-picker">Color Picker</a></li>
+          <li><a href="/palette-generator">Palette Generator</a></li>
+          <li><a href="/gradient-generator">Gradient Generator</a></li>
+        </ul>
+      </div>
+    </div>
+  );
+}`,
 
-### Example 2: Advanced Usage
-\`\`\`css
-/* Advanced example */
-.gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-\`\`\`
-
-## Tips and Tricks
-
-1. Tip 1: Save your favorite colors
-2. Tip 2: Use keyboard shortcuts
-3. Tip 3: Export in multiple formats
-
-## Related Tools
-
-- [Color Picker](/color-picker)
-- [Palette Generator](/palette-generator)
-- [Gradient Generator](/gradient-generator)
-
-## Conclusion
-
-${title} is a powerful tool for developers and designers.
-`,
-
-  article: (title, slug) => `---
-title: "${title}"
-description: "Comprehensive guide about ${title.toLowerCase()}. Learn best practices and tips."
-keywords: ["${slug}", "color theory", "web design"]
----
-
-# ${title}
-
-## What is ${title}?
-
-${title} is an important concept in web design and development.
-
-## Why ${title} Matters
-
-Understanding ${title} helps you create better designs.
-
-## Key Concepts
-
-### Concept 1: Basics
-The fundamentals of ${title}.
-
-### Concept 2: Applications
-How to apply ${title} in real projects.
-
-### Concept 3: Best Practices
-Tips for using ${title} effectively.
-
-## Practical Examples
-
-### Example 1
-\`\`\`css
-.example {
-  /* CSS example */
-}
-\`\`\`
-
-### Example 2
-\`\`\`javascript
-// JavaScript example
-const colors = {
-  primary: '#3B82F6'
-};
-\`\`\`
-
-## Common Mistakes to Avoid
-
-1. Mistake 1: Not considering accessibility
-2. Mistake 2: Using too many colors
-3. Mistake 3: Ignoring contrast ratios
-
-## Tools to Help
-
-- [exdreamcolors Color Picker](/color-picker)
-- [Contrast Checker](/contrast-checker)
-- [Palette Generator](/palette-generator)
-
-## Conclusion
-
-Master ${title} to improve your web design skills.
-
-## FAQ
-
-**Q: How do I get started with ${title}?**
-A: Start with the basics and practice regularly.
-
-**Q: What tools do I need?**
-A: Use exdreamcolors for all your color needs.
-`
+  article: (title, slug) => `export const metadata = {
+  title: '${title} | exdreamcolors',
+  description: 'Comprehensive guide about ${title.toLowerCase()}. Learn best practices and tips.',
 };
 
-// 所有内容合并为一个完整队列，按顺序执行
+export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.replace(/-/g, '').slice(1)}Page() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold mb-6">${title}</h1>
+      
+      <div className="prose prose-lg max-w-none">
+        <h2>What is ${title}?</h2>
+        <p>${title} is an important concept in web design and development.</p>
+        
+        <h2>Why ${title} Matters</h2>
+        <p>Understanding ${title} helps you create better designs.</p>
+        
+        <h2>Key Concepts</h2>
+        <h3>Concept 1: Basics</h3>
+        <p>The fundamentals of ${title}.</p>
+        
+        <h3>Concept 2: Applications</h3>
+        <p>How to apply ${title} in real projects.</p>
+        
+        <h3>Concept 3: Best Practices</h3>
+        <p>Tips for using ${title} effectively.</p>
+        
+        <h2>Practical Examples</h2>
+        <pre className="bg-gray-100 p-4 rounded">
+{/* CSS Example */}
+.example {'{'}
+  /* Your code here */
+{'}'}
+        </pre>
+        
+        <h2>Common Mistakes to Avoid</h2>
+        <ul>
+          <li>Not considering accessibility</li>
+          <li>Using too many colors</li>
+          <li>Ignoring contrast ratios</li>
+        </ul>
+        
+        <h2>Tools to Help</h2>
+        <ul>
+          <li><a href="/color-picker">exdreamcolors Color Picker</a></li>
+          <li><a href="/contrast-checker">Contrast Checker</a></li>
+          <li><a href="/palette-generator">Palette Generator</a></li>
+        </ul>
+        
+        <h2>Conclusion</h2>
+        <p>Master ${title} to improve your web design skills.</p>
+      </div>
+    </div>
+  );
+}`
+};
+
+// 所有内容合并
 const allContent = [
   ...contentPlan.week1,
   ...contentPlan.week2,
@@ -205,7 +212,7 @@ async function generateContent() {
     progress = JSON.parse(fs.readFileSync(progressFile, 'utf-8'));
   }
   
-  // 确定今天要生成的内容：优先按日期匹配，否则从未生成的队列中取
+  // 确定今天要生成的内容
   let contentToGenerate = [];
   
   // 先尝试按日期匹配
@@ -234,9 +241,7 @@ async function generateContent() {
     if (!template) continue;
     
     const content = template(item.title, item.slug);
-    const filePath = item.type === 'policy' || item.type === 'page' 
-      ? `src/app/${item.slug}/page.tsx`
-      : `src/app/blog/${item.slug}/page.mdx`;
+    const filePath = `src/app/${item.slug}/page.tsx`;
     
     // 确保目录存在
     const dir = path.dirname(filePath);
