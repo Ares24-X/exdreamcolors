@@ -5,7 +5,9 @@
     "cookie-policy",
     "contact",
     "color-picker-guide",
-    "palette-generator-guide"
+    "palette-generator-guide",
+    "gradient-generator-guide",
+    "contrast-checker-guide"
   ],
   "startDate": "2026-05-21",
   "day": 1
