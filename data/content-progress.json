@@ -7,7 +7,9 @@
     "color-picker-guide",
     "palette-generator-guide",
     "gradient-generator-guide",
-    "contrast-checker-guide"
+    "contrast-checker-guide",
+    "what-is-hex-color",
+    "rgb-vs-hsl"
   ],
   "startDate": "2026-05-21",
   "day": 1
