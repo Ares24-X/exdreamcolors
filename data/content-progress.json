@@ -13,7 +13,9 @@
     "color-trends-2025",
     "brand-color-selection",
     "color-theory-basics",
-    "complementary-colors"
+    "complementary-colors",
+    "tailwind-colors-guide",
+    "wcag-color-accessibility"
   ],
   "startDate": "2026-05-21",
   "day": 1
