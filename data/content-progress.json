@@ -15,7 +15,9 @@
     "color-theory-basics",
     "complementary-colors",
     "tailwind-colors-guide",
-    "wcag-color-accessibility"
+    "wcag-color-accessibility",
+    "extract-colors-from-image",
+    "saas-color-best-practices"
   ],
   "startDate": "2026-05-21",
   "day": 1
