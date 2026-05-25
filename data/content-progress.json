@@ -17,7 +17,8 @@
     "tailwind-colors-guide",
     "wcag-color-accessibility",
     "extract-colors-from-image",
-    "saas-color-best-practices"
+    "saas-color-best-practices",
+    "dark-mode-colors"
   ],
   "startDate": "2026-05-21",
   "day": 1
