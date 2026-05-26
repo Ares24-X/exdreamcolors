@@ -1,25 +1,8 @@
 {
-  "generated": [
-    "privacy-policy",
-    "terms",
-    "cookie-policy",
-    "contact",
-    "color-picker-guide",
-    "palette-generator-guide",
-    "gradient-generator-guide",
-    "contrast-checker-guide",
-    "what-is-hex-color",
-    "rgb-vs-hsl",
-    "color-trends-2025",
-    "brand-color-selection",
-    "color-theory-basics",
-    "complementary-colors",
-    "tailwind-colors-guide",
-    "wcag-color-accessibility",
-    "extract-colors-from-image",
-    "saas-color-best-practices",
-    "dark-mode-colors"
-  ],
-  "startDate": "2026-05-21",
-  "day": 1
+  "generated": [],
+  "startDate": "2026-05-26",
+  "currentDay": 1,
+  "endDate": "2026-06-20",
+  "totalPlan": 60,
+  "daysTotal": 26
 }
