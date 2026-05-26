@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://exdreamcolors.com/sitemap.xml
+Sitemap: https://exdreamcolors.win/sitemap.xml
