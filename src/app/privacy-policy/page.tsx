@@ -11,7 +11,7 @@ export default function PrivacypolicyPage() {
         <p>This page contains the privacy policy for exdreamcolors.</p>
         
         <h2>Last Updated</h2>
-        <p>2026-05-21</p>
+        <p>2026-05-26</p>
         
         <h2>Contact Information</h2>
         <p>If you have any questions about this privacy policy, please contact us at:</p>

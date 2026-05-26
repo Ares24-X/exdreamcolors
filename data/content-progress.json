@@ -1,5 +1,10 @@
 {
-  "generated": [],
+  "generated": [
+    "privacy-policy",
+    "terms",
+    "cookie-policy",
+    "contact"
+  ],
   "startDate": "2026-05-26",
   "currentDay": 1,
   "endDate": "2026-06-20",
