@@ -3,10 +3,14 @@
     "privacy-policy",
     "terms",
     "cookie-policy",
-    "contact"
+    "contact",
+    "color-picker-guide",
+    "palette-generator-guide",
+    "gradient-generator-guide",
+    "contrast-checker-guide"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 1,
+  "currentDay": 2,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
