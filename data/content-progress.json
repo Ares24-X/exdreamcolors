@@ -1,7 +1,12 @@
 {
-  "generated": [],
+  "generated": [
+    "what-is-hex-color",
+    "rgb-vs-hsl",
+    "color-trends-2025",
+    "brand-color-selection"
+  ],
   "startDate": "2026-05-26",
-  "currentDay": 1,
+  "currentDay": 3,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
