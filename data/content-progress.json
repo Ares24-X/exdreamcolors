@@ -1,20 +1,7 @@
 {
-  "generated": [
-    "privacy-policy",
-    "terms",
-    "cookie-policy",
-    "contact",
-    "color-picker-guide",
-    "palette-generator-guide",
-    "gradient-generator-guide",
-    "contrast-checker-guide",
-    "what-is-hex-color",
-    "rgb-vs-hsl",
-    "color-trends-2025",
-    "brand-color-selection"
-  ],
+  "generated": [],
   "startDate": "2026-05-26",
-  "currentDay": 3,
+  "currentDay": 1,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
