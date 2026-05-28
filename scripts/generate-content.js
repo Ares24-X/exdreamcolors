@@ -203,9 +203,9 @@ export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.
   );
 }`,
 
-  article: (title, slug) => `'use client';
+  article: (title, slug) => `import dynamic from 'next/dynamic';
 
-import RelatedArticles from '@/components/RelatedArticles';
+const RelatedArticles = dynamic(() => import('@/components/RelatedArticles'), { ssr: false });
 
 export const metadata = {
   title: '${title} | exdreamcolors',
