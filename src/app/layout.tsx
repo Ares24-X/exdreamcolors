@@ -37,6 +37,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* PartnerBoost Verification */}
+        <meta name="partnerboostverifycode" content="32dc01246faccb7f5b3cad5016dd5033" />
         {/* Google Analytics 4 */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QMFH9M0HNR"></script>
         <script
