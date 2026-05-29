@@ -3,10 +3,13 @@
     "what-is-hex-color",
     "rgb-vs-hsl",
     "color-trends-2025",
-    "brand-color-selection"
+    "brand-color-selection",
+    "color-theory-basics",
+    "complementary-colors",
+    "analogous-colors"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 3,
+  "currentDay": 4,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
