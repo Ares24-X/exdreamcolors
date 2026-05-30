@@ -6,10 +6,13 @@
     "brand-color-selection",
     "color-theory-basics",
     "complementary-colors",
-    "analogous-colors"
+    "analogous-colors",
+    "triadic-color-scheme",
+    "monochromatic-colors",
+    "split-complementary-colors"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 4,
+  "currentDay": 5,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
