@@ -9,10 +9,13 @@
     "analogous-colors",
     "triadic-color-scheme",
     "monochromatic-colors",
-    "split-complementary-colors"
+    "split-complementary-colors",
+    "tetradic-colors",
+    "square-color-scheme",
+    "tailwind-colors-guide"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 5,
+  "currentDay": 6,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
