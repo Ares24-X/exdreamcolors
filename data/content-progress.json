@@ -12,10 +12,15 @@
     "split-complementary-colors",
     "tetradic-colors",
     "square-color-scheme",
-    "tailwind-colors-guide"
+    "tailwind-colors-guide",
+    "vintage-color-palette",
+    "neon-color-palette",
+    "pastel-color-palette",
+    "earth-tone-color-palette",
+    "ocean-color-palette"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 6,
+  "currentDay": 7,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
