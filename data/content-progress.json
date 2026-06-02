@@ -17,10 +17,15 @@
     "neon-color-palette",
     "pastel-color-palette",
     "earth-tone-color-palette",
-    "ocean-color-palette"
+    "ocean-color-palette",
+    "sunset-color-palette",
+    "forest-color-palette",
+    "desert-color-palette",
+    "best-color-picker-tools",
+    "how-to-choose-website-colors"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 7,
+  "currentDay": 8,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
