@@ -1,9 +1,34 @@
-import Link from 'next/link'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { articles } from '@/data/articles';
+
+export const metadata: Metadata = {
+  title: 'Blog | Color Theory, Design Tips & Tools | exdreamcolors',
+  description: 'Free color design blog with 50+ articles. Learn color theory, palette creation, accessibility, CSS colors, and design best practices.',
+  keywords: ['color blog', 'color theory', 'color palette', 'design tips', 'CSS colors', 'color tools'],
+  openGraph: {
+    title: 'Blog | Color Theory, Design Tips & Tools',
+    description: 'Free color design blog with 50+ articles. Learn color theory, palette creation, and more.',
+    type: 'website',
+  },
+};
+
+const CATEGORIES = [
+  'All',
+  'Color Theory',
+  'Color Palettes',
+  'Technical',
+  'Guides',
+  'Accessibility',
+  'Color Psychology',
+  'Marketing',
+  'Trends',
+  'Design Tips',
+];
 
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -20,51 +45,85 @@ export default function BlogPage() {
         </div>
       </header>
 
-      <main className="tool-container">
-        <div className="mb-12 text-center">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-10 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Blog
+            Color Design Blog
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Color theory tips, tool guides, and design resources.
+            {articles.length}+ articles about color theory, palette creation, CSS colors, accessibility, and design best practices.
           </p>
         </div>
 
-        {/* Coming Soon */}
-        <div className="max-w-3xl mx-auto text-center py-16">
-          <div className="text-6xl mb-6">📝</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Blog Posts Coming Soon!
-          </h2>
-          <p className="text-gray-600 mb-8">
-            We're working on helpful articles about color theory, tool tutorials, and design tips.
-          </p>
-          <Link href="/tools" className="btn btn-primary">
-            Explore Our Tools
-          </Link>
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {CATEGORIES.map((cat) => {
+            const count = cat === 'All' ? articles.length : articles.filter(a => a.cat === cat).length;
+            return (
+              <a
+                key={cat}
+                href={cat === 'All' ? '#all' : `#${cat.toLowerCase().replace(/\s+/g, '-')}`}
+                className="px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              >
+                {cat} ({count})
+              </a>
+            );
+          })}
         </div>
 
-        {/* Preview Topics */}
-        <div className="max-w-4xl mx-auto mt-16">
-          <h2 className="text-2xl font-bold mb-8 text-center">Upcoming Topics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card">
-              <h3 className="font-semibold mb-2">🎨 Color Theory Basics</h3>
-              <p className="text-sm text-gray-600">Learn the fundamentals of color harmony and theory.</p>
-            </div>
-            <div className="card">
-              <h3 className="font-semibold mb-2">💻 Tailwind Color Guide</h3>
-              <p className="text-sm text-gray-600">Master Tailwind CSS color configuration.</p>
-            </div>
-            <div className="card">
-              <h3 className="font-semibold mb-2">♿ Accessibility Tips</h3>
-              <p className="text-sm text-gray-600">Create accessible designs with proper contrast.</p>
-            </div>
+        {/* Articles by Category */}
+        {CATEGORIES.slice(1).map((cat) => {
+          const catArticles = articles.filter(a => a.cat === cat);
+          if (catArticles.length === 0) return null;
+          return (
+            <section key={cat} id={cat.toLowerCase().replace(/\s+/g, '-')} className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+                {cat}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {catArticles.map((article) => (
+                  <Link
+                    key={article.slug}
+                    href={`/${article.slug}`}
+                    className="block p-5 bg-white rounded-xl border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all group"
+                  >
+                    <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full mb-2">
+                      {article.cat}
+                    </span>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {article.desc}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+
+        {/* All Articles Quick List */}
+        <section id="all" className="border-t border-gray-200 pt-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">All Articles ({articles.length})</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {articles.map((article) => (
+              <Link
+                key={article.slug}
+                href={`/${article.slug}`}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all group"
+              >
+                <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></span>
+                <span className="text-gray-700 group-hover:text-blue-600 transition-colors">
+                  {article.title}
+                </span>
+                <span className="text-xs text-gray-400 ml-auto hidden sm:inline">{article.cat}</span>
+              </Link>
+            ))}
           </div>
-        </div>
+        </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-600">
@@ -73,5 +132,5 @@ export default function BlogPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
