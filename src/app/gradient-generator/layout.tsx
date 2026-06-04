@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Gradient Generator - Create CSS Gradients Online | exdreamcolors',
+  title: 'Gradient Generator - Create CSS Gradients Online',
   description: 'Free online CSS gradient generator. Create beautiful linear and radial gradients with live preview. Copy CSS code instantly. No registration required.',
   keywords: ['gradient generator', 'CSS gradient', 'linear gradient', 'radial gradient', 'gradient maker', 'online gradient tool'],
   openGraph: {

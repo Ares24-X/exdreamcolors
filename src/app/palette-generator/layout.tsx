@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Palette Generator - Create Beautiful Color Schemes Online | exdreamcolors',
+  title: 'Palette Generator - Create Beautiful Color Schemes Online',
   description: 'Free online color palette generator. Create beautiful color schemes based on color theory. Complementary, analogous, triadic, and more palette types. Instant preview.',
   keywords: ['palette generator', 'color palette generator', 'color scheme generator', 'color harmony', 'color combinations', 'online palette tool'],
   openGraph: {

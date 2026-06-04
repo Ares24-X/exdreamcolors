@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Color Picker - Pick HEX, RGB, HSL Colors Online | exdreamcolors',
+  title: 'Color Picker - Pick HEX, RGB, HSL Colors Online',
   description: 'Free online color picker tool. Pick any color and get HEX, RGB, and HSL values instantly. Copy color codes with one click. No registration required.',
   keywords: ['color picker', 'HEX color picker', 'RGB picker', 'HSL picker', 'color code picker', 'online color tool'],
   openGraph: {

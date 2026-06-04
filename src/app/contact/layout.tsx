@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact | exdreamcolors',
+  title: 'Contact',
   description: 'Contact page for exdreamcolors - free online color tools.',
 };
 

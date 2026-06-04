@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Tailwind Color Generator - Generate Tailwind CSS Colors | exdreamcolors',
+  title: 'Tailwind Color Generator - Generate Tailwind CSS Colors',
   description: 'Free Tailwind CSS color generator. Generate complete Tailwind color configurations from a base color. Copy ready-to-use code. Perfect for developers.',
   keywords: ['tailwind generator', 'Tailwind CSS colors', 'Tailwind color palette', 'Tailwind config', 'Tailwind color shades', 'CSS framework'],
   openGraph: {
