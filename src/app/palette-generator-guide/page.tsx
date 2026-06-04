@@ -27,10 +27,9 @@ export default function PalettegeneratorguidePage() {
         
         <h2>Examples</h2>
         <pre className="bg-gray-100 p-4 rounded">
-{/* Example CSS */}
-.color-primary {'{'}
+.color-primary {
   color: #3B82F6;
-{'}'}
+}
         </pre>
         
         <h2>Tips and Tricks</h2>

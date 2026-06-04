@@ -199,9 +199,7 @@ export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.
   );
 }`,
 
-  article: (title, slug) => `import dynamic from 'next/dynamic';
-
-const RelatedArticles = dynamic(() => import('@/components/RelatedArticles'), { ssr: false });
+  article: (title, slug) => `import RelatedArticles from '@/components/RelatedArticles';
 
 export const metadata = {
   title: '${title} | exdreamcolors',

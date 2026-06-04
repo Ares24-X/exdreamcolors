@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const RelatedArticles = dynamic(() => import('@/components/RelatedArticles'), { ssr: false });
+import RelatedArticles from '@/components/RelatedArticles';
 
 export const metadata = {
   title: 'Color Theory Basics | exdreamcolors',
@@ -31,7 +29,7 @@ export default function ColortheorybasicsPage() {
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>5 min read</span>
           <span>|</span>
-          <span>Updated 2026-05-29</span>
+          <span>Updated 2026-06-04</span>
         </div>
       </header>
       
@@ -66,21 +64,20 @@ export default function ColortheorybasicsPage() {
         <h3>2. Practical Applications</h3>
         <p>Here are some common use cases:</p>
         <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-{/* CSS Example */}
-:root {'{'}
+:root {
   --primary-color: #3B82F6;
   --secondary-color: #8B5CF6;
   --text-color: #1F2937;
   --background-color: #FFFFFF;
-{'}'}
+}
 
 /* Apply in your styles */
-.button {'{'}
+.button {
   background-color: var(--primary-color);
   color: var(--background-color);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-{'}'}
+}
         </pre>
         
         <h3>3. Best Practices</h3>

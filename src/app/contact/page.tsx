@@ -9,7 +9,7 @@ export default function ContactPage() {
       <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
       <div className="prose prose-lg max-w-none">
         <p>Welcome to the Contact Us page.</p>
-        <p>Last updated: 2026-05-26</p>
+        <p>Last updated: 2026-06-04</p>
       </div>
     </div>
   );

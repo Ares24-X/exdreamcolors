@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const RelatedArticles = dynamic(() => import('@/components/RelatedArticles'), { ssr: false });
+import RelatedArticles from '@/components/RelatedArticles';
 
 export const metadata = {
   title: 'How to Choose Website Colors | exdreamcolors',
@@ -31,7 +29,7 @@ export default function HowtochoosewebsitecolorsPage() {
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>5 min read</span>
           <span>|</span>
-          <span>Updated 2026-06-02</span>
+          <span>Updated 2026-06-04</span>
         </div>
       </header>
       

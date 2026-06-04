@@ -11,7 +11,7 @@ export default function TermsPage() {
         <p>This page contains the terms of service for exdreamcolors.</p>
         
         <h2>Last Updated</h2>
-        <p>2026-05-26</p>
+        <p>2026-06-04</p>
         
         <h2>Contact Information</h2>
         <p>If you have any questions about this terms of service, please contact us at:</p>

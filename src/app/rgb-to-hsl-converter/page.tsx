@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const RelatedArticles = dynamic(() => import('@/components/RelatedArticles'), { ssr: false });
+import RelatedArticles from '@/components/RelatedArticles';
 
 export const metadata = {
   title: 'RGB to HSL Converter | exdreamcolors',
