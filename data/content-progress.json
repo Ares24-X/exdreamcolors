@@ -27,10 +27,15 @@
     "css-gradient-generator-online",
     "wcag-contrast-checker-tool",
     "tailwind-color-palette-generator",
-    "image-color-extractor-online"
+    "image-color-extractor-online",
+    "hex-to-rgb-converter",
+    "rgb-to-hsl-converter",
+    "color-code-converter",
+    "faq",
+    "tools-comparison"
   ],
   "startDate": "2026-05-26",
-  "currentDay": 9,
+  "currentDay": 10,
   "endDate": "2026-06-20",
   "totalPlan": 60,
   "daysTotal": 26
