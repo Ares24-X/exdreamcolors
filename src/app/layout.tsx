@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Header } from '@/components/Header'
 
 export const metadata: Metadata = {
   title: {
@@ -37,22 +38,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* PartnerBoost Verification */}
         <meta name="partnerboostverifycode" content="32dc01246faccb7f5b3cad5016dd5033" />
-        {/* Google Analytics 4 */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QMFH9M0HNR"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-QMFH9M0HNR');
-            `,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-QMFH9M0HNR');
+        `}} />
       </head>
-      <body>{children}</body>
+      <body>
+        <Header locale="en" />
+        {children}
+      </body>
     </html>
   )
 }

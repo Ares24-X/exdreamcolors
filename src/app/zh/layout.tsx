@@ -1,13 +1,19 @@
 import { Metadata } from "next";
+import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: {
-    default: 'exdreamcolors - 免费在线颜色工具',
-    template: '%s | exdreamcolors',
+    default: "exdreamcolors - 免费在线颜色工具",
+    template: "%s | exdreamcolors",
   },
-  description: '取色器、调色板、渐变色、对比度检查等免费在线颜色工具，无需注册。',
+  description: "取色器、调色板、渐变色、对比度检查等免费在线颜色工具，无需注册。",
 };
 
 export default function ZhRootLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <Header locale="zh" />
+      {children}
+    </>
+  );
 }

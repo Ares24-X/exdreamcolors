@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { articleDatabase, articleSlugs } from "@/data/article-database";
+import { articleContent, getDefaultContent, type ContentBlock } from "@/data/article-content";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -8,130 +9,168 @@ export function generateStaticParams() {
   return articleSlugs.map((slug) => ({ slug }));
 }
 
+function getContent(slug: string): ContentBlock {
+  return articleContent[slug] || getDefaultContent(slug);
+}
+
 export default function ZhArticlePage({ params }: { params: { slug: string } }) {
   const article = articleDatabase[params.slug];
   if (!article) notFound();
 
-  const titleParts = article.title.split(" | ");
-  const displayTitle = titleParts[0];
+  const content = getContent(params.slug);
+  const displayTitle = article.title.split(" | ")[0];
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <nav className="text-sm text-gray-500 mb-4">
+      <nav className="text-sm text-slate-500 mb-6" aria-label="面包屑">
         <Link href="/zh/" className="hover:text-blue-600">首页</Link>
         <span className="mx-2">/</span>
         <Link href="/zh/blog" className="hover:text-blue-600">博客</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-700">{displayTitle}</span>
+        <span className="text-slate-700">{displayTitle}</span>
         <span className="ml-4">
           <Link href={`/${params.slug}`} className="text-blue-500 hover:text-blue-700 text-xs">🇺🇸 English</Link>
         </span>
       </nav>
 
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{displayTitle}</h1>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span>阅读时间 5 分钟</span>
-          <span>|</span>
+      <header className="mb-10">
+        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
+          {displayTitle}
+        </h1>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+          <span>阅读时间 8 分钟</span>
+          <span aria-hidden="true">|</span>
           <span>更新于 {new Date().toISOString().split("T")[0]}</span>
         </div>
       </header>
 
-      <article className="prose prose-lg max-w-none">
-        <h2>什么是{displayTitle}？</h2>
-        <p>
-          {displayTitle}是色彩理论和网页设计中的基础概念，每位设计师和开发者都应该掌握。
-          本指南将带你全面了解相关知识，从基本原理到高级技巧。
-        </p>
-        <p>
-          无论你是在建网站、做品牌设计还是进行设计项目，
-          掌握{displayTitle.toLowerCase()}将帮助你做出更好的视觉决策。
-        </p>
+      {/* 英文内容 + 中文导航说明 */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-sm text-blue-800">
+        📘 本文内容为英文原文，提供最准确的技术信息。中文解读和实操指南正在完善中。你也可以使用页面顶部的翻译工具。
+      </div>
 
-        <h2>为什么{displayTitle}很重要？</h2>
-        <p>理解{displayTitle.toLowerCase()}至关重要，原因如下：</p>
-        <ul>
-          <li><strong>更好的用户体验：</strong>合理使用色彩可以提高可读性和用户参与度</li>
-          <li><strong>品牌一致性：</strong>统一的色彩使用能建立品牌认知</li>
-          <li><strong>无障碍访问：</strong>良好的色彩选择确保内容对所有用户友好</li>
-          <li><strong>转化率优化：</strong>正确的颜色可以显著影响转化率</li>
-        </ul>
+      <div className="text-lg leading-relaxed text-slate-700 mb-10">
+        {content.intro.split("\n\n").map((p, i) => (
+          <p key={i} className={i > 0 ? "mt-4" : ""}>{p}</p>
+        ))}
+      </div>
 
-        <h2>核心概念</h2>
-        <h3>1. 基本原理</h3>
-        <p>
-          {displayTitle.toLowerCase()}的核心是理解色彩如何相互作用以及如何影响人的感知。
-          色彩可以唤起情感、创建层次结构并引导用户注意力。
-        </p>
+      {content.sectionFlow.map((section, idx) => (
+        <ZhSectionRenderer key={section} type={section} content={content} index={idx} />
+      ))}
 
-        <h3>2. 实际应用</h3>
-        <p>以下是一些常见的使用场景：</p>
-        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-{`:root {
-  --primary-color: #3B82F6;
-  --secondary-color: #8B5CF6;
-  --text-color: #1F2937;
-  --background-color: #FFFFFF;
-}
+      {content.toolsMention && content.toolsMention.length > 0 && (
+        <section className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+          <h2 className="text-xl font-bold text-slate-900 mb-4">免费工具推荐</h2>
+          <p className="text-slate-600 mb-4">用这些免费工具实操你学到的知识：</p>
+          <div className="flex flex-wrap gap-3">
+            {content.toolsMention.map(tool => (
+              <Link key={tool} href={`/zh/${tool}`} className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-blue-600 font-medium hover:border-blue-400 hover:shadow-md transition-all text-sm">
+                {tool === "color-picker" ? "🎨 取色器" :
+                 tool === "palette-generator" ? "🎯 调色板生成器" :
+                 tool === "gradient-generator" ? "🌈 渐变生成器" :
+                 tool === "contrast-checker" ? "⚡ 对比度检查器" :
+                 tool === "tailwind-generator" ? "💨 Tailwind色系" :
+                 tool === "image-extractor" ? "🖼️ 图片取色器" : tool}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-.button {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-}`}
-        </pre>
-
-        <h3>3. 最佳实践</h3>
-        <ol>
-          <li><strong>明确目标：</strong>确定你想要唤起的情感或行动</li>
-          <li><strong>测试对比度：</strong>始终使用对比度检查器验证可读性</li>
-          <li><strong>考虑场景：</strong>颜色在不同屏幕和光线条件下看起来不同</li>
-          <li><strong>保持一致：</strong>在整个设计中使用有限的调色板</li>
-          <li><strong>用户测试：</strong>尽可能获取真实用户的反馈</li>
-        </ol>
-
-        <h2>常见误区</h2>
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 my-4">
-          <ul className="space-y-2">
-            <li>忽视色盲和无障碍访问指南</li>
-            <li>在单个设计中使用过多颜色</li>
-            <li>仅凭个人喜好选择颜色</li>
-            <li>忽略移动端和暗黑模式的考虑</li>
-            <li>忘记在不同浏览器中测试</li>
-          </ul>
+      <footer className="mt-16 pt-8 border-t border-slate-200">
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          <Link href="/zh/blog" className="text-blue-600 hover:text-blue-800 font-medium">← 返回博客</Link>
+          <Link href="/blog" className="text-slate-500 hover:text-blue-600 text-sm">🇺🇸 English Blog</Link>
         </div>
-
-        <h2>实用工具推荐</h2>
-        <p>使用以下免费工具在你的项目中实践{displayTitle.toLowerCase()}：</p>
-        <div className="grid grid-cols-2 gap-4 my-4">
-          <Link href="/zh/color-picker" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>取色器</strong>
-            <p className="text-sm text-gray-600">找到完美的颜色</p>
-          </Link>
-          <Link href="/zh/contrast-checker" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>对比度检查器</strong>
-            <p className="text-sm text-gray-600">确保无障碍访问</p>
-          </Link>
-          <Link href="/zh/palette-generator" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>调色板生成器</strong>
-            <p className="text-sm text-gray-600">创建和谐配色</p>
-          </Link>
-          <Link href="/zh/gradient-generator" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>渐变生成器</strong>
-            <p className="text-sm text-gray-600">设计精美渐变</p>
-          </Link>
-        </div>
-
-        <h2>总结</h2>
-        <p>
-          {displayTitle}是你设计工具箱中的强大工具。通过理解和运用这些原则，
-          你可以创建更有效、更易访问、更美观的设计。
-        </p>
-        <p>
-          立即使用我们的免费颜色工具开始实验，看看正确的色彩选择能带来多大不同！
-        </p>
-      </article>
+      </footer>
     </div>
   );
+}
+
+// Chinese section renderer (uses English content + Chinese labels)
+function ZhSectionRenderer({ type, content, index }: { type: string; content: ContentBlock; index: number }) {
+  const zhLabels: Record<string, string> = {
+    realWorldExamples: "真实案例",
+    real_world: "真实案例",
+    examples: "真实案例",
+    industry_examples: "行业案例",
+    real_palettes: "真实配色",
+    how_it_works: "原理详解",
+    color_wheel: "色轮原理",
+    foundation: "基础原理",
+    math: "数学原理",
+    science: "科学原理",
+    the_five_patterns: "五大配色模式",
+    cultural_context: "文化背景",
+    culture_matrix: "文化矩阵",
+    history: "历史背景",
+    key_trends: "趋势分析",
+    trends: "趋势分析",
+    wcag_levels: "WCAG标准解读",
+    testing: "测试方法",
+    testing_methods: "测试方法",
+    simulation: "模拟测试",
+    format_comparison: "格式对比",
+    function_reference: "函数参考",
+    types_of_gradients: "渐变类型",
+    pro_tips: "高手技巧",
+    practical: "实操指南",
+    practicalApps: "实操指南",
+    next_steps: "下一步",
+    developer_perspective: "开发者视角",
+    performance_tips: "性能优化",
+    tools: "工具推荐",
+    tools_walkthrough: "工具详解",
+    comparison: "对比分析",
+    code_patterns: "代码示例",
+    code: "代码示例",
+  };
+
+  const label = zhLabels[type] || type.replace(/_/g, " ");
+
+  // For most section types, the content is in English since it's technical
+  if (type === "code_patterns" || type === "code") {
+    return content.codeSnippet ? (
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">{content.codeSnippet.label}</h2>
+        <pre className="bg-slate-900 text-slate-100 p-4 md:p-6 rounded-xl overflow-x-auto text-sm leading-relaxed">
+          <code>{content.codeSnippet.code}</code>
+        </pre>
+        <p className="text-slate-500 text-sm mt-2">复制粘贴到项目即可使用。</p>
+      </section>
+    ) : null;
+  }
+
+  if (type === "pro_tips" || type === "practical" || type === "practicalApps" || type === "next_steps") {
+    return (
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">💡 {label}</h2>
+        <ul className="space-y-3">
+          {content.proTips.map((tip, i) => (
+            <li key={i} className="flex gap-3 text-slate-700">
+              <span className="text-blue-500 font-bold flex-shrink-0">▸</span>
+              <span>{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mb-10">
+      <h2 className="text-2xl font-bold text-slate-900 mb-4">{label}</h2>
+      <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples || "") }} />
+    </section>
+  );
+}
+
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/^/, "<p>")
+    .replace(/$/, "</p>");
 }

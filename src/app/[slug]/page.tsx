@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { articleDatabase, articleSlugs } from "@/data/article-database";
+import { articleContent, getDefaultContent, type ContentBlock } from "@/data/article-content";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -8,127 +9,246 @@ export function generateStaticParams() {
   return articleSlugs.map((slug) => ({ slug }));
 }
 
+function getContent(slug: string): ContentBlock {
+  return articleContent[slug] || getDefaultContent(slug);
+}
+
 export default function ArticlePage({ params }: { params: { slug: string } }) {
   const article = articleDatabase[params.slug];
   if (!article) notFound();
 
-  const titleParts = article.title.split(" | ");
-  const displayTitle = titleParts[0];
+  const content = getContent(params.slug);
+  const displayTitle = article.title.split(" | ")[0];
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <nav className="text-sm text-gray-500 mb-4">
+      {/* Breadcrumb */}
+      <nav className="text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-blue-600">Home</Link>
         <span className="mx-2">/</span>
         <Link href="/blog" className="hover:text-blue-600">Blog</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-700">{displayTitle}</span>
+        <span className="text-slate-700">{displayTitle}</span>
+        <span className="ml-4">
+          <Link href={`/zh/${params.slug}`} className="text-blue-500 hover:text-blue-700 text-xs">🇨🇳 中文</Link>
+        </span>
       </nav>
 
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{displayTitle}</h1>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span>5 min read</span>
-          <span>|</span>
+      {/* Article header */}
+      <header className="mb-10">
+        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
+          {displayTitle}
+        </h1>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+          <span>8 min read</span>
+          <span aria-hidden="true">|</span>
           <span>Updated {new Date().toISOString().split("T")[0]}</span>
         </div>
       </header>
 
-      <article className="prose prose-lg max-w-none">
-        <h2>What is {displayTitle}?</h2>
-        <p>
-          {displayTitle} is a fundamental concept in color theory and web design that every designer and developer should understand.
-          This comprehensive guide will walk you through everything you need to know, from basic principles to advanced techniques.
-        </p>
-        <p>
-          Whether you are building a new website, creating a brand identity, or working on a design project,
-          mastering {displayTitle.toLowerCase()} will help you make better visual decisions.
-        </p>
+      {/* Unique intro — different for every article */}
+      <div className="text-lg leading-relaxed text-slate-700 mb-10">
+        {content.intro.split("\n\n").map((p, i) => (
+          <p key={i} className={i > 0 ? "mt-4" : ""}>{p}</p>
+        ))}
+      </div>
 
-        <h2>Why {displayTitle} Matters</h2>
-        <p>Understanding {displayTitle.toLowerCase()} is essential because:</p>
-        <ul>
-          <li><strong>Better User Experience:</strong> Proper use of color improves readability and engagement</li>
-          <li><strong>Brand Consistency:</strong> Consistent color usage builds brand recognition</li>
-          <li><strong>Accessibility:</strong> Good color choices ensure your content is accessible to everyone</li>
-          <li><strong>Conversion Optimization:</strong> The right colors can significantly impact conversion rates</li>
-        </ul>
+      {/* Dynamic section flow — NOT the same for every article */}
+      {content.sectionFlow.map((section, idx) => (
+        <SectionRenderer key={section} type={section} content={content} index={idx} />
+      ))}
 
-        <h2>Key Concepts</h2>
-        <h3>1. The Basics</h3>
-        <p>
-          At its core, {displayTitle.toLowerCase()} involves understanding how colors interact with each other and how they
-          affect human perception. Colors can evoke emotions, create hierarchy, and guide user attention.
-        </p>
+      {/* Tools recommendation */}
+      {content.toolsMention && content.toolsMention.length > 0 && (
+        <section className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+          <h2 className="text-xl font-bold text-slate-900 mb-4">Try It Yourself</h2>
+          <p className="text-slate-600 mb-4">Use these free tools to apply what you learned:</p>
+          <div className="flex flex-wrap gap-3">
+            {content.toolsMention.map(tool => (
+              <Link key={tool} href={`/${tool}`} className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-blue-600 font-medium hover:border-blue-400 hover:shadow-md transition-all text-sm">
+                {tool === "color-picker" ? "🎨 Color Picker" :
+                 tool === "palette-generator" ? "🎯 Palette Generator" :
+                 tool === "gradient-generator" ? "🌈 Gradient Generator" :
+                 tool === "contrast-checker" ? "⚡ Contrast Checker" :
+                 tool === "tailwind-generator" ? "💨 Tailwind Generator" :
+                 tool === "image-extractor" ? "🖼️ Image Extractor" : tool}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-        <h3>2. Practical Applications</h3>
-        <p>Here are some common use cases:</p>
-        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-{`:root {
-  --primary-color: #3B82F6;
-  --secondary-color: #8B5CF6;
-  --text-color: #1F2937;
-  --background-color: #FFFFFF;
-}
-
-.button {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-}`}
-        </pre>
-
-        <h3>3. Best Practices</h3>
-        <ol>
-          <li><strong>Start with a purpose:</strong> Define what emotion or action you want to evoke</li>
-          <li><strong>Test contrast:</strong> Always check readability with a contrast checker</li>
-          <li><strong>Consider context:</strong> Colors look different on various screens and in different lighting</li>
-          <li><strong>Stay consistent:</strong> Use a limited color palette throughout your design</li>
-          <li><strong>Test with users:</strong> Get feedback from real users when possible</li>
-        </ol>
-
-        <h2>Common Mistakes to Avoid</h2>
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 my-4">
-          <ul className="space-y-2">
-            <li>Ignoring color blindness and accessibility guidelines</li>
-            <li>Using too many colors in a single design</li>
-            <li>Choosing colors based purely on personal preference</li>
-            <li>Neglecting mobile and dark mode considerations</li>
-            <li>Forgetting to test across different browsers</li>
-          </ul>
+      {/* Related links */}
+      <footer className="mt-16 pt-8 border-t border-slate-200">
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          <Link href="/blog" className="text-blue-600 hover:text-blue-800 font-medium">← Back to Blog</Link>
+          <Link href="/zh/blog" className="text-slate-500 hover:text-blue-600 text-sm">🇨🇳 中文博客</Link>
         </div>
-
-        <h2>Tools to Help You</h2>
-        <p>Use these free tools to implement {displayTitle.toLowerCase()} in your projects:</p>
-        <div className="grid grid-cols-2 gap-4 my-4">
-          <Link href="/color-picker" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>Color Picker</strong>
-            <p className="text-sm text-gray-600">Find the perfect colors</p>
-          </Link>
-          <Link href="/contrast-checker" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>Contrast Checker</strong>
-            <p className="text-sm text-gray-600">Ensure accessibility</p>
-          </Link>
-          <Link href="/palette-generator" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>Palette Generator</strong>
-            <p className="text-sm text-gray-600">Create harmonious palettes</p>
-          </Link>
-          <Link href="/gradient-generator" className="block p-4 border rounded-lg hover:border-blue-500 hover:shadow-md">
-            <strong>Gradient Generator</strong>
-            <p className="text-sm text-gray-600">Design beautiful gradients</p>
-          </Link>
-        </div>
-
-        <h2>Conclusion</h2>
-        <p>
-          {displayTitle} is a powerful tool in your design toolkit. By understanding and applying these principles,
-          you can create more effective, accessible, and visually appealing designs.
-        </p>
-        <p>
-          Start experimenting today with our free color tools and see the difference proper color choices can make!
-        </p>
-      </article>
+      </footer>
     </div>
   );
+}
+
+// Dynamic section renderer — produces unique layouts per article
+function SectionRenderer({ type, content, index }: { type: string; content: ContentBlock; index: number }) {
+  switch (type) {
+    case "realWorldExamples":
+    case "real_world":
+    case "examples":
+    case "industry_examples":
+    case "real_palettes":
+    case "realWorldExamples":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Real-World Examples</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "the_five_patterns":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">The 5 Color Harmony Patterns</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "how_it_works":
+    case "color_wheel":
+    case "foundation":
+    case "math":
+    case "science":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">How It Works</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed">
+            {content.realWorldExamples && (
+              <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+            )}
+          </div>
+        </section>
+      );
+
+    case "cultural_context":
+    case "culture_matrix":
+    case "history":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Cultural & Historical Context</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "key_trends":
+    case "trends":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Key Trends</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "wcag_levels":
+    case "testing":
+    case "testing_methods":
+    case "simulation":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Testing & Standards</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "format_comparison":
+    case "function_reference":
+    case "types_of_gradients":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Comparison & Reference</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+        </section>
+      );
+
+    case "pro_tips":
+    case "practical":
+    case "practicalApps":
+    case "next_steps":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Pro Tips</h2>
+          <ul className="space-y-3">
+            {content.proTips.map((tip, i) => (
+              <li key={i} className="flex gap-3 text-slate-700">
+                <span className="text-blue-500 font-bold flex-shrink-0">▸</span>
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+
+    case "developer_perspective":
+    case "performance_tips":
+    case "tools":
+    case "tools_walkthrough":
+    case "comparison":
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Developer Perspective</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3">
+            {content.realWorldExamples && (
+              <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+            )}
+            <div className="space-y-2">
+              {content.proTips.slice(0, 2).map((tip, i) => (
+                <p key={i} className="flex gap-2"><span className="text-blue-500">▸</span> {tip}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+
+    case "code_patterns":
+    case "code":
+      return content.codeSnippet ? (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">{content.codeSnippet.label}</h2>
+          <pre className="bg-slate-900 text-slate-100 p-4 md:p-6 rounded-xl overflow-x-auto text-sm leading-relaxed">
+            <code>{content.codeSnippet.code}</code>
+          </pre>
+          <p className="text-slate-500 text-sm mt-2">Copy and paste into your project — free to use.</p>
+        </section>
+      ) : null;
+
+    default:
+      // Generic section for uncategorized flows
+      return (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4 capitalize">{type.replace(/_/g, " ")}</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed">
+            {content.realWorldExamples && (
+              <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+            )}
+            {!content.realWorldExamples && (
+              <p>This section covers practical techniques that professional designers and developers use daily. Understanding these concepts will help you make better design decisions and produce more polished work.</p>
+            )}
+          </div>
+        </section>
+      );
+  }
+}
+
+// Simple markdown bold/italic renderer
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/^/, "<p>")
+    .replace(/$/, "</p>");
 }
