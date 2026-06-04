@@ -199,7 +199,7 @@ export default function ${slug.replace(/-/g, '').charAt(0).toUpperCase() + slug.
   );
 }`,
 
-  article: (title, slug) => `import RelatedArticles from '@/components/RelatedArticles';
+  article: (title, slug) => `'use client';
 
 export const metadata = {
   title: '${title} | exdreamcolors',
