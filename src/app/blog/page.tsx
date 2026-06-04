@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { articles } from '@/data/articles';
 
 export const metadata: Metadata = {
-  title: 'Blog | Color Theory, Design Tips & Tools | exdreamcolors',
+  title: 'Blog | Color Theory, Design Tips & Tools',
   description: 'Free color design blog with 50+ articles. Learn color theory, palette creation, accessibility, CSS colors, and design best practices.',
   keywords: ['color blog', 'color theory', 'color palette', 'design tips', 'CSS colors', 'color tools'],
   openGraph: {
