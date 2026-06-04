@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: '/exdreamcolors',
   output: 'export',
   images: { unoptimized: true },
   trailingSlash: true,
