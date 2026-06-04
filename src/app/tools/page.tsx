@@ -150,7 +150,7 @@ export default function ToolsPage() {
       <footer className="bg-white border-t border-gray-200 mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-600">
-            © 2025 exdreamcolors. Free online color tools for developers and designers.
+            © 2026 exdreamcolors. Free online color tools for developers and designers.
           </p>
         </div>
       </footer>
