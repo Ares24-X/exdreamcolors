@@ -13,6 +13,7 @@ export const articles: Article[] = [
   {"slug":"color-accessibility-guidelines","title":"Color Accessibility Guidelines","desc":"Learn about color accessibility guidelines — WCAG compliance made practical.","cat":"Accessibility"},
   {"slug":"color-blind-friendly-palettes","title":"Color Blind Friendly Palettes","desc":"Learn about color blind friendly palettes — design choices that work for everyone.","cat":"Color Palettes"},
   {"slug":"color-code-converter","title":"Color Code Converter Tool","desc":"Learn about color code converter tools — HEX, RGB, HSL conversion explained.","cat":"Technical"},
+  {"slug":"color-conversion-rate-optimization","title":"Color Conversion Rate Optimization","desc":"How specific colors affect conversion rates in CTAs, landing pages, and checkout flows — backed by real A/B test data.","cat":"Marketing"},
   {"slug":"color-design-trends-2026","title":"Color Design Trends 2026","desc":"Learn about color design trends 2026 — what's hot in web and UI design this year.","cat":"Trends"},
   {"slug":"color-harmony-principles","title":"Color Harmony Principles","desc":"Learn about color harmony principles — the foundation of beautiful color combinations.","cat":"Color Theory"},
   {"slug":"color-management-design-systems","title":"Color Management in Design Systems","desc":"Learn about color management in design systems — organize and scale your colors.","cat":"Design Tips"},

@@ -12,6 +12,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "color-accessibility-guidelines": { slug: "color-accessibility-guidelines", title: "Color Accessibility Guidelines", description: "Learn about color accessibility guidelines." },
   "color-blind-friendly-palettes": { slug: "color-blind-friendly-palettes", title: "Color Blind Friendly Palettes", description: "Learn about color blind friendly palettes." },
   "color-code-converter": { slug: "color-code-converter", title: "Color Code Converter Tool", description: "Learn about color code converter tool." },
+  "color-conversion-rate-optimization": { slug: "color-conversion-rate-optimization", title: "Color Conversion Rate Optimization", description: "How specific colors affect conversion rates in CTAs, landing pages, and checkout flows — backed by real A/B test data." },
   "color-design-trends-2026": { slug: "color-design-trends-2026", title: "Color Design Trends 2026", description: "Learn about color design trends 2026." },
   "color-harmony-principles": { slug: "color-harmony-principles", title: "Color Harmony Principles", description: "Learn about color harmony principles." },
   "color-management-design-systems": { slug: "color-management-design-systems", title: "Color Management in Design Systems", description: "Learn about color management in design systems." },
