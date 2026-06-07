@@ -32,6 +32,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "css-custom-properties-colors": { slug: "css-custom-properties-colors", title: "CSS Custom Properties Colors", description: "Learn about css custom properties colors." },
   "css-gradient-generator-online": { slug: "css-gradient-generator-online", title: "CSS Gradient Generator Online", description: "Learn about css gradient generator online." },
   "dark-mode-colors": { slug: "dark-mode-colors", title: "Dark Mode Colors", description: "Learn about dark mode colors." },
+  "data-visualization-color-guide": { slug: "data-visualization-color-guide", title: "Data Visualization Color Guide", description: "Best color practices for charts, graphs, dashboards, and data storytelling — make your data readable and beautiful." },
   "desert-color-palette": { slug: "desert-color-palette", title: "Desert Color Palette", description: "Learn about desert color palette." },
   "earth-tone-color-palette": { slug: "earth-tone-color-palette", title: "Earth Tone Color Palette", description: "Learn about earth tone color palette." },
   "ecommerce-color-psychology": { slug: "ecommerce-color-psychology", title: "E-commerce Color Psychology", description: "Learn about e-commerce color psychology." },
