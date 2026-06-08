@@ -341,6 +341,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://exdreamcolors.win/srgb-vs-p3-color-spaces</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://exdreamcolors.win/sunset-color-palette</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

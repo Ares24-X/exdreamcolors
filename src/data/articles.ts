@@ -55,6 +55,7 @@ export const articles: Article[] = [
   {"slug":"sass-color-functions","title":"Sass Color Functions","desc":"Learn about Sass color functions — lighten, darken, mix, and manipulate colors.","cat":"Technical"},
   {"slug":"split-complementary-colors","title":"Split Complementary Colors","desc":"Learn about split complementary colors — a safer alternative to complementary schemes.","cat":"Color Theory"},
   {"slug":"square-color-scheme","title":"Square Color Scheme","desc":"Learn about the square color scheme — four colors evenly spaced on the wheel.","cat":"Color Theory"},
+  {"slug":"srgb-vs-p3-color-spaces","title":"sRGB vs P3 Color Spaces","desc":"Understanding color gamut differences for modern displays — why your colors look dull and how to fix it.","cat":"Technical"},
   {"slug":"sunset-color-palette","title":"Sunset Color Palette","desc":"Learn about sunset color palettes — warm oranges, pinks, and purples combined.","cat":"Color Palettes"},
   {"slug":"tailwind-color-palette-generator","title":"Tailwind Color Palette Generator","desc":"Learn about Tailwind color palette generators — create Tailwind CSS color configs.","cat":"Color Palettes"},
   {"slug":"tailwind-colors-guide","title":"Tailwind Colors Guide","desc":"Learn about Tailwind CSS colors — the complete color system and customization.","cat":"Guides"},
