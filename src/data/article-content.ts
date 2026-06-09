@@ -220,6 +220,42 @@ The worst: you set a color in HEX, tweak it in HSL in devtools, copy it back as 
     toolsMention: ["color-picker", "palette-generator"],
   },
 
+  // ── COLOR IN LOGO DESIGN ──
+  "color-in-logo-design": {
+    intro: `Your logo's color does more heavy lifting than you think. Before anyone reads your brand name, processes your tagline, or notices your icon shape, they've already formed an opinion based on color. It takes 90 seconds to form a subconscious judgment about a brand — and up to 90% of that judgment comes from color alone.
+
+Here's what separates logos that last decades from logos that get redesigned every 3 years: restraint. The most enduring logos in history — Apple, Nike, Coca-Cola, Chanel — use one or two colors. Not because their designers lacked creativity, but because simplicity scales. Your logo needs to work on a billboard, a favicon, a business card, an embroidered polo shirt, and a 16×16 pixel browser tab. Every extra color makes that harder.
+
+This guide covers the strategic decisions behind logo color choices, backed by data from the world's most valuable brands.`,
+    sectionFlow: ["foundation", "real_world", "history", "practical", "comparison", "pro_tips", "tools"],
+    realWorldExamples: `**Coca-Cola's Red (#F40009)** has remained virtually unchanged since 1886 — 140 years. The specific shade was originally chosen to stand out against the brown shelving of general stores. Today, Coca-Cola owns that red so thoroughly that competitors physically cannot use it without triggering brand confusion. Interbrand values the Coca-Cola brand at $57.5 billion (2025), and brand experts attribute roughly 40% of instant recognition to the red alone.
+
+**Tiffany's Robin Egg Blue (#0ABAB5)** is a trademarked color (Pantone 1837, named after the company's founding year). The shade was chosen by founder Charles Lewis Tiffany for the 1837 Blue Book catalog cover. Today, 73% of consumers can identify a Tiffany box by color alone without seeing the logo (Siegel+Gale brand recognition study, 2022). The color is so protected that Tiffany has successfully sued companies for using similar shades in jewelry packaging.
+
+**Mastercard's Red and Yellow** — In 2019, Mastercard dropped the wordmark entirely and went to just overlapping circles. Why? Because 80% of consumers could already identify the brand from the color pattern alone (Mastercard internal research). This is the ultimate goal of logo color: becoming so distinctive that you don't need letters anymore.
+
+**UPS's Pullman Brown (#644117)** — UPS chose brown in 1916 because it doesn't show dirt on delivery vehicles (practical) and because no other carrier used it (distinctive). Over a century later, they literally trademarked the color and built the tagline "What Can Brown Do for You?" The color IS the brand.
+
+**T-Mobile's Magenta (#E20074)** — T-Mobile has trademarked their specific magenta in the telecommunications category. They've sent cease-and-desist letters to companies as far afield as insurance firms for using similar pinks. In 2014, they sued AT&T's cricket brand for using a plum shade they considered too close. Color ownership in logos is serious legal territory.
+
+**FedEx's Purple and Orange** — The purple-to-orange combination serves a specific psychological function: purple communicates reliability and sophistication (your package is safe), while orange communicates speed and energy (it'll get there fast). These are the two brand promises of a shipping company, encoded in color.
+
+**Google's Four Colors** — Google's logo breaks the "one or two colors" rule deliberately. The primary colors (blue, red, yellow) follow a pattern, then green breaks it — signaling that Google "doesn't follow the rules." Designer Ruth Kedar confirmed this was intentional in her 1999 redesign notes.`,
+    codeSnippet: {
+      label: "Logo Color System with Dark/Light Mode Variants",
+      code: `:root {\n  /* Primary logo color — use for main brand mark */\n  --logo-primary: #2563EB;\n  --logo-primary-on-dark: #60A5FA;\n  \n  /* Knockout versions for reversed backgrounds */\n  --logo-on-white: #1E40AF;\n  --logo-on-black: #93C5FD;\n  --logo-on-brand: #FFFFFF;\n  \n  /* Minimum clear space = 0.5× logo height */\n  --logo-clearspace: 0.5em;\n}\n\n/* Responsive logo color switching */\n@media (prefers-color-scheme: dark) {\n  .logo-mark {\n    color: var(--logo-primary-on-dark);\n  }\n}\n\n/* Ensure logo meets contrast on any background */\n.logo-wrapper {\n  /* Minimum 3:1 contrast ratio for graphical elements (WCAG 2.1) */\n  /* Test: getContrastRatio(logoColor, backgroundColor) >= 3 */\n  padding: var(--logo-clearspace);\n}\n\n/* Favicon-safe version (simplified colors for small sizes) */\n@media (max-resolution: 2dppx) and (max-width: 32px) {\n  .logo-mark { color: var(--logo-on-white); }\n}`
+    },
+    proTips: [
+      "Test your logo color in grayscale first. If the logo still communicates your brand personality without color (through shape alone), you've got strong bones. Then add color as the final enhancement, not the structural element.",
+      "Limit to two colors maximum. Of the top 100 global brands, 95% use only one or two colors in their logo. Three+ colors demand exceptional justification (like Google's deliberate rule-breaking).",
+      "Always define a 'knockout' version — a single-color logo variant for use on colored backgrounds. If your blue logo sits on a blue background, you need a white or dark version ready.",
+      "Check your industry's color landscape before choosing. If every competitor in your space uses blue (banking, tech), choosing orange or green makes you instantly distinctive without saying a word.",
+      "Your logo color must pass the 'fax test': can it work in pure black-and-white? If a one-color version of your logo loses all meaning, the color is doing too much structural work."
+    ],
+    keyStat: "Color increases brand recognition by up to 80% (University of Loyola, Maryland). Consistent brand presentation across all platforms increases revenue by 23% (Lucidpress Brand Consistency Report, 2024).",
+    toolsMention: ["color-picker", "palette-generator", "contrast-checker"],
+  },
+
   // ── COLOR HARMONY ──
   "color-harmony-principles": {
     intro: `Harmony isn't about "colors that look good together." It's about colors that relate to each other mathematically. Every harmonious palette — whether you realize it or not — follows one of five geometric patterns on the color wheel: complementary, analogous, triadic, split-complementary, or tetradic.
