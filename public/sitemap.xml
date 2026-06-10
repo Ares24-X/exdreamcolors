@@ -251,6 +251,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://exdreamcolors.win/gradient-design-trends-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://exdreamcolors.win/hex-to-rgb-converter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -312,6 +317,11 @@
   </url>
   <url>
     <loc>https://exdreamcolors.win/pastel-color-palette</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://exdreamcolors.win/print-vs-digital-color</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
