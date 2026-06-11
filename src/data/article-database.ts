@@ -65,6 +65,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "square-color-scheme": { slug: "square-color-scheme", title: "Square Color Scheme", description: "Learn about square color scheme." },
   "srgb-vs-p3-color-spaces": { slug: "srgb-vs-p3-color-spaces", title: "sRGB vs P3 Color Spaces", description: "Understanding color gamut differences for modern displays and web design." },
   "sunset-color-palette": { slug: "sunset-color-palette", title: "Sunset Color Palette", description: "Learn about sunset color palette." },
+  "tailwind-color-generator": { slug: "tailwind-color-generator", title: "Tailwind Color Generator", description: "Generate Tailwind CSS colors and config-ready palettes." },
   "tailwind-color-palette-generator": { slug: "tailwind-color-palette-generator", title: "Tailwind Color Palette Generator", description: "Learn about tailwind color palette generator." },
   "tailwind-colors-guide": { slug: "tailwind-colors-guide", title: "Tailwind Colors Guide", description: "Learn about tailwind colors guide." },
   "tetradic-colors": { slug: "tetradic-colors", title: "Tetradic Colors", description: "Learn about tetradic colors." },

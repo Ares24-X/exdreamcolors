@@ -80,12 +80,12 @@ export default function Home() {
             </Link>
 
             {/* Tailwind Generator */}
-            <Link href="/tailwind-generator" className="card hover:shadow-lg transition-shadow">
+            <Link href="/tailwind-color-generator" className="card hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">💻</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Tailwind Generator</h3>
-              <p className="text-gray-600">Generate Tailwind CSS color configurations. Copy and paste ready-to-use code.</p>
+              <h3 className="text-xl font-semibold mb-2">Tailwind Color Generator</h3>
+              <p className="text-gray-600">Generate Tailwind CSS colors from a base color. Copy config-ready palettes.</p>
             </Link>
 
           </div>

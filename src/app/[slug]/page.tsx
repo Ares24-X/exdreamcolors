@@ -70,7 +70,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                  tool === "palette-generator" ? "🎯 Palette Generator" :
                  tool === "gradient-generator" ? "🌈 Gradient Generator" :
                  tool === "contrast-checker" ? "⚡ Contrast Checker" :
-                 tool === "tailwind-generator" ? "💨 Tailwind Generator" :
+                 tool === "tailwind-color-generator" ? "💨 Tailwind Generator" :
                  tool === "image-extractor" ? "🖼️ Image Extractor" : tool}
               </Link>
             ))}

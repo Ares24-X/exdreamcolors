@@ -310,9 +310,9 @@ export default function GradientGeneratorPage() {
               <h3 className="font-semibold mb-2">🎭 Palette Generator</h3>
               <p className="text-sm text-gray-600">Generate color schemes</p>
             </Link>
-            <Link href="/tailwind-generator" className="card hover:shadow-lg transition-shadow">
-              <h3 className="font-semibold mb-2">💻 Tailwind Generator</h3>
-              <p className="text-sm text-gray-600">Export as Tailwind config</p>
+            <Link href="/tailwind-color-generator" className="card hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold mb-2">💻 Tailwind Color Generator</h3>
+              <p className="text-sm text-gray-600">Create Tailwind CSS colors</p>
             </Link>
           </div>
         </div>

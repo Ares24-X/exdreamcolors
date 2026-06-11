@@ -175,7 +175,7 @@ But here's what nobody tells you: generating a Tailwind-compatible color scale f
       "The 950 shade should have L ≈ 10-12% for a near-black that still shows the hue.",
       "Always test your generated scale's contrast: 600 on 100 should pass AA, 700 on 50 should pass AAA.",
     ],
-    toolsMention: ["tailwind-generator", "contrast-checker"],
+    toolsMention: ["tailwind-color-generator", "contrast-checker"],
   },
 
   // ── COLOR PICKER GUIDE ──
@@ -383,7 +383,7 @@ A single CSS color function — color-mix() — can replace an entire Sass color
       "light-dark() requires color-scheme: light dark on a parent element. Without it, only the first value is used.",
       "OKLCH's chroma (C) component goes to ~0.37 for sRGB gamut. Don't set it above 0.37 unless you're targeting P3 displays.",
     ],
-    toolsMention: ["gradient-generator", "tailwind-generator"],
+    toolsMention: ["gradient-generator", "tailwind-color-generator"],
   },
 
   // ── More articles with lighter enrichment ──
@@ -400,7 +400,7 @@ A single CSS color function — color-mix() — can replace an entire Sass color
     sectionFlow: ["tokens", "formats", "implementation", "migration"],
     realWorldExamples: "Shopify Polaris, Adobe Spectrum, and Salesforce Lightning all use design tokens generated from base hue/saturation/lightness values. The key insight: you don't define 'blue-500' — you define the base blue and derive all 11 stops mathematically.",
     proTips: ["Never manually define all 11 stops of a color scale. Use a generator. Manual tweaking creates inconsistency.", "Store design tokens in HSL, export to HEX, consume in RGB. Each consumer gets the format it needs."],
-    toolsMention: ["tailwind-generator", "palette-generator"],
+    toolsMention: ["tailwind-color-generator", "palette-generator"],
   },
 
   "color-design-history": {
@@ -467,7 +467,7 @@ A single CSS color function — color-mix() — can replace an entire Sass color
     realWorldExamples: "The 'semantic token' pattern: don't name colors by their value (--blue-500), name them by their purpose (--color-primary, --color-text, --color-surface). This makes theme switching trivial.",
     codeSnippet: { label: "Semantic token pattern", code: `:root {\n  /* Foundation tokens */\n  --blue-500: hsl(220, 70%, 50%);\n  /* Semantic tokens */\n  --color-primary: var(--blue-500);\n  --color-primary-hover: hsl(220, 70%, 45%);\n}\n[data-theme="dark"] {\n  --color-primary: hsl(220, 70%, 65%); /* Lighter for dark bg */\n}` },
     proTips: ["Use two layers: 'foundation' tokens (raw colors) and 'semantic' tokens (purpose-based). Never reference foundation tokens directly in components.", "Name your gray scale by role, not number: --gray-surface, --gray-border, --gray-text, --gray-text-muted."],
-    toolsMention: ["palette-generator", "tailwind-generator"],
+    toolsMention: ["palette-generator", "tailwind-color-generator"],
   },
 
   // ── CSS COLOR VARIABLES GUIDE (3000-word deep dive) ──

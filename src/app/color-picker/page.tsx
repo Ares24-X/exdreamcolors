@@ -209,9 +209,9 @@ export default function ColorPickerPage() {
               <h3 className="font-semibold mb-2">🌈 Gradient Generator</h3>
               <p className="text-sm text-gray-600">Create gradients with your color</p>
             </Link>
-            <Link href="/contrast-checker" className="card hover:shadow-lg transition-shadow">
-              <h3 className="font-semibold mb-2">♿ Contrast Checker</h3>
-              <p className="text-sm text-gray-600">Check accessibility of your color</p>
+            <Link href="/tailwind-color-generator" className="card hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold mb-2">💻 Tailwind Color Generator</h3>
+              <p className="text-sm text-gray-600">Turn your color into Tailwind CSS colors</p>
             </Link>
           </div>
         </div>

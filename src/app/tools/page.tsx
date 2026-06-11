@@ -43,10 +43,10 @@ export default function ToolsPage() {
       color: 'yellow'
     },
     {
-      href: '/tailwind-generator',
+      href: '/tailwind-color-generator',
       icon: '💻',
-      title: 'Tailwind Generator',
-      description: 'Generate Tailwind CSS color configurations',
+      title: 'Tailwind Color Generator',
+      description: 'Generate complete Tailwind CSS colors and config-ready palettes',
       category: 'Developer',
       color: 'cyan'
     }

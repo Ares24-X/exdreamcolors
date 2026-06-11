@@ -17,7 +17,7 @@ const navData = {
       { href: "/gradient-generator/", label: "Gradient Generator" },
       { href: "/contrast-checker/", label: "Contrast Checker" },
       { href: "/image-extractor/", label: "Image Extractor" },
-      { href: "/tailwind-generator/", label: "Tailwind Colors" },
+      { href: "/tailwind-color-generator/", label: "Tailwind Color Generator" },
     ],
     blog: { href: "/blog/", label: "Blog" },
     about: { href: "/about/", label: "About" },

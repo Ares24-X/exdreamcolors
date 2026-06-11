@@ -273,9 +273,9 @@ ${contrastRatio.toFixed(2)}:1`}
               <h3 className="font-semibold mb-2">🎭 Palette Generator</h3>
               <p className="text-sm text-gray-600">Generate accessible palettes</p>
             </Link>
-            <Link href="/tailwind-generator" className="card hover:shadow-lg transition-shadow">
-              <h3 className="font-semibold mb-2">💻 Tailwind Generator</h3>
-              <p className="text-sm text-gray-600">Export as Tailwind config</p>
+            <Link href="/tailwind-color-generator" className="card hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold mb-2">💻 Tailwind Color Generator</h3>
+              <p className="text-sm text-gray-600">Generate accessible Tailwind shades</p>
             </Link>
           </div>
         </div>

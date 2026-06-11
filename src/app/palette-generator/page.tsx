@@ -238,9 +238,9 @@ ${palette.map(c => `  --color-${c.role}: ${c.hex};`).join('\n')}
               <h3 className="font-semibold mb-2">🌈 Gradient Generator</h3>
               <p className="text-sm text-gray-600">Create gradients from palette</p>
             </Link>
-            <Link href="/tailwind-generator" className="card hover:shadow-lg transition-shadow">
-              <h3 className="font-semibold mb-2">💻 Tailwind Generator</h3>
-              <p className="text-sm text-gray-600">Export as Tailwind config</p>
+            <Link href="/tailwind-color-generator" className="card hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold mb-2">💻 Tailwind Color Generator</h3>
+              <p className="text-sm text-gray-600">Create a full Tailwind palette</p>
             </Link>
           </div>
         </div>
