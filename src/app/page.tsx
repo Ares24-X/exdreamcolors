@@ -25,6 +25,23 @@ export default function Home() {
               View All Tools
             </Link>
           </div>
+
+          {/* Product Hunt Badge */}
+          <div className="mt-8 flex justify-center">
+            <a
+              href="https://www.producthunt.com/posts/exdreamcolors?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-exdreamcolors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=exdreamcolors&theme=light"
+                alt="exdreamcolors - Free color palette generator for designers and developers | Product Hunt"
+                width="250"
+                height="54"
+                style={{ width: '250px', height: '54px' }}
+              />
+            </a>
+          </div>
         </div>
       </section>
 
