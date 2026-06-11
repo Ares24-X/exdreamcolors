@@ -70,4 +70,5 @@ export const articles: Article[] = [
   {"slug":"wcag-contrast-checker-tool","title":"WCAG Contrast Checker Tool","desc":"Learn about WCAG contrast checker tools — ensure your colors pass accessibility tests.","cat":"Accessibility"},
   {"slug":"web-app-color-best-practices","title":"Web App Color Best Practices","desc":"Learn about web app color best practices — design interfaces that users love.","cat":"Guides"},
   {"slug":"what-is-hex-color","title":"What is HEX Color Code","desc":"Learn what a HEX color code is — the most common color format on the web explained.","cat":"Technical"},
+  {"slug":"neutral-color-palette","title":"Neutral Color Palette Guide","desc":"Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat.","cat":"Color Palettes"},
 ];

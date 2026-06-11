@@ -711,6 +711,36 @@ If you've ever sent a design to print and thought "why does this look like garba
     keyStat: "The CMYK gamut covers only about 55-65% of the sRGB gamut, meaning roughly 35-45% of colors you see on screen cannot be physically reproduced in standard 4-color offset printing. (Fogra/ISO 12647-2)",
     toolsMention: ["color-picker", "contrast-checker", "palette-generator"],
   },
+
+  // ── NEUTRAL COLOR PALETTE ──
+  // [💬] DeAI marker: add a short product-specific neutral palette anecdote here when a founder/designer quote is available.
+  "neutral-color-palette": {
+    intro: `A neutral palette is not "gray plus white." Good neutrals carry a tiny color bias, enough contrast for real text, and enough warmth or coolness to make the brand feel intentional. Bad neutrals make every screen look like a wireframe.
+
+The fastest fix: pick one direction before you touch the color picker. Warm neutrals feel editorial and human. Cool neutrals feel technical and precise. True gray is rarely the best choice because it has no personality at all.`,
+    sectionFlow: ["examples", "palette_anatomy", "accessibility", "code", "pro_tips", "tools"],
+    realWorldExamples: `**Apple** uses near-neutral backgrounds with tiny blue-gray shifts. The pages still feel white, but the shadows and borders have enough temperature to avoid looking sterile.
+
+**Notion** leans warmer. Its off-white surfaces and soft gray borders make long reading sessions feel less harsh than pure #FFFFFF and #000000.
+
+**Linear** goes cooler. The product UI uses blue-tinted grays because the brand wants to feel fast, technical, and sharp. Same neutral strategy, different emotional target.
+
+**The practical rule:** if your product is finance, developer tools, analytics, or SaaS infrastructure, start with cool neutrals. If it is education, wellness, writing, lifestyle, or creator tools, start with warm neutrals. You can break the rule later. Just do not start by guessing.`,
+    codeSnippet: {
+      label: "A neutral scale you can paste into CSS",
+      code: `:root {\n  --neutral-50:  hsl(40, 30%, 98%);\n  --neutral-100: hsl(38, 24%, 95%);\n  --neutral-200: hsl(36, 18%, 88%);\n  --neutral-300: hsl(34, 14%, 78%);\n  --neutral-400: hsl(32, 10%, 62%);\n  --neutral-500: hsl(30, 8%, 46%);\n  --neutral-600: hsl(28, 10%, 34%);\n  --neutral-700: hsl(26, 12%, 24%);\n  --neutral-800: hsl(24, 14%, 16%);\n  --neutral-900: hsl(22, 16%, 10%);\n}\n\nbody {\n  background: var(--neutral-50);\n  color: var(--neutral-800);\n}\n.card {\n  background: white;\n  border: 1px solid var(--neutral-200);\n}`
+    },
+    proTips: [
+      "Do not use pure black for body text on pure white. #111827 on #F9FAFB is easier to read for long pages.",
+      "Give your neutral scale a hue bias: 30-45 degrees for warm, 210-230 degrees for cool. Even 4-8% saturation changes the feel.",
+      "Borders need more contrast than you think. If a border disappears on a laptop at 60% brightness, darken it one step.",
+      "For dark mode, do not invert the palette mechanically. Build a separate dark scale and test cards, inputs, disabled states, and hover states.",
+      "Use your accent color less than 10% of the page. A neutral palette works because the accent has room to matter."
+    ],
+    keyStat: "Most production interfaces use neutrals for 70-90% of visible surface area. The brand color is the accent, not the foundation.",
+    toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

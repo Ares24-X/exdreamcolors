@@ -75,6 +75,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "wcag-contrast-checker-tool": { slug: "wcag-contrast-checker-tool", title: "WCAG Contrast Checker Tool", description: "Learn about wcag contrast checker tool." },
   "web-app-color-best-practices": { slug: "web-app-color-best-practices", title: "Web App Color Best Practices", description: "Learn about web app color best practices." },
   "what-is-hex-color": { slug: "what-is-hex-color", title: "What is HEX Color Code", description: "Learn about what is hex color code." },
+  "neutral-color-palette": { slug: "neutral-color-palette", title: "Neutral Color Palette Guide", description: "Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);
