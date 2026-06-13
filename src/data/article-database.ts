@@ -77,6 +77,8 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "web-app-color-best-practices": { slug: "web-app-color-best-practices", title: "Web App Color Best Practices", description: "Learn about web app color best practices." },
   "what-is-hex-color": { slug: "what-is-hex-color", title: "What is HEX Color Code", description: "Learn about what is hex color code." },
   "neutral-color-palette": { slug: "neutral-color-palette", title: "Neutral Color Palette Guide", description: "Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat." },
+  "color-gradient-tools-guide": { slug: "color-gradient-tools-guide", title: "Best Color Gradient Tools for Web Designers (2026)", description: "Compare the best online gradient generators and tools for web design. Create CSS, mesh, and animated gradients, and export ready-to-use code." },
+  "accessible-color-token-system": { slug: "accessible-color-token-system", title: "Accessible Color Token System for Product Teams", description: "Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);

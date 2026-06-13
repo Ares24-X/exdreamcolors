@@ -72,4 +72,6 @@ export const articles: Article[] = [
   {"slug":"web-app-color-best-practices","title":"Web App Color Best Practices","desc":"Learn about web app color best practices — design interfaces that users love.","cat":"Guides"},
   {"slug":"what-is-hex-color","title":"What is HEX Color Code","desc":"Learn what a HEX color code is — the most common color format on the web explained.","cat":"Technical"},
   {"slug":"neutral-color-palette","title":"Neutral Color Palette Guide","desc":"Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat.","cat":"Color Palettes"},
+  {"slug":"color-gradient-tools-guide","title":"Best Color Gradient Tools for Web Designers (2026)","desc":"Compare the best online gradient generators and tools for web design. Create CSS, mesh, and animated gradients, and export ready-to-use code.","cat":"Guides"},
+  {"slug":"accessible-color-token-system","title":"Accessible Color Token System for Product Teams","desc":"Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down.","cat":"Accessibility"},
 ];
