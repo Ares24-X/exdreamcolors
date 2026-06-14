@@ -74,4 +74,5 @@ export const articles: Article[] = [
   {"slug":"neutral-color-palette","title":"Neutral Color Palette Guide","desc":"Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat.","cat":"Color Palettes"},
   {"slug":"color-gradient-tools-guide","title":"Best Color Gradient Tools for Web Designers (2026)","desc":"Compare the best online gradient generators and tools for web design. Create CSS, mesh, and animated gradients, and export ready-to-use code.","cat":"Guides"},
   {"slug":"accessible-color-token-system","title":"Accessible Color Token System for Product Teams","desc":"Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down.","cat":"Accessibility"},
+  {"slug":"ai-color-palette-review-checklist","title":"AI Color Palette Review Checklist","desc":"A practical checklist for reviewing AI-generated color palettes before shipping them in websites, dashboards, brand systems, and marketing assets.","cat":"Guides"},
 ];

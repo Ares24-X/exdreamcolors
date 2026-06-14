@@ -887,6 +887,63 @@ Keep a short token request path. If a team needs a new color, ask for the use ca
     toolsMention: ["contrast-checker", "palette-generator", "color-picker"],
   },
 
+
+  "ai-color-palette-review-checklist": {
+    intro: `AI palette generators are fast. Too fast, sometimes. They can give you five pretty swatches in two seconds, but they cannot know that your checkout button needs AA contrast, your dashboard has warning states, your brand already owns a blue, or your campaign will run in both light and dark mode. That review work is still yours.
+
+Use AI for range, not for final judgment. [💬] A palette that looks polished in a prompt window can fall apart the moment it touches body text, disabled buttons, chart legends, or a printed one-pager. This checklist is the human pass that catches those quiet failures before users do.`,
+    sectionFlow: ["workflow", "testing_methods", "real_world", "pro_tips", "code", "next_steps"],
+    realWorldExamples: `**The landing page problem.** A generated palette may include a beautiful coral, sand, teal, charcoal, and cream set. On a hero mockup it feels warm. On the actual landing page, the coral CTA sits on cream at 2.8:1 contrast and fails normal text rules. The palette is not bad; the role assignment is bad.
+
+**The dashboard problem.** AI tools often pick attractive colors that are too close in lightness. A sales chart with blue, purple, and teal might look refined, but in grayscale those lines collapse into the same value. If your users print reports or use color-vision filters, that chart becomes guesswork.
+
+**The brand system problem.** A palette can pass accessibility and still feel wrong. If your product voice is precise and technical, a soft candy palette may lower trust. If your brand is wellness-focused, harsh neon accents may create the wrong body feel. Color review is not only math. It is fit.
+
+**The dark mode problem.** Many generated palettes are tuned for white backgrounds. Drop the same colors onto near-black and saturation jumps. The friendly blue becomes electric, the yellow vibrates, and the red warning state starts shouting. Dark mode needs adjusted tokens, not copied swatches.`,
+    codeSnippet: {
+      label: "Palette Review Notes Template",
+      code: `type PaletteReview = {
+  paletteName: string;
+  approvedPairs: Array<{ foreground: string; background: string; ratio: number }>;
+  riskyPairs: Array<{ foreground: string; background: string; reason: string }>;
+  roles: {
+    primaryAction: string;
+    background: string;
+    text: string;
+    success: string;
+    warning: string;
+    danger: string;
+  };
+  humanNotes: string[];
+};
+
+const review: PaletteReview = {
+  paletteName: "AI warm editorial v2",
+  approvedPairs: [{ foreground: "#1F2937", background: "#FFF7ED", ratio: 12.1 }],
+  riskyPairs: [{ foreground: "#F97316", background: "#FFF7ED", reason: "CTA text fails AA" }],
+  roles: {
+    primaryAction: "#C2410C",
+    background: "#FFF7ED",
+    text: "#1F2937",
+    success: "#15803D",
+    warning: "#A16207",
+    danger: "#B91C1C",
+  },
+  humanNotes: ["[💬] Keep orange for actions only; do not reuse it for badges."],
+};`
+    },
+    proTips: [
+      "Start by assigning jobs: background, text, border, primary action, secondary action, success, warning, danger, chart series, and focus ring.",
+      "Check contrast in pairs, not in isolation. A color is never accessible by itself; it is accessible against a specific background.",
+      "Run a grayscale pass. If buttons, chart lines, or status chips lose meaning, add labels, icons, patterns, or stronger value differences.",
+      "Create dark mode as a separate review, not an afterthought. Lower saturation on bright accents and test glare on real screens.",
+      "Keep one accent sacred. If the CTA color appears in badges, illustrations, links, and charts, the action stops feeling special.",
+      "Add short human notes beside final tokens. A small [💬] warning often prevents a teammate from misusing a color months later."
+    ],
+    keyStat: "Most color failures in production are pairing failures: the palette looks good, but the foreground/background role was never reviewed.",
+    toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

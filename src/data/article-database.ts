@@ -79,6 +79,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "neutral-color-palette": { slug: "neutral-color-palette", title: "Neutral Color Palette Guide", description: "Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat." },
   "color-gradient-tools-guide": { slug: "color-gradient-tools-guide", title: "Best Color Gradient Tools for Web Designers (2026)", description: "Compare the best online gradient generators and tools for web design. Create CSS, mesh, and animated gradients, and export ready-to-use code." },
   "accessible-color-token-system": { slug: "accessible-color-token-system", title: "Accessible Color Token System for Product Teams", description: "Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down." },
+  "ai-color-palette-review-checklist": { slug: "ai-color-palette-review-checklist", title: "AI Color Palette Review Checklist", description: "A practical checklist for reviewing AI-generated color palettes before shipping them in websites, dashboards, brand systems, and marketing assets." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);
