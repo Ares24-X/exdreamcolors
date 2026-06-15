@@ -944,6 +944,38 @@ const review: PaletteReview = {
     toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
   },
 
+
+  "oklch-color-design-guide": {
+    intro: `OKLCH is the color format designers wanted years ago, even if most teams did not know the name. HEX is easy to copy, RGB is easy for screens, and HSL feels friendly until you try to build a full palette. Then the cracks show: two colors with the same HSL lightness can look wildly different. OKLCH fixes that by matching human perception more closely.
+
+The practical win is simple. If you need a blue scale, a warning scale, a dark mode variant, or a set of accessible color tokens, OKLCH gives you more predictable steps. [💬] You still need taste and testing, but you stop fighting the math every time you adjust lightness by 10%.`,
+    sectionFlow: ["science", "format_comparison", "code", "practical", "testing_methods", "tools"],
+    realWorldExamples: `**Why HSL breaks down in real palettes**
+
+In HSL, yellow at 50% lightness often looks much brighter than blue at 50% lightness. That is not a small detail. It means a generated yellow-500 and blue-500 may sit on the same numeric step but feel like they belong to different systems. Product teams notice this when badges, alerts, and charts look uneven even though the token names look tidy.
+
+**OKLCH separates the useful parts better.** L is perceived lightness, C is chroma, and H is hue. The big difference is that lightness is closer to what your eyes actually see. Move L from 92 to 82, and the result usually feels like one step darker instead of a random jump.
+
+**Design systems use this for smoother token scales.** A product team can define a brand hue, lower chroma for background tints, raise chroma for accents, and keep contrast predictable across light and dark mode. You can still export fallback HEX values, but OKLCH becomes the source of truth.
+
+**Dark mode gets easier.** Many dark mode palettes fail because teams invert light colors or reuse saturated accents. In OKLCH, you can keep the same hue, lower chroma a little, and choose a lightness value that works on dark surfaces. The result feels less neon and less muddy.
+
+**Wide-gamut displays matter now.** Modern phones and laptops can show colors outside old sRGB limits. CSS supports display-p3 and OKLCH in current browsers. That does not mean every brand should chase extreme color, but it does mean your color system should understand gamut clipping before a vivid token turns dull on one screen and electric on another.`,
+    codeSnippet: {
+      label: "OKLCH tokens with safe fallbacks",
+      code: `:root {\n  /* Fallback first for older environments */\n  --brand-600: #2563eb;\n  --brand-600: oklch(54% 0.22 260);\n\n  --brand-50: #eff6ff;\n  --brand-50: oklch(97% 0.03 260);\n\n  --warning-600: #d97706;\n  --warning-600: oklch(61% 0.17 65);\n}\n\n.button-primary {\n  background: var(--brand-600);\n  color: white;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --brand-600: #60a5fa;\n    --brand-600: oklch(72% 0.16 260);\n  }\n}`
+    },
+    proTips: [
+      "Use OKLCH as the source format, then export HEX for systems that still need it. Do not hand-edit both versions separately.",
+      "Keep chroma lower for backgrounds and higher for interactive accents. Loud background tints make interfaces feel cheap fast.",
+      "Check contrast after conversion. Better color math helps, but WCAG scores still decide whether text is readable.",
+      "Watch gamut clipping. If a color looks different after export, reduce chroma before blaming the browser.",
+      "For dark mode, do not just raise lightness. Reduce chroma by 10-25% so accents do not glow like warning signs."
+    ],
+    keyStat: "CSS Color Level 4 support has made OKLCH usable in modern browser workflows, which means teams can now define perceptual color tokens directly in CSS instead of only inside design tools.",
+    toolsMention: ["color-picker", "palette-generator", "contrast-checker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {
