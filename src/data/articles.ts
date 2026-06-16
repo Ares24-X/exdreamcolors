@@ -42,6 +42,7 @@ export const articles: Article[] = [
   {"slug":"hex-to-rgb-converter","title":"Hex to RGB Converter","desc":"Learn about HEX to RGB conversion — understand color formats used in CSS and design.","cat":"Technical"},
   {"slug":"high-contrast-color-combinations","title":"High Contrast Color Combinations","desc":"Learn about high contrast color combinations — bold designs that still pass WCAG.","cat":"Accessibility"},
   {"slug":"how-to-choose-website-colors","title":"How to Choose Website Colors","desc":"Learn how to choose website colors — a practical framework for any project.","cat":"Guides"},
+  {"slug":"ui-color-hierarchy-guide","title":"UI Color Hierarchy Guide","desc":"Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing.","cat":"Guides"},
   {"slug":"image-color-extractor-online","title":"Image Color Extractor Online","desc":"Learn about image color extractor tools — extract palettes from any photo.","cat":"Design Tips"},
   {"slug":"ios-app-color-guidelines","title":"iOS App Color Guidelines","desc":"Learn about iOS app color guidelines — Apple's Human Interface color principles.","cat":"Guides"},
   {"slug":"landing-page-color-tips","title":"Landing Page Color Tips","desc":"Learn landing page color tips — how to use color to boost conversions.","cat":"Marketing"},
@@ -76,4 +77,5 @@ export const articles: Article[] = [
   {"slug":"accessible-color-token-system","title":"Accessible Color Token System for Product Teams","desc":"Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down.","cat":"Accessibility"},
   {"slug":"ai-color-palette-review-checklist","title":"AI Color Palette Review Checklist","desc":"A practical checklist for reviewing AI-generated color palettes before shipping them in websites, dashboards, brand systems, and marketing assets.","cat":"Guides"},
   {"slug":"oklch-color-design-guide","title":"OKLCH Color Design Guide","desc":"Use OKLCH colors to build smoother palettes, safer lightness steps, and modern CSS color systems for web interfaces.","cat":"Technical"},
+  {"slug":"dashboard-color-palette-guide","title":"Dashboard Color Palette Guide","desc":"Design dashboard color palettes that make metrics, charts, alerts, and dark mode easier to read without turning the screen into a rainbow.","cat":"Design Tips"},
 ];

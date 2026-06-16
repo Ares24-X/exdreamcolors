@@ -976,6 +976,99 @@ In HSL, yellow at 50% lightness often looks much brighter than blue at 50% light
     toolsMention: ["color-picker", "palette-generator", "contrast-checker"],
   },
 
+  "ui-color-hierarchy-guide": {
+    intro: `A UI can have good colors and still feel messy. That usually happens when every token tries to do the same job. Buttons shout, links compete with headlines, charts borrow brand colors they do not need, and status badges become tiny neon signs. A hierarchy fixes that.
+
+[💬] The trick is simple: not every color should be loud. Some colors should guide. Some should support. Some should disappear. Once the system knows which layer is which, the interface becomes easier to scan and much harder to break when the next feature ships.`,
+    sectionFlow: ["foundation", "realWorldExamples", "code", "testing_methods", "pro_tips", "tools"],
+    realWorldExamples: `**Buttons need one primary voice.** If the primary CTA uses the same saturation as warning banners, users stop seeing the difference. Keep the main action color distinct, then use lower-chroma variants for secondary actions and subtle states. That way the eye lands where you want it first.
+
+**Text should stay boring on purpose.** Brand color can work for links, but body text usually needs neutral ink. Pure brand blue for long paragraphs looks loud and hurts readability. A clean hierarchy gives body text, muted text, and link text different jobs instead of forcing one blue to do all three.
+
+**Surfaces need quieter colors than controls.** Cards, panels, and page backgrounds should mostly support the content. If the surface is louder than the button, the button loses. A good hierarchy pushes most of the palette into the background while saving the strongest values for interaction.
+
+**Charts are their own world.** Data colors should be distinct from brand and UI colors. If a product uses blue for navigation, teal for success, and purple for charts, the chart set still needs enough contrast to separate series on a legend, in grayscale, and in motion.
+
+**Status colors need structure, not just hue.** Success, warning, and danger should each have a background, border, text, and icon treatment. That gives the state a hierarchy inside the hierarchy. The user gets meaning from color, but also from shape and wording.
+
+**Dark mode changes the order.** In light mode, the page background can stay almost invisible. In dark mode, the surface colors carry more of the visual load. If you simply invert the palette, the hierarchy collapses. Dark mode needs new token values, not a mirror image.`,
+    codeSnippet: {
+      label: "Simple UI color hierarchy tokens",
+      code: `:root {
+  --color-text: oklch(22% 0.02 255);
+  --color-text-muted: oklch(44% 0.02 255);
+  --color-surface: oklch(98% 0.01 255);
+  --color-surface-raised: oklch(96% 0.01 255);
+  --color-primary: oklch(56% 0.20 255);
+  --color-primary-hover: oklch(50% 0.22 255);
+  --color-success: oklch(62% 0.14 145);
+  --color-warning: oklch(72% 0.16 75);
+  --color-danger: oklch(58% 0.18 28);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.card {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}`
+    },
+    proTips: [
+      "Give each layer one job: text, surface, action, status, or data. If a token does more than one, it will eventually break.",
+      "Keep the CTA color out of charts and badges. If everything is special, nothing is special.",
+      "Test the palette in grayscale. Hierarchy survives when lightness differences are clear, not when hue is doing all the work.",
+      "Make muted text truly muted. If secondary labels compete with headlines, the page feels noisy even when the colors are pretty.",
+      "Use separate tokens for hover, focus, and disabled states. Interaction hierarchy matters as much as color hierarchy.",
+    ],
+    keyStat: "Most UI color mistakes come from role confusion, not bad taste. The palette usually works; the assignment does not.",
+    toolsMention: ["color-picker", "contrast-checker", "palette-generator"],
+  },
+
+  "dashboard-color-palette-guide": {
+    intro: `A dashboard palette has one job: help people read numbers faster. Not admire the colors. When every KPI card, chart line, alert badge, and filter chip uses a different bright hue, the dashboard stops being useful and starts feeling like a carnival.
+
+[💬] The fix is not fewer colors. The fix is giving each color a job. Neutrals carry the layout. One accent guides action. Status colors warn or confirm. Chart colors separate data without fighting the UI. Once that split is clear, even a dense dashboard feels calm.`,
+    sectionFlow: ["foundation", "realWorldExamples", "code", "testing_methods", "pro_tips", "tools"],
+    realWorldExamples: `**Metrics need neutral space first.** Revenue, conversion rate, churn, and traffic should not each get a loud brand color. Use strong typography and spacing for hierarchy, then reserve color for trend direction, thresholds, and selected states.
+
+**Charts need separation from UI chrome.** If navigation uses blue and buttons use purple, your chart series should not reuse those exact colors. Users may read interface meaning into data colors. Build a chart palette that lives beside the product palette, not inside it.
+
+**Alerts need lightness differences, not just red and green.** Success, warning, danger, and info states should have background, border, icon, and text tokens. A tiny red dot alone is easy to miss. A status system is stronger when shape and wording back up the color.
+
+**Dark dashboards punish saturated colors.** A blue that feels sharp on white can glow on a dark surface. Drop chroma, raise lightness carefully, and test the chart against the actual dark background. Guessing here gets ugly fast.
+
+**Executive dashboards and operator dashboards need different palettes.** Executives need clean summaries and a few exceptions. Operators need dense signals, thresholds, and quick scanning. Same brand, different color pressure.`,
+    codeSnippet: {
+      label: "Dashboard color tokens",
+      code: `:root {
+  --dash-bg: oklch(98% 0.01 250);
+  --dash-panel: oklch(100% 0 0);
+  --dash-text: oklch(24% 0.02 250);
+  --dash-muted: oklch(52% 0.02 250);
+  --dash-accent: oklch(56% 0.18 255);
+  --dash-success: oklch(60% 0.14 145);
+  --dash-warning: oklch(72% 0.15 80);
+  --dash-danger: oklch(58% 0.18 28);
+  --chart-1: oklch(58% 0.16 255);
+  --chart-2: oklch(62% 0.14 175);
+  --chart-3: oklch(68% 0.16 70);
+  --chart-4: oklch(60% 0.15 315);
+}`
+    },
+    proTips: [
+      "Start with neutrals. Dashboards are mostly background, panels, borders, labels, and numbers. If neutrals are wrong, no accent color saves it.",
+      "Keep brand color out of every chart. Use it for product actions, not random data series.",
+      "Limit default chart series to 5-7 colors. More than that needs grouping, filtering, or a table view.",
+      "Use red only for real problems. If red appears everywhere, users learn to ignore it.",
+      "Test color in the worst state: dark mode, small labels, dense charts, and a tired user reading fast.",
+    ],
+    keyStat: "A useful dashboard palette usually has more neutral tokens than bright tokens. That is not boring design. That is readable design.",
+    toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

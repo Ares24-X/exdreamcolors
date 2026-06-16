@@ -45,6 +45,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "hex-to-rgb-converter": { slug: "hex-to-rgb-converter", title: "Hex to RGB Converter", description: "Learn about hex to rgb converter." },
   "high-contrast-color-combinations": { slug: "high-contrast-color-combinations", title: "High Contrast Color Combinations", description: "Learn about high contrast color combinations." },
   "how-to-choose-website-colors": { slug: "how-to-choose-website-colors", title: "How to Choose Website Colors", description: "Learn about how to choose website colors." },
+  "ui-color-hierarchy-guide": { slug: "ui-color-hierarchy-guide", title: "UI Color Hierarchy Guide", description: "Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing." },
   "image-color-extractor-online": { slug: "image-color-extractor-online", title: "Image Color Extractor Online", description: "Learn about image color extractor online." },
   "ios-app-color-guidelines": { slug: "ios-app-color-guidelines", title: "iOS App Color Guidelines", description: "Learn about ios app color guidelines." },
   "landing-page-color-tips": { slug: "landing-page-color-tips", title: "Landing Page Color Tips", description: "Learn about landing page color tips." },
@@ -81,6 +82,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "accessible-color-token-system": { slug: "accessible-color-token-system", title: "Accessible Color Token System for Product Teams", description: "Build color tokens that stay readable across light mode, dark mode, charts, states, and brand themes without slowing product teams down." },
   "ai-color-palette-review-checklist": { slug: "ai-color-palette-review-checklist", title: "AI Color Palette Review Checklist", description: "A practical checklist for reviewing AI-generated color palettes before shipping them in websites, dashboards, brand systems, and marketing assets." },
   "oklch-color-design-guide": { slug: "oklch-color-design-guide", title: "OKLCH Color Design Guide", description: "Use OKLCH colors to build smoother palettes, safer lightness steps, and modern CSS color systems for web interfaces." },
+  "dashboard-color-palette-guide": { slug: "dashboard-color-palette-guide", title: "Dashboard Color Palette Guide", description: "Design dashboard color palettes that make metrics, charts, alerts, and dark mode easier to read without turning the screen into a rainbow." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);
