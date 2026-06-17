@@ -83,6 +83,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "ai-color-palette-review-checklist": { slug: "ai-color-palette-review-checklist", title: "AI Color Palette Review Checklist", description: "A practical checklist for reviewing AI-generated color palettes before shipping them in websites, dashboards, brand systems, and marketing assets." },
   "oklch-color-design-guide": { slug: "oklch-color-design-guide", title: "OKLCH Color Design Guide", description: "Use OKLCH colors to build smoother palettes, safer lightness steps, and modern CSS color systems for web interfaces." },
   "dashboard-color-palette-guide": { slug: "dashboard-color-palette-guide", title: "Dashboard Color Palette Guide", description: "Design dashboard color palettes that make metrics, charts, alerts, and dark mode easier to read without turning the screen into a rainbow." },
+  "form-validation-color-accessibility": { slug: "form-validation-color-accessibility", title: "Form Validation Color Accessibility Guide", description: "Design form validation colors that users can understand without relying on red alone." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);

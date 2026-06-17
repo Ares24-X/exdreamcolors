@@ -1069,6 +1069,48 @@ In HSL, yellow at 50% lightness often looks much brighter than blue at 50% light
     toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
   },
 
+  "form-validation-color-accessibility": {
+    intro: `A form error should not feel like a puzzle. If the only signal is a thin red border, plenty of users will miss it: color blind users, keyboard users moving fast, mobile users in sunlight, and anyone trying to finish checkout before a meeting. [💬]
+
+Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing.`,
+    sectionFlow: ["foundation", "testing_methods", "real_world", "code", "pro_tips"],
+    realWorldExamples: `**Stripe-style checkout forms** do not depend on red alone. The error text appears directly under the field, the border changes, the icon changes, and the message says what to fix. The color supports the message. It does not carry the whole job.
+
+**Government and healthcare forms** often fail because validation appears only after submit and only at the top of the page. Users then have to hunt for the bad field. A better pattern is summary plus inline error: one message at the top, one message beside each field.
+
+**Password forms** are where green can mislead people. A green check beside every rule looks nice, but if the final submit button still fails, users stop trusting the interface. Show validation states only when they are true, and keep helper text visible until the user succeeds.`,
+    codeSnippet: {
+      label: "Accessible validation color tokens",
+      code: `:root {
+  --field-border: #94a3b8;
+  --field-focus: #2563eb;
+  --field-error: #b91c1c;
+  --field-error-bg: #fef2f2;
+  --field-success: #047857;
+  --field-success-bg: #ecfdf5;
+}
+
+.field[aria-invalid="true"] {
+  border-color: var(--field-error);
+  background: var(--field-error-bg);
+}
+
+.error-message {
+  color: var(--field-error);
+  font-weight: 600;
+}`
+    },
+    proTips: [
+      "Pair color with text and an icon. Red alone is not a validation system.",
+      "Keep error text near the field. Users should not scroll back to decode what went wrong.",
+      "Test error red on the actual background, not only on white. Tinted error backgrounds can reduce contrast.",
+      "Do not remove helper text too early. For complex fields, instructions are part of the fix.",
+      "Make focus and error states compatible. Keyboard users still need a visible focus ring on invalid fields.",
+    ],
+    keyStat: "A useful form validation system answers three questions fast: what failed, why it failed, and how to fix it.",
+    toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {
