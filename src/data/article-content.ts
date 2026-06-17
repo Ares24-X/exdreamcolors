@@ -221,6 +221,114 @@ The worst: you set a color in HEX, tweak it in HSL in devtools, copy it back as 
   },
 
   // ── COLOR IN LOGO DESIGN ──
+  // ── COLOR IN BRAND IDENTITY ──
+  "color-in-brand-identity": {
+    intro: `Here's the thing: your brand color isn't one color. It's an entire system. The mistake most startups make is picking a single "brand color" (#3B82F6 blue!), slapping it everywhere, and wondering why their site looks like a default Bootstrap template from 2015.
+
+A real brand color system has layers. Primary, secondary, accent, neutral, semantic (success/warning/error), and dark mode variants. Every color has a job. No color is decorative. When you look at Stripe's website, Airbnb's app, or Notion's interface, you're not seeing "blue" or "red" — you're seeing a color system engineered to answer one question at every touchpoint: "Who am I talking to?" The answer should be the same whether you're looking at a billboard, an email footer, an app icon, or a 404 page.
+
+This guide breaks down how the best brand color systems are built — not the theory, the architecture.`,
+    sectionFlow: ["foundation", "how_it_works", "real_world", "dark_mode", "pro_tips", "tools"],
+    realWorldExamples: `**Stripe's Brand Color Architecture (The Gold Standard)**
+
+Stripe doesn't have "a blue." They have a color architecture: the core brand blue (#635BFF) sits at the center, but the system fans out into 12 semantic layers. The website uses a near-black (#0A2540) as the dominant color with the blue as a precision accent — appearing only in the logo, CTAs, and key interaction points. This restraint is intentional: Stripe's design team (led by Benjamin de Cock) has said publicly that their color strategy is "one loud voice, everything else whispers." Each blue appearance signals an action: sign up, learn more, start now. The color IS the information hierarchy.
+
+**Airbnb's 2023 Identity Refresh (The "Rausch" Strategy)**
+
+Airbnb's rebrand introduced a proprietary red (#FF385C, internally called "Rausch") as their signature. But here's what most people miss: Airbnb uses approximately 93% neutral colors and 7% Rausch across their platform. The color hits only in three strategic places: the logo/wordmark, primary CTAs, and the favicon. Everything else — cards, backgrounds, text, borders — lives in a carefully calibrated gray system spanning 12 lightness stops. The result: when you DO see Rausch, your brain registers it as meaningful. It's not decoration — it's a brand signature that works at any scale.
+
+**Notion's Color System (The "Functional Color" Approach)**
+
+Notion took a radically different path. Instead of one brand color, they built an intentional rainbow system where every color has a job: blue = information/databases, red = urgent/errors, green = success/complete, yellow = in-progress/warnings, purple = creative/content, orange = action/energy, pink = fun/personal. Users can apply any color to any block, making Notion feel playful and personal — but behind the scenes, the system is rigidly controlled. Only 10 colors exist, each with exactly 3 variants (light/default/dark), and nothing else. This approach generated a phenomenon where users literally identify with "their" Notion color scheme — a level of brand attachment most apps never achieve.
+
+**Google's Material You: Algorithmic Brand Identity**
+
+Google's Material You (2021-present) represents the most radical approach to brand color in modern design: the system extracts a color palette algorithmically from the user's wallpaper. Google's brand is no longer a specific color — it's the idea of personalized color. The algorithm, codenamed "Monet," uses a quantization engine to find the dominant color, then generates a full tonal palette using the HCT (Hue-Chroma-Tone) color space developed at Google Research. The result: every Android phone running Material You feels personally branded to its owner, while Google's "brand" becomes the framework itself — not the paint, the painter.
+
+**Apple's Ecosystem Color Strategy: The Anti-Rainbow**
+
+Apple is the world's most valuable company and they use almost no color in their identity. The Apple logo has been monochrome since 1998 (the rainbow logo died with the iMac G3 era). Their brand identity color strategy is: white, black, silver, and one carefully chosen accent color per product (Sierra Blue for iPhone 13 Pro, Deep Purple for iPhone 14 Pro). The consistency WORKS because it's based on absence — the products provide the color, not the branding. Apple's approach proves that "brand color system" doesn't mean "lots of colors." It means "the right amount of color for your specific brand promise."
+
+**Spotify's Green: The Exception That Proves the Rule**
+
+Spotify uses one color — #1DB954, a specific shade of green — across everything. Website, app icon, desktop app, billboards, podcast covers, everything. This works because Spotify's product is content (album art, playlist covers, podcast artwork), which provides all the visual variety. The green anchors everything else. It's the brand equivalent of a gallery wall: the walls are white (or in Spotify's case, dark), and the green is the signature frame that tells you you're in a Spotify gallery, not Apple Music.`,
+    codeSnippet: {
+      label: "Brand Color System with Semantic Tokens",
+      code: `// Brand color system — semantic tokens mapped to raw values
+// This is the architecture Stripe, Airbnb, and Linear all use under the hood
+
+:root {
+  /* ── Raw Brand Colors (HSL — easy to derive variants) ── */
+  --brand-h: 245;
+  --brand-s: 78%;
+  --brand-l: 52%;
+  --brand: hsl(var(--brand-h), var(--brand-s), var(--brand-l));
+
+  /* ── Semantic Token Layer — these NEVER change format ── */
+  --color-surface-primary: #FFFFFF;
+  --color-surface-secondary: #F8F9FC;
+  --color-surface-tertiary: #F1F3F9;
+  --color-surface-inverse: #0A0D1A;
+
+  --color-text-primary: #0A0D1A;
+  --color-text-secondary: #555A6E;
+  --color-text-tertiary: #8B90A0;
+  --color-text-on-brand: #FFFFFF;
+
+  --color-border-default: #E2E4EB;
+  --color-border-strong: #C8CBD6;
+
+  --color-accent-primary: hsl(var(--brand-h), var(--brand-s), var(--brand-l));
+  --color-accent-hover: hsl(var(--brand-h), var(--brand-s), 45%);
+  --color-accent-active: hsl(var(--brand-h), var(--brand-s), 38%);
+  --color-accent-subtle: hsla(var(--brand-h), var(--brand-s), var(--brand-l), 0.08);
+
+  --color-success: #0D9488;
+  --color-warning: #EAB308;
+  --color-error: #DC2626;
+  --color-info: #3B82F6;
+}
+
+/* ── Dark Mode: same semantic tokens, different raw values ── */
+[data-theme="dark"] {
+  --color-surface-primary: #0A0D1A;
+  --color-surface-secondary: #141829;
+  --color-surface-tertiary: #1E2239;
+  --color-surface-inverse: #FFFFFF;
+
+  --color-text-primary: #F1F3F9;
+  --color-text-secondary: #A1A6B8;
+  --color-text-tertiary: #6B708A;
+
+  --color-border-default: #2A2E42;
+  --color-border-strong: #3E4256;
+
+  /* Accent gets brighter on dark for same perceived intensity */
+  --color-accent-primary: hsl(var(--brand-h), 85%, 68%);
+  --color-accent-subtle: hsla(var(--brand-h), 85%, 68%, 0.12);
+}
+
+/* Usage: always use semantic tokens, never raw values */
+.card { 
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-default);
+}
+.btn-primary { 
+  background: var(--color-accent-primary); 
+  color: var(--color-text-on-brand);
+}`
+    },
+    proTips: [
+      "The 90/10 rule: your brand color should occupy roughly 10% of visual real estate. The other 90% is neutrals, surfaces, and text. If it feels like 'too little' brand color, you've got it right. Brands that feel overwhelming are using 30%+.",
+      "Build your color system from grayscale upward. Nail the gray scale first (6-10 stops from near-white to near-black), then add brand color on top. If the page doesn't work in grayscale, adding color won't fix it.",
+      "Semantic tokens > raw values. Never write 'background: #FFFFFF' in a component. Write 'background: var(--color-surface-primary)'. This one architectural decision lets you swap light/dark mode globally without touching a single component.",
+      "Limit accent colors to 3 max. Primary accent (your brand), secondary accent (complementary for charts/secondary CTAs), and tertiary (rare, for special emphasis). Every color beyond 3 dilutes brand recognition.",
+      "Your brand color must survive the 'billboard test': if someone drove past your brand at 70 mph, would they recognize the colors? If your palette has 6 colors, the answer is no. Aim for 1-2 recognizable colors."
+    ],
+    keyStat: "Color increases brand recognition by up to 80%. Consistent brand presentation increases revenue by 23% on average. (University of Loyola, Maryland / Lucidpress Brand Consistency Report 2024)",
+    toolsMention: ["palette-generator", "color-picker", "contrast-checker"],
+  },
+
   "color-in-logo-design": {
     intro: `Your logo's color does more heavy lifting than you think. Before anyone reads your brand name, processes your tagline, or notices your icon shape, they've already formed an opinion based on color. It takes 90 seconds to form a subconscious judgment about a brand — and up to 90% of that judgment comes from color alone.
 
