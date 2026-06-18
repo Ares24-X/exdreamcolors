@@ -1219,6 +1219,161 @@ Good validation color is not just red for wrong and green for right. It is contr
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
+  // ── UI DARK MODE COLOR STRATEGY ──
+  "ui-dark-mode-color-strategy": {
+    intro: `Here's the thing: 82% of developers now use dark mode as their primary IDE theme. 65% of smartphone users keep dark mode enabled. Apple, Google, and Microsoft all ship system-wide dark modes that users toggle on at sunset. If your UI doesn't have a dark mode in 2026, you're not behind — you're broken.
+
+But here's what most dark mode guides won't tell you: dark mode isn't just "light mode with inverted colors." If you literally flip #FFFFFF to #000000 and #333333 to #CCCCCC, you get a UI that looks technically correct but feels like a 1990s terminal emulator. Real dark mode requires rethinking contrast, saturation, elevation, and even your color's hue angle. The same blue that looks vibrant on white can look radioactive on black.
+
+This guide covers the actual production dark mode strategies used by Stripe, Linear, and Vercel — not the theory, the shipped code.`,
+    sectionFlow: ["foundation", "color_wheel", "how_it_works", "dark_mode", "real_world", "code_patterns", "pro_tips"],
+    realWorldExamples: `**Stripe's Dark Mode Architecture: Separate Tokens, Not Inverted Math**
+
+Stripe's design system (Stripe Elements) doesn't use CSS invert() or computational dark mode. They define two separate token files — one for light, one for dark — and each surface, text, and border token gets a human-chosen dark mode value. Why? Because mathematically inverted colors look wrong at scale. A surface that's #FFFFFF in light mode should be approximately #0A0D1A (near-black with a hint of blue) in dark mode — not #000000. A subtle 2-3° hue shift toward cooler tones on dark backgrounds makes the interface feel intentional rather than mechanically generated.
+
+**Linear's "Elevation Through Layered Surfaces"**
+
+Linear's dark mode uses at least 4 surface layers to create depth without borders or shadows: base (#0D0F14), raised (#131620), overlay (#191C28), and sunken (#090A0F). Each layer is 5-8% lighter than the one below, creating a subtle stacking effect that the eye reads as depth. On dark backgrounds, borders and shadows are nearly invisible — you must build elevation with luminosity alone. Linear's designers have said publicly that getting these 4 surface stops right took more iteration than the entire accent color system.
+
+**Vercel's Accent-Forward Dark Mode**
+
+Vercel's dark mode (used on vercel.com, nextjs.org, and the Vercel dashboard) takes the opposite approach from Linear: instead of building depth through surface layers, they use minimal surfaces (just 2: base and raised) and push all visual interest into the accent colors. Their brand gradient (blue → cyan → purple) gets a 10-15% saturation boost in dark mode, making it feel almost luminous against near-black backgrounds. This works because on dark backgrounds, saturated colors appear to emit light — a perceptual illusion called the Hunt Effect.
+
+**Apple's Human Interface Dark Mode Color Guidelines**
+
+Apple's HIG specifies that dark mode app backgrounds should be true black (#000000) on OLED devices but dark gray (#1C1C1E) on LCD devices — because OLED saves battery with true black, but LCD looks better with near-black. Apple's semantic color system (systemBackground, secondarySystemBackground, etc.) abstracts this detail so developers never choose these values manually. Modern iOS apps get this behavior free through UIKit and SwiftUI.
+
+**GitHub's Dark Mode Rollout: The Grayscale Problem**
+
+When GitHub launched dark mode in 2020, their biggest challenge wasn't accent colors — it was the grayscale. GitHub's UI is 90% gray: code backgrounds, borders, sidebar, toolbar. In light mode, 8 grayscale stops work beautifully. In dark mode, 8 stops became indistinguishable because the human eye perceives fewer distinct shades at the dark end of the luminance spectrum. GitHub's solution: remap their gray scale so dark mode uses non-linear luminosity steps (steeper progression near black, flatter near white) and added a subtle blue tint (#161B22 instead of #161616) to help the eye distinguish between layers.
+
+**Figma's Dark Mode Evolution**
+
+Figma shipped dark mode in 2023, and their engineering blog detailed the color strategy: every color in dark mode is hand-tuned, not algorithmically generated. The team found that the "ideal" dark mode conversion formula (reduce lightness by 50%, boost saturation by 10%) produced technically correct but aesthetically dead results. The fix involved manual intervention for every color in their 200+ token system — a multi-month effort. The key lesson: dark mode is a design problem, not an engineering problem.`,
+    codeSnippet: {
+      label: "Production Dark Mode Color System",
+      code: `/* ═══════════════════════════════════════════════════════════
+   Dark Mode Color Strategy — Production Patterns
+   Three-layer approach used by Stripe, Linear, Vercel
+   ═══════════════════════════════════════════════════════════ */
+
+/* Layer 1: Raw color values for each theme */
+:root {
+  /* Surfaces — dark mode uses slightly blue-tinted blacks */
+  --surface-0: #FFFFFF;
+  --surface-1: #F8F9FC;
+  --surface-2: #F1F3F9;
+  --surface-3: #E9ECF5;
+
+  /* Text — crisp black → soft dark gray hierarchy */
+  --text-primary: #0A0D1A;
+  --text-secondary: #555A6E;
+  --text-tertiary: #8B90A0;
+
+  /* Borders — subtle but distinct */
+  --border-default: #E2E4EB;
+  --border-strong: #C8CBD6;
+
+  /* Brand — same hue, full saturation on light */
+  --accent: hsl(245, 78%, 52%);
+  --accent-hover: hsl(245, 78%, 45%);
+  --accent-subtle: hsl(245, 78%, 96%);
+}
+
+/* ═══ Dark Mode Override ✦ No invert(), no math — hand-chosen ═══ */
+[data-theme="dark"],
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* ── Rule 1: Surfaces must have a hue ──
+       Pure grays (#1a1a1a) look flat. Add 1-3° hue shift toward blue or
+       purple for depth. Stripe uses blue-tinted blacks; Linear uses purple. */
+    --surface-0: #0A0D1A;   /* Blue-tinted near-black, not #000 */
+    --surface-1: #121729;
+    --surface-2: #1A1F33;
+    --surface-3: #232840;
+
+    /* ── Rule 2: Text must have REDUCED contrast ──
+       White (#FFFFFF) on black is 21:1 contrast — too harsh. Target 7-12:1
+       for body text by using off-white (#D1D5E0, ~12:1) or light gray. */
+    --text-primary: #E2E6F0;   /* ~12:1 on surface-0 — ideal for body */
+    --text-secondary: #9AA0B8; /* ~5:1 — meets AA for secondary text */
+    --text-tertiary: #666D85;  /* ~3.5:1 — use sparingly */
+
+    /* ── Rule 3: Borders become TOO visible on dark ──
+       Same opacity border that was subtle on white becomes a neon sign
+       on dark. Reduce opacity by 40-60% compared to light mode. */
+    --border-default: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+
+    /* ── Rule 4: Accent gets BRIGHTER and MORE SATURATED ──
+       The Hunt Effect: colors on dark appear to emit light. You must
+       increase lightness by 10-15% and saturation by 5-10% so the
+       accent feels equally vibrant, not dim. */
+    --accent: hsl(245, 85%, 68%);
+    --accent-hover: hsl(245, 85%, 62%);
+    --accent-subtle: hsl(245, 40%, 15%);
+  }
+}
+
+/* ═══ Practical Dark Mode Fixes ═══ */
+
+/* Fix 1: Images look too bright on dark — dim them */
+@media (prefers-color-scheme: dark) {
+  img:not([src*=".svg"]) {
+    filter: brightness(0.85) contrast(1.05);
+  }
+}
+
+/* Fix 2: Box shadows are invisible on dark — use glow instead */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Light mode */
+}
+@media (prefers-color-scheme: dark) {
+  .card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);   /* Darker + stronger */
+    border: 1px solid var(--border-default);      /* Add border backup */
+  }
+}
+
+/* Fix 3: Charts need RECALIBRATED palettes, not inverted ones */
+/* Bad: same chart colors in dark mode — cyan (#06B6D4) disappears on dark */
+/* Good: light mode chart palette vs dark mode chart palette */
+.theme-light .chart-series-1 { --chart-1: #2563EB; }
+.theme-light .chart-series-2 { --chart-2: #059669; }
+.theme-light .chart-series-3 { --chart-3: #D97706; }
+
+.theme-dark .chart-series-1 { --chart-1: #93C5FD; }  /* Lighter blue */
+.theme-dark .chart-series-2 { --chart-2: #6EE7B7; }  /* Lighter green */
+.theme-dark .chart-series-3 { --chart-3: #FCD34D; }  /* Lighter amber */
+
+/* Fix 4: Code blocks — the hardest dark mode problem */
+.theme-dark pre, .theme-dark code {
+  background: #0D1117;           /* GitHub dark code bg */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); /* Subtle top highlight */
+}
+
+/* Fix 5: Scrollbars — easy to miss, ugly when wrong */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}`,
+    },
+    proTips: [
+      "The #1 dark mode mistake: using pure black (#000000) as your background. Add a 2-3° hue shift toward blue or purple. Stripe uses #0A0D1A, Linear uses #0D0F14, GitHub uses #0D1117. Pure black looks like a terminal, not an interface.",
+      "Text contrast in dark mode should be LOWER, not higher. White (#FFF) on black (#000) = 21:1 contrast ratio, which causes eye strain. Target 7:1-12:1 for body text. Use off-white like #D1D5E0 on near-black for comfortable reading.",
+      "Borders on dark backgrounds: reduce opacity by 40-60% compared to light mode. A border at 10% opacity on white is visible. The same border at 10% opacity on black is invisible. Use rgba(255,255,255,0.08) for subtle borders, rgba(255,255,255,0.14) for strong ones.",
+      "Shadows don't work on dark mode. Replace them with either stronger, darker shadows (box-shadow: 0 2px 8px rgba(0,0,0,0.4)) or switch to a border-based approach (1px solid border for card separation).",
+      "Always boost accent saturation and lightness in dark mode by 10-15%. Colors appear dimmer on dark backgrounds (the Hunt Effect). Your vibrant #3B82F6 in light mode should become #60A5FA in dark mode to maintain the same perceived intensity.",
+    ],
+    keyStat: "82% of developers use dark mode as their primary IDE theme (Stack Overflow 2025). 65% of smartphone users keep dark mode enabled. Apps with dark mode see 13% longer average session duration (Android Developer Blog, 2025).",
+    toolsMention: ["color-picker", "contrast-checker", "palette-generator"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

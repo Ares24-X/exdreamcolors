@@ -47,6 +47,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "high-contrast-color-combinations": { slug: "high-contrast-color-combinations", title: "High Contrast Color Combinations", description: "Learn about high contrast color combinations." },
   "how-to-choose-website-colors": { slug: "how-to-choose-website-colors", title: "How to Choose Website Colors", description: "Learn about how to choose website colors." },
   "ui-color-hierarchy-guide": { slug: "ui-color-hierarchy-guide", title: "UI Color Hierarchy Guide", description: "Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing." },
+  "ui-dark-mode-color-strategy": { slug: "ui-dark-mode-color-strategy", title: "UI Dark Mode Color Strategy", description: "Designing color systems that work beautifully in both light and dark modes — real strategies from Stripe, Linear, and Vercel." },
   "image-color-extractor-online": { slug: "image-color-extractor-online", title: "Image Color Extractor Online", description: "Learn about image color extractor online." },
   "ios-app-color-guidelines": { slug: "ios-app-color-guidelines", title: "iOS App Color Guidelines", description: "Learn about ios app color guidelines." },
   "landing-page-color-tips": { slug: "landing-page-color-tips", title: "Landing Page Color Tips", description: "Learn about landing page color tips." },

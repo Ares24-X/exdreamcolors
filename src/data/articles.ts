@@ -44,6 +44,7 @@ export const articles: Article[] = [
   {"slug":"high-contrast-color-combinations","title":"High Contrast Color Combinations","desc":"Learn about high contrast color combinations — bold designs that still pass WCAG.","cat":"Accessibility"},
   {"slug":"how-to-choose-website-colors","title":"How to Choose Website Colors","desc":"Learn how to choose website colors — a practical framework for any project.","cat":"Guides"},
   {"slug":"ui-color-hierarchy-guide","title":"UI Color Hierarchy Guide","desc":"Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing.","cat":"Guides"},
+  {"slug":"ui-dark-mode-color-strategy","title":"UI Dark Mode Color Strategy","desc":"Designing color systems that work beautifully in both light and dark modes — real strategies from Stripe, Linear, and Vercel.","cat":"Technical"},
   {"slug":"image-color-extractor-online","title":"Image Color Extractor Online","desc":"Learn about image color extractor tools — extract palettes from any photo.","cat":"Design Tips"},
   {"slug":"ios-app-color-guidelines","title":"iOS App Color Guidelines","desc":"Learn about iOS app color guidelines — Apple's Human Interface color principles.","cat":"Guides"},
   {"slug":"landing-page-color-tips","title":"Landing Page Color Tips","desc":"Learn landing page color tips — how to use color to boost conversions.","cat":"Marketing"},
