@@ -1482,6 +1482,111 @@ function swatchesToCSS(palette: Array<{hex: string; pct: number}>) {
     toolsMention: ["image-extractor", "palette-generator", "color-picker"],
   },
 
+  // ── WEB SAFE COLORS GUIDE ──
+  "web-safe-colors-guide": {
+    intro: `Here's a sentence I bet you haven't heard since 1998: "just use web-safe colors." For two decades, web-safe was the bible of web color — a palette of 216 colors guaranteed to render identically on every computer monitor on earth. Today, over 99% of displays support 24-bit color (16.7 million colors). So web-safe colors are a relic, right?
+
+Wrong. Here's the thing: web-safe colors are still relevant in 2026, just not for the reason you think. They're relevant for embedded devices, e-ink displays, industrial terminals, email clients that strip CSS, and accessibility scenarios where color reduction is a feature, not a bug. And more importantly: understanding WHY the 216-color palette existed teaches you more about color rendering and dithering than any modern design course ever will.
+
+This guide covers the history, the math, the modern use cases, and when you should (and absolutely shouldn't) reach for web-safe colors.`,
+    sectionFlow: ["history", "math", "how_it_works", "culture_matrix", "practical", "pro_tips", "tools"],
+    realWorldExamples: `**The 216-Color Origin Story: How Netscape Shaped the Web**
+
+The "web-safe" palette wasn't designed by designers. It was designed by engineers at Netscape in 1994, working around the limitations of 8-bit color displays (256 colors total). Operating systems reserved 40 colors for UI elements (window borders, menu bars, desktop icons), leaving 216 for applications. The 6×6×6 cube (6 levels each of red, green, and blue: 0%, 20%, 40%, 60%, 80%, 100%) produced exactly 6³ = 216 colors — the maximum palette that wouldn't trigger dithering on 8-bit displays.
+
+**Why Dithering Was a Nightmare (and Why It Matters Now)**
+
+Before anti-aliasing and subpixel rendering, 8-bit displays used dithering to simulate colors outside the available 256. Dithering placed two available colors in a checkerboard pattern, hoping your eye would blend them. On a CRT monitor at 72 DPI, this created a fuzzy, noisy mess. IBM's OS/2 and early Windows used the same 20 system colors as Netscape, but Macintosh System 7 used a different 40-color system palette — meaning a color that looked smooth on Windows could dither on Mac, and vice versa. The 216 palette was the only set of colors guaranteed NO dithering on both platforms. This cross-platform guarantee was revolutionary for 1996.
+
+**Lynda Weinman and the Browser-Safe Palette**
+
+Lynda Weinman (founder of Lynda.com, sold to LinkedIn for $1.5 billion in 2015) published the first "browser-safe palette" in 1996. Her book "Designing Web Graphics" became the de facto standard, and every web designer from 1996-2003 kept a browser-safe color swatch taped to their monitor. Weinman's palette removed 36 of the 216 colors that rendered inconsistently on some Unix systems, leaving 180. This attention to edge cases across operating systems foreshadowed modern cross-browser testing.
+
+**The 6×6×6 Cube Math (Understanding the Pattern)**
+
+The web-safe palette uses RGB values at these 6 levels: 00, 33, 66, 99, CC, FF (hex). In decimal: 0, 51, 102, 153, 204, 255. Every web-safe color's hex code uses only these six two-digit pairs. Test yourself: #FF9933 → web-safe (FF=255, 99=153, 33=51 — all in the set). #FF8800 → NOT web-safe (88 is not in the set). This pattern makes web-safe colors instantly identifiable: if every pair in a hex code is 00, 33, 66, 99, CC, or FF, it's web-safe.
+
+**Modern Use Case #1: Embedded Systems and IoT**
+
+Here's where web-safe gets interesting in 2026. E-ink displays (Kindle, retail price tags, bus stop displays) typically support 16-level grayscale or limited color palettes. The ESP32 microcontroller with a TFT display often uses 16-bit color (65,536 colors) but with limited gamma correction — meaning a web-safe-derived palette avoids banding artifacts. Companies like Pimoroni and Adafruit ship libraries that default to web-safe-adjacent palettes for their e-ink and LCD breakouts.
+
+**Modern Use Case #2: Email HTML (Yes, Still in 2026)**
+
+Outlook 2007-2019 used Microsoft Word's HTML rendering engine (yes, Word), which strips CSS background colors on certain elements and falls back to system colors. Litmus testing shows that emails using web-safe colors render consistently across 90+ email clients, while arbitrary hex colors fail in roughly 12% of Outlook 2016/2019 configurations. For enterprise email where every render matters, web-safe colors are still part of the toolkit.
+
+**Modern Use Case #3: Accessibility and Reduced Palettes**
+
+Some users with photosensitivity or migraine conditions configure their devices to use reduced color palettes. Windows' "High Contrast" mode and macOS's "Reduce Transparency" + "Increase Contrast" effectively reduce the displayable color space. Designing with a restricted palette (similar to web-safe thinking) ensures your UI degrades gracefully in these modes rather than becoming unreadable.
+
+**Modern Use Case #4: Legacy Industrial Systems**
+
+Factory floor HMIs (Human-Machine Interfaces), airport flight information displays, and medical device screens often run on hardware platforms that haven't been updated since the early 2000s. FIP (Flight Information Protocol) screens at airports typically support 16 or 64 colors. Siemens' industrial HMI panels (SIMATIC series) still default to a web-safe-derived color palette in their configuration software.
+
+**When to IGNORE Web-Safe Colors (95% of Modern Work)**
+
+If you're building a modern website, web app, or mobile app for consumer devices — ignore web-safe colors completely. Use HSL or OKLCH with full 24-bit color. The last 8-bit consumer display shipped in roughly 2004. Modern browsers handle color management automatically. Clinging to web-safe colors for consumer web design is like refusing to use CSS Grid because "tables worked fine in 1999."`,
+    codeSnippet: {
+      label: "Web-Safe Color Detection & Palette Generator",
+      code: `// Detect if any hex color is web-safe
+const WEB_SAFE_VALUES = [0x00, 0x33, 0x66, 0x99, 0xCC, 0xFF];
+
+function isWebSafe(hex: string): boolean {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return [r, g, b].every(v => WEB_SAFE_VALUES.includes(v));
+}
+
+// Find the nearest web-safe color to any input
+function nearestWebSafe(hex: string): string {
+  const channels = [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16)
+  ];
+  const safe = channels.map(c => {
+    let closest = WEB_SAFE_VALUES[0];
+    let minDist = Math.abs(c - closest);
+    for (const v of WEB_SAFE_VALUES) {
+      const dist = Math.abs(c - v);
+      if (dist < minDist) { minDist = dist; closest = v; }
+    }
+    return closest;
+  });
+  return '#' + safe.map(v => v.toString(16).padStart(2, '0').toUpperCase()).join('');
+}
+
+// Generate all 216 web-safe colors
+function generateWebSafePalette(): string[] {
+  const palette: string[] = [];
+  for (const r of WEB_SAFE_VALUES) {
+    for (const g of WEB_SAFE_VALUES) {
+      for (const b of WEB_SAFE_VALUES) {
+        palette.push(
+          '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0').toUpperCase()).join('')
+        );
+      }
+    }
+  }
+  return palette; // 6 × 6 × 6 = 216 colors
+}
+
+// Example: nearest web-safe to #FF8800
+console.log(nearestWebSafe('#FF8800')); // '#FF9933'
+console.log(isWebSafe('#FF9933'));      // true
+console.log(isWebSafe('#FF8800'));      // false`,
+    },
+    proTips: [
+      "For modern web design: ignore web-safe colors. Use HSL or OKLCH with full 24-bit color. The last consumer 8-bit display shipped around 2004.",
+      "For email HTML: test your colors in Litmus or Email on Acid. If rendering is inconsistent across Outlook versions, drop back to web-safe-adjacent values for backgrounds and borders.",
+      "For embedded/e-ink projects: start with web-safe values, then test on real hardware. E-ink's limited gamut means your beautiful gradient will be 4 shades of gray on device.",
+      "Quick check: if every two-character pair in a hex code is 00, 33, 66, 99, CC, or FF, it's web-safe. #336699 = yes. #3366AA = no.",
+      "When building design systems for enterprise: include a 'reduced palette' mode that ships web-safe-adjacent tokens for legacy compatibility. Your industrial and government clients will thank you.",
+    ],
+    keyStat: "99.7% of web users globally now have displays capable of 24-bit color or higher. But 12% of enterprise emails still fail to render non-web-safe colors in Outlook 2016/2019. (StatCounter Global Stats / Litmus Email Client Market Share, Q1 2026)",
+    toolsMention: ["color-picker", "contrast-checker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

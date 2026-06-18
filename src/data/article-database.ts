@@ -78,6 +78,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "wcag-color-accessibility": { slug: "wcag-color-accessibility", title: "WCAG Accessibility", description: "Learn about wcag accessibility." },
   "wcag-contrast-checker-tool": { slug: "wcag-contrast-checker-tool", title: "WCAG Contrast Checker Tool", description: "Learn about wcag contrast checker tool." },
   "web-app-color-best-practices": { slug: "web-app-color-best-practices", title: "Web App Color Best Practices", description: "Learn about web app color best practices." },
+  "web-safe-colors-guide": { slug: "web-safe-colors-guide", title: "Web Safe Colors Guide", description: "Understanding web-safe colors, legacy palettes, and ensuring consistent color rendering on any display." },
   "what-is-hex-color": { slug: "what-is-hex-color", title: "What is HEX Color Code", description: "Learn about what is hex color code." },
   "neutral-color-palette": { slug: "neutral-color-palette", title: "Neutral Color Palette Guide", description: "Build calm, flexible neutral palettes for websites, dashboards, and brand systems without making everything look flat." },
   "color-gradient-tools-guide": { slug: "color-gradient-tools-guide", title: "Best Color Gradient Tools for Web Designers (2026)", description: "Compare the best online gradient generators and tools for web design. Create CSS, mesh, and animated gradients, and export ready-to-use code." },
