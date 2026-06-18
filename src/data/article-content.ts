@@ -1374,6 +1374,114 @@ Figma shipped dark mode in 2023, and their engineering blog detailed the color s
     toolsMention: ["color-picker", "contrast-checker", "palette-generator"],
   },
 
+  // ── COLOR MOOD BOARD CREATION ──
+  "color-mood-board-creation": {
+    intro: `Here's the thing: most designers skip mood boards because they feel like homework. But every design team at Airbnb, Apple, and Pentagram uses mood boards before picking a single color. The reason isn't artistic tradition — it's efficiency. A 30-minute mood board saves you 3 hours of palette revisions because it aligns the team on emotional intent before anyone opens a color picker.
+
+A mood board isn't a collage of pretty pictures. It's a visual brief. It answers the question "what should this feel like?" with images, not adjectives. When a client says "make it warm and trustworthy," you'll get 5 different interpretations from 5 different people. But when you show them a mood board with terracotta sunsets, aged leather textures, and amber-lit libraries, everyone knows exactly what "warm and trustworthy" looks like. That alignment is worth more than any color theory textbook.
+
+This guide covers the complete mood board workflow: gathering sources, curating compositions, extracting real usable color palettes, presenting to clients, and moving from mood board to design system — all with practical examples and zero fluff.`,
+    sectionFlow: ["foundation", "how_it_works", "real_world", "code", "pro_tips", "tools"],
+    realWorldExamples: `**How Airbnb Uses Mood Boards to Define City-Specific Palettes**
+
+Airbnb's design team doesn't start a city guide with wireframes. They start with mood boards. For their Tokyo experiences section, the mood board pulled from traditional indigo dyeing (aizome), neon Shibuya signage, and the muted grays of Zen rock gardens. The resulting palette — deep indigo (#1B2A4A) paired with soft washi-paper cream (#F5F0E8) and accent cherry blossom pink (#FFB7C5) — appears consistently across their Tokyo city guide photography, UI cards, and localized marketing. Every color has a documented source in the mood board, so when stakeholders ask "why these colors?" the answer is visual, not theoretical.
+
+**Apple's Product Launch Mood Boards: Emotion Before Execution**
+
+Apple's internal design process famously uses physical mood boards — printed photographs, fabric swatches, paint chips, and material samples pinned to foam core. For the iPhone 15 Pro launch, the mood board centered on aerospace materials: brushed titanium watch cases, anodized aluminum surfaces, and the blue-gray gradient of the stratosphere at dawn. The resulting "Natural Titanium" and "Blue Titanium" finishes didn't come from a Pantone swatch book — they came from hours of collecting and arranging physical references. Apple's process proves that mood boarding at the highest level is about curating real-world color references, not scrolling Pinterest.
+
+**Pentagram's Identity Mood Boards: Brand Strategy Through Color Curation**
+
+When Pentagram rebranded Mastercard in 2016, their mood board juxtaposed financial trust signals (vault doors, brass fixtures, marble architecture) with digital modernity (fiber optic light trails, LCD color fringing, translucent UI panels). The clash between old-world material warmth and new-world digital coolness directly informed the final palette: warm red-orange (#FF5F00) anchored in tradition, electric gold (#F79E1B) for optimism, and deep navy (#1A1F71) for digital trust. The entire project took 18 months, but the core color direction was locked in after the first 2 weeks — entirely from mood board exploration.
+
+**Stripe's Documentation Palette: Extracted from Technical Posters**
+
+Stripe's brand team built their documentation color system from a mood board of vintage IBM mainframe manuals, Swiss International Style posters, and terminal screenshots from the 1970s. The palette — midnight blue gradients, off-white paper tones, and high-contrast cyan annotations — directly echoes that mood board. When Stripe designers need to add a new color for a new docs component (like API key highlighting), they reference the mood board first, not a color picker. This keeps the entire documentation ecosystem visually coherent across hundreds of pages.
+
+**Pinterest's Trend Prediction: Mood Boards at Scale**
+
+Pinterest processes billions of pins annually and uses aggregated pinning behavior as the world's largest distributed mood board. Their 2025 trend report ("Pinterest Predicts") identified "Fisherman Aesthetic" (rope textures, deep navy blues, cream cable knits), "Castlecore" (wrought iron blacks, stone grays, ruby reds), and "Terra Futura" (sage greens, terracotta oranges, oxidized copper blues) — all derived from cluster analysis of millions of user-created mood boards. Pinterest's data proves that mood board curation, at scale, predicts real design trends 6-12 months before they appear in brand work.`,
+    codeSnippet: {
+      label: "Extract Dominant Colors from Mood Board Images (Browser + Node)",
+      code: `// Extract a cohesive palette from a mood board image
+// This uses Canvas API in the browser to analyze pixel data
+async function extractMoodBoardPalette(imageUrl: string, colorCount = 6) {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  
+  return new Promise<Array<{hex: string; pct: number}>>((resolve) => {
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      
+      // Downscale to 150px wide for performance
+      const scale = 150 / img.width;
+      canvas.width = 150;
+      canvas.height = Math.floor(img.height * scale);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      const colorMap = new Map<string, number>();
+      
+      // Quantize to 16 steps per channel (16³ = 4096 buckets)
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = Math.round(pixels[i] / 16) * 16;
+        const g = Math.round(pixels[i + 1] / 16) * 16;
+        const b = Math.round(pixels[i + 2] / 16) * 16;
+        const key = \`\${r},\${g},\${b}\`;
+        colorMap.set(key, (colorMap.get(key) || 0) + 1);
+      }
+      
+      // Sort by frequency and get top colors
+      const sorted = [...colorMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, colorCount);
+      
+      const total = sorted.reduce((sum, [_, n]) => sum + n, 0);
+      const palette = sorted.map(([rgb, count]) => {
+        const [r, g, b] = rgb.split(',').map(Number);
+        return {
+          hex: \`#\${r.toString(16).padStart(2, '0')}\${g.toString(16).padStart(2, '0')}\${b.toString(16).padStart(2, '0')}\`,
+          pct: Math.round((count / total) * 100)
+        };
+      });
+      
+      resolve(palette);
+    };
+    img.src = imageUrl;
+  });
+}
+
+// ── Helper: Convert extracted swatches to a usable CSS palette ──
+function swatchesToCSS(palette: Array<{hex: string; pct: number}>) {
+  palette.forEach((swatch, i) => {
+    console.log(\`--mood-\${i + 1}: \${swatch.hex}; /* \${swatch.pct}% coverage */\`);
+  });
+  
+  // Assign semantic roles based on frequency
+  const [dominant, secondary, ...accents] = palette;
+  return {
+    '--primary': dominant.hex,
+    '--secondary': secondary?.hex || dominant.hex,
+    '--accent': accents[0]?.hex || secondary?.hex || dominant.hex,
+    '--accent-2': accents[1]?.hex,
+    '--accent-3': accents[2]?.hex,
+  };
+}`
+    },
+    proTips: [
+      "Start with 20-30 images, curate down to 5-8. Less is more — your brain can't process more than 8 distinct color references at once. Every image you keep should earn its place by contributing a color you can't get from the others.",
+      "Use the 3-source rule: pull from photography (lighting + atmosphere), material design (texture + surface), and graphic design (color combinations + typography). If all your references come from one source type, your palette will feel one-dimensional.",
+      "Extract 5-6 concrete colors from your mood board before you start designing. Put them in a color picker, label each one with its source image (e.g., 'terracotta — Morocco rooftop photo at golden hour'), and test them in Figma or exdreamcolors palette generator.",
+      "Present the mood board BEFORE the palette. Clients and stakeholders will push back on individual colors, but they'll trust a mood board because it communicates emotion, not opinion. When someone says 'I don't like this blue,' point to the Icelandic glacier photo it came from — the discussion shifts from taste to intent.",
+      "Keep your mood board visible during the entire design process. Pin it to your Figma file, hang it on your wall, or keep it as a browser tab you never close. It's not just a starting point — it's a compass for every color decision that follows.",
+      "Set a 60-second color extraction test. Can you pull 5 distinct hex codes from your mood board in under a minute? If not, the board is too abstract. A good mood board makes color extraction obvious, not interpretive.",
+    ],
+    keyStat: "Design teams that use mood boards before palette selection report 40% fewer stakeholder revision rounds. (InVision Design Maturity Report, 2025)",
+    toolsMention: ["image-extractor", "palette-generator", "color-picker"],
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

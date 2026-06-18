@@ -21,6 +21,7 @@ export const articles: Article[] = [
   {"slug":"color-harmony-principles","title":"Color Harmony Principles","desc":"Learn about color harmony principles — the foundation of beautiful color combinations.","cat":"Color Theory"},
   {"slug":"color-management-design-systems","title":"Color Management in Design Systems","desc":"Learn about color management in design systems — organize and scale your colors.","cat":"Design Tips"},
   {"slug":"color-meaning-symbolism","title":"Color Meaning and Symbolism","desc":"Learn about color meaning and symbolism — what colors communicate across cultures.","cat":"Color Psychology"},
+  {"slug":"color-mood-board-creation","title":"Color Mood Board Creation","desc":"How to build and use color mood boards for design inspiration and client presentations — practical workflow from source gathering to palette extraction.","cat":"Design Tips"},
   {"slug":"color-palette-generator-free","title":"Color Palette Generator Free","desc":"Learn about free color palette generators — create beautiful palettes instantly.","cat":"Color Palettes"},
   {"slug":"color-palette-ideas","title":"Color Palette Ideas for Designers","desc":"Learn about color palette ideas for designers — curated palettes for every project.","cat":"Color Palettes"},
   {"slug":"color-psychology-marketing","title":"Color Psychology in Marketing","desc":"Learn about color psychology in marketing — how colors influence buying decisions.","cat":"Color Psychology"},
