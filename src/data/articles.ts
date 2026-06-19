@@ -84,4 +84,5 @@ export const articles: Article[] = [
   {"slug":"oklch-color-design-guide","title":"OKLCH Color Design Guide","desc":"Use OKLCH colors to build smoother palettes, safer lightness steps, and modern CSS color systems for web interfaces.","cat":"Technical"},
   {"slug":"dashboard-color-palette-guide","title":"Dashboard Color Palette Guide","desc":"Design dashboard color palettes that make metrics, charts, alerts, and dark mode easier to read without turning the screen into a rainbow.","cat":"Design Tips"},
   {"slug":"form-validation-color-accessibility","title":"Form Validation Color Accessibility Guide","desc":"Design form validation colors that users can understand without relying on red alone — accessible error states, success states, helper text, and contrast checks.","cat":"Accessibility"},
+  {"slug":"accessibility-form-error-colors","title":"Accessible Form Error Colors","desc":"Design form error, warning, success, and helper states that pass WCAG contrast checks without relying on red alone.","cat":"Accessibility"},
 ];
