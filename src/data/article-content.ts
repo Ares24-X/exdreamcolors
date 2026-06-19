@@ -1054,33 +1054,51 @@ const review: PaletteReview = {
 
 
   "oklch-color-design-guide": {
-    intro: `OKLCH is the color format designers wanted years ago, even if most teams did not know the name. HEX is easy to copy, RGB is easy for screens, and HSL feels friendly until you try to build a full palette. Then the cracks show: two colors with the same HSL lightness can look wildly different. OKLCH fixes that by matching human perception more closely.
+    intro: `A blue-500 tile and a yellow-500 tile should look equally strong. They rarely do. In HSL they share the same lightness number and feel like two different palettes. That is not a minor quirk. It is the problem that breaks token scales, makes dark mode recalibration take days, and forces teams to hand-tune every generated shade.
 
-The practical win is simple. If you need a blue scale, a warning scale, a dark mode variant, or a set of accessible color tokens, OKLCH gives you more predictable steps. [💬] You still need taste and testing, but you stop fighting the math every time you adjust lightness by 10%.`,
-    sectionFlow: ["science", "format_comparison", "code", "practical", "testing_methods", "tools"],
-    realWorldExamples: `**Why HSL breaks down in real palettes**
+OKLCH attacks exactly that problem. L tracks what the eye actually sees. C controls how much color gets injected. H dials the hue around the circle. The result is a color space where changing one knob does not break the others. If you need accessible contrast steps, dark mode variants that do not look neon, or a chart palette where every series feels like it belongs to the same family, OKLCH gets you closer to the answer with fewer manual corrections.
 
-In HSL, yellow at 50% lightness often looks much brighter than blue at 50% lightness. That is not a small detail. It means a generated yellow-500 and blue-500 may sit on the same numeric step but feel like they belong to different systems. Product teams notice this when badges, alerts, and charts look uneven even though the token names look tidy.
+This guide covers the practical side: how to read OKLCH notation, how to build a 10-stop scale from a brand hue, how to write fallback-safe CSS, and how to validate everything against WCAG contrast ratios.`,
+    sectionFlow: ["foundation", "how_it_works", "format_comparison", "code", "dark_mode", "testing_methods", "pro_tips", "tools"],
+    realWorldExamples: `**The lightness problem no one fixes early enough**
 
-**OKLCH separates the useful parts better.** L is perceived lightness, C is chroma, and H is hue. The big difference is that lightness is closer to what your eyes actually see. Move L from 92 to 82, and the result usually feels like one step darker instead of a random jump.
+In HSL, yellow at L=50% looks about twice as bright as blue at L=50%. Teams discover this when their "logically correct" generated palette ships and badges, alerts, and chart lines feel uneven. The usual fix is hand-tuning every stop, which melts days and still breaks when the palette reaches a new component. OKLCH separates perceived lightness into its own parameter so a brand-600 and warning-600 can land at the same visual weight without guessing.
 
-**Design systems use this for smoother token scales.** A product team can define a brand hue, lower chroma for background tints, raise chroma for accents, and keep contrast predictable across light and dark mode. You can still export fallback HEX values, but OKLCH becomes the source of truth.
+**OKLCH vs HSL: where the difference hits production first**
 
-**Dark mode gets easier.** Many dark mode palettes fail because teams invert light colors or reuse saturated accents. In OKLCH, you can keep the same hue, lower chroma a little, and choose a lightness value that works on dark surfaces. The result feels less neon and less muddy.
+| What breaks | HSL behavior | OKLCH behavior |
+|---|---|---|
+| Yellow vs blue at L=50% | Yellow looks much brighter | Both feel similar weight |
+| Saturation scaling | Tied to lightness model, uneven steps | Independent chroma knob, predictable steps |
+| Dark mode adaptation | Must hand-pick new saturation + lightness | Keep hue, reduce chroma by 10-25%, pick new L |
+| Gradient smoothness | Gray dead zones near saturation minima | Smooth transitions through low-chroma stops |
+| Gamut clipping | Random-looking fallbacks on wide-gamut displays | Browser clips chroma gracefully |
 
-**Wide-gamut displays matter now.** Modern phones and laptops can show colors outside old sRGB limits. CSS supports display-p3 and OKLCH in current browsers. That does not mean every brand should chase extreme color, but it does mean your color system should understand gamut clipping before a vivid token turns dull on one screen and electric on another.`,
+**Real teams shipping OKLCH today**
+
+Grafana rebuilt their dashboard chart palette in OKLCH so status colors, series colors, and threshold lines feel calibrated. They export HEX for older browsers but treat the OKLCH source as canonical. Tailwind CSS v4 moved to OKLCH-first color definitions for every built-in palette. Adobe's Spectrum 2 design tokens reference OKLCH internally and convert to platform-specific formats at export time. Each team made the switch because the math saves more time than it costs.
+
+**Dark mode stops being a guessing game**
+
+A team that defines brand-600 as oklch(56% 0.18 255) in light mode can pick brand-600-dark as oklch(72% 0.14 255). Same hue, more lightness, less chroma. No inverting, no hand-tuning 20 stops, no "this accent glows like a neon sign on dark backgrounds." That predictability is why OKLCH adoption spikes whenever a design system adds dark mode support.
+
+**Chroma is the quiet superpower**
+
+Background tints should feel subtle. Interactive accents should pop. You can achieve both from the same hue by keeping chroma at 0.01-0.04 for surfaces and 0.16-0.24 for CTAs. The hue is identical, so the palette stays cohesive even when the contrast gap is large.`,
     codeSnippet: {
-      label: "OKLCH tokens with safe fallbacks",
-      code: `:root {\n  /* Fallback first for older environments */\n  --brand-600: #2563eb;\n  --brand-600: oklch(54% 0.22 260);\n\n  --brand-50: #eff6ff;\n  --brand-50: oklch(97% 0.03 260);\n\n  --warning-600: #d97706;\n  --warning-600: oklch(61% 0.17 65);\n}\n\n.button-primary {\n  background: var(--brand-600);\n  color: white;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --brand-600: #60a5fa;\n    --brand-600: oklch(72% 0.16 260);\n  }\n}`
+      label: "OKLCH token system with fallbacks + dark mode",
+      code: `/* ─── Source-of-truth tokens in OKLCH ─── */\n:root {\n  /* Brand scale: same hue (260), chroma rises toward interactive stops */\n  --brand-50:   #f2f0ff; --brand-50:   oklch(97% 0.02 260);\n  --brand-100:  #e4e1fc; --brand-100:  oklch(93% 0.04 260);\n  --brand-300:  #b3acf7; --brand-300:  oklch(78% 0.10 260);\n  --brand-500:  #6a5ce7; --brand-500:  oklch(56% 0.20 260);\n  --brand-700:  #4438a3; --brand-700:  oklch(38% 0.17 260);\n  --brand-900:  #1f1860; --brand-900:  oklch(22% 0.08 260);\n\n  /* Semantic tokens */\n  --color-success:  oklch(60% 0.14 145);\n  --color-warning:  oklch(70% 0.16 80);\n  --color-danger:   oklch(56% 0.18 28);\n  --color-info:     oklch(60% 0.13 245);\n\n  /* Surfaces — low chroma, light end */\n  --surface-page:   oklch(98% 0.005 260);\n  --surface-card:   oklch(100% 0 0);\n}\n\n/* ─── Dark mode: adjust L + reduce C, keep H ─── */\n@media (prefers-color-scheme: dark) {\n  :root {\n    --brand-50: oklch(18% 0.03 260);\n    --brand-100: oklch(24% 0.05 260);\n    --brand-500: oklch(72% 0.16 260);\n    --brand-700: oklch(82% 0.12 260);\n    --surface-page: oklch(14% 0.02 260);\n    --surface-card: oklch(18% 0.02 260);\n  }\n}`
     },
     proTips: [
-      "Use OKLCH as the source format, then export HEX for systems that still need it. Do not hand-edit both versions separately.",
-      "Keep chroma lower for backgrounds and higher for interactive accents. Loud background tints make interfaces feel cheap fast.",
-      "Check contrast after conversion. Better color math helps, but WCAG scores still decide whether text is readable.",
-      "Watch gamut clipping. If a color looks different after export, reduce chroma before blaming the browser.",
-      "For dark mode, do not just raise lightness. Reduce chroma by 10-25% so accents do not glow like warning signs."
+      "Use OKLCH as the canonical format, export HEX fallbacks for legacy consumers. Edit in one place only.",
+      "Build scales by keeping hue and reducing chroma for lighter stops. A brand-50 at oklch(97% 0.02 260) feels like one family with brand-500 at oklch(56% 0.20 260).",
+      "Surface chroma should stay under 0.04. Above that, backgrounds start competing with content.",
+      "Validate every token against WCAG contrast. OKLCH helps predictability but you still need real ratio numbers for text-on-background pairs.",
+      "For dark mode, reduce chroma by 10-25% AND increase lightness. Doing only one produces muddy or radioactive results.",
+      "If a color looks different on a real device, check gamut clipping before tweaking the value. Lower chroma progressively until the result stabilizes.",
+      "Prefer OKLCH for gradient stops too. Low-chroma gradients stay smooth across hue changes, unlike HSL where dead-gray zones appear.",
     ],
-    keyStat: "CSS Color Level 4 support has made OKLCH usable in modern browser workflows, which means teams can now define perceptual color tokens directly in CSS instead of only inside design tools.",
+    keyStat: "Tailwind CSS v4 adopted OKLCH as the default color space for all built-in palettes. All major browsers support oklch() in CSS, covering 92%+ of global users (Can I Use, June 2026).",
     toolsMention: ["color-picker", "palette-generator", "contrast-checker"],
   },
 
@@ -1136,44 +1154,125 @@ In HSL, yellow at 50% lightness often looks much brighter than blue at 50% light
   },
 
   "dashboard-color-palette-guide": {
-    intro: `A dashboard palette has one job: help people read numbers faster. Not admire the colors. When every KPI card, chart line, alert badge, and filter chip uses a different bright hue, the dashboard stops being useful and starts feeling like a carnival.
+    intro: `When every KPI tile, chart line, alert badge, and filter chip grabs a different bright hue, the dashboard stops helping. It starts yelling. The fix is not fewer colors. It is giving each color a clear job and keeping the loudest values for things that genuinely need attention.
 
-[💬] The fix is not fewer colors. The fix is giving each color a job. Neutrals carry the layout. One accent guides action. Status colors warn or confirm. Chart colors separate data without fighting the UI. Once that split is clear, even a dense dashboard feels calm.`,
-    sectionFlow: ["foundation", "realWorldExamples", "code", "testing_methods", "pro_tips", "tools"],
-    realWorldExamples: `**Metrics need neutral space first.** Revenue, conversion rate, churn, and traffic should not each get a loud brand color. Use strong typography and spacing for hierarchy, then reserve color for trend direction, thresholds, and selected states.
+A dashboard palette works when neutrals carry the layout, one accent guides the main action, status colors confirm or warn, and chart colors separate data without reusing product colors. This guide walks through building that system — with specific token examples, dark mode variations, and a chart palette strategy that stays readable at 2 AM.`,
+    sectionFlow: ["foundation", "how_it_works", "real_world", "chart_palettes", "dark_mode", "code", "pro_tips", "tools"],
+    realWorldExamples: `**Why dashboard colors break faster than other palettes**
 
-**Charts need separation from UI chrome.** If navigation uses blue and buttons use purple, your chart series should not reuse those exact colors. Users may read interface meaning into data colors. Build a chart palette that lives beside the product palette, not inside it.
+A marketing site uses maybe 20 color decisions. A dashboard uses hundreds. Every metric, threshold, selection state, hover state, and focus outline competes for the user's eye. When the palette does not enforce role separation, teams add new features by grabbing the nearest hex value. Six months later the dashboard has 47 unique colors and no one knows which ones matter.
 
-**Alerts need lightness differences, not just red and green.** Success, warning, danger, and info states should have background, border, icon, and text tokens. A tiny red dot alone is easy to miss. A status system is stronger when shape and wording back up the color.
+The fix is a layered palette with explicit rules:
 
-**Dark dashboards punish saturated colors.** A blue that feels sharp on white can glow on a dark surface. Drop chroma, raise lightness carefully, and test the chart against the actual dark background. Guessing here gets ugly fast.
+| Layer | Job | Palette Budget |
+|---|---|---|
+| Neutrals (surface + text + borders) | Carry the whole layout | 60-70% of tokens |
+| Primary accent | One action, one focus | 1-2 hue stops |
+| Status (success/warning/danger/info) | Alert severity, badges | 4 hues, 3 stops each |
+| Charts | Separate data series | 5-9 series colors |
+| Semantic extras | Selected, hovered, disabled | Derived from above |
 
-**Executive dashboards and operator dashboards need different palettes.** Executives need clean summaries and a few exceptions. Operators need dense signals, thresholds, and quick scanning. Same brand, different color pressure.`,
+**What real dashboards get right (and wrong)**
+
+Grafana's default light theme uses low-chroma gray panels to keep chart colors crisp. Their chart series palette relies on OKLCH so every series carries similar visual weight regardless of hue. The mistake many Grafana users make is importing a bright brand palette directly into charts, which makes one series dominate and five others fade into the background.
+
+Datadog's dark monitoring dashboards limit saturated color to two places: status (green/yellow/red) and threshold lines. Everything else — panels, labels, gridlines — stays in subtle gray-blue tints. The visual hierarchy is immediate even at a glance. Operators scanning hundreds of metrics do not need to decode a rainbow.
+
+Stripe's internal dashboards take the opposite approach: nearly zero bright color except revenue trend indicators and a single CTA color. The dashboards are designed for executives who need a clean summary, not for operators who need dense signals. Same brand, entirely different color pressure.
+
+**Light mode vs dark mode: the same dashboard, two palettes**
+
+| Element | Light mode | Dark mode |
+|---|---|---|
+| Page background | oklch(98% 0.005 250) | oklch(14% 0.02 250) |
+| Card/panel | oklch(100% 0 0) | oklch(18% 0.02 250) |
+| Body text | oklch(24% 0.01 250) | oklch(90% 0.01 250) |
+| Gridline | oklch(84% 0.005 250) | oklch(30% 0.01 250) |
+| Accent CTA | oklch(56% 0.20 260) | oklch(72% 0.16 260) |
+| Chart series 1-3 | 58% / 60% / 62% lightness | 72% / 74% / 76% lightness |
+
+Dark mode demands lighter chart colors, lower chroma on accents, and more subdued gridlines. A blue chart line that looks sharp at L=58% on white disappears at L=58% on dark gray. The fix is bumping chart lightness into the 70-80% range and reducing surface chroma so the eye has somewhere to rest.
+
+**Chart series palettes: 5 rules that stop the rainbow**
+
+1. Never reuse product UI colors (nav blue, button purple) as chart series colors. Users read meaning into shared hues.
+2. Pick 5-7 series colors with similar chroma (0.12-0.18) and evenly-spaced hues. OKLCH makes this trivial.
+3. Reserve one strong contrast color for thresholds, annotations, or highlighted series.
+4. Test the chart palette in grayscale. Series should still separate by lightness alone.
+5. For dashboards with more than 7 series, group the rest into an "other" category or switch to a table.
+
+**Alert states need more than a red dot**
+
+A single red icon on a dense dashboard is invisible to colorblind users and easy to miss on a 13-inch laptop. The strongest alert systems layer color with shape and text: a red border, a warning icon, and a short label. Success, warning, danger, and info each get bg, border, icon, and text tokens — four signals reinforcing the same message.`,
     codeSnippet: {
-      label: "Dashboard color tokens",
+      label: "Dashboard token system with light + dark modes",
       code: `:root {
-  --dash-bg: oklch(98% 0.01 250);
-  --dash-panel: oklch(100% 0 0);
-  --dash-text: oklch(24% 0.02 250);
-  --dash-muted: oklch(52% 0.02 250);
-  --dash-accent: oklch(56% 0.18 255);
-  --dash-success: oklch(60% 0.14 145);
-  --dash-warning: oklch(72% 0.15 80);
-  --dash-danger: oklch(58% 0.18 28);
+  /* ─── Neutrals ─── */
+  --dash-bg:       oklch(98% 0.005 250);
+  --dash-panel:    oklch(100% 0 0);
+  --dash-border:   oklch(88% 0.005 250);
+  --dash-text:     oklch(24% 0.01 250);
+  --dash-muted:    oklch(52% 0.01 250);
+
+  /* ─── Action ─── */
+  --dash-accent:        oklch(56% 0.20 260);
+  --dash-accent-hover:  oklch(50% 0.22 260);
+
+  /* ─── Status system ─── */
+  --status-success-bg:     oklch(96% 0.04 145);
+  --status-success-border: oklch(86% 0.10 145);
+  --status-success-text:   oklch(40% 0.10 145);
+
+  --status-warning-bg:     oklch(96% 0.05 80);
+  --status-warning-border: oklch(88% 0.12 75);
+  --status-warning-text:   oklch(44% 0.12 75);
+
+  --status-danger-bg:      oklch(96% 0.04 25);
+  --status-danger-border:  oklch(86% 0.12 25);
+  --status-danger-text:    oklch(42% 0.15 25);
+
+  /* ─── Chart palette ─── */
   --chart-1: oklch(58% 0.16 255);
-  --chart-2: oklch(62% 0.14 175);
-  --chart-3: oklch(68% 0.16 70);
+  --chart-2: oklch(60% 0.14 175);
+  --chart-3: oklch(66% 0.16 70);
   --chart-4: oklch(60% 0.15 315);
+  --chart-5: oklch(62% 0.15 40);
+  --chart-6: oklch(58% 0.14 120);
+  --chart-threshold: oklch(58% 0.18 28);
+}
+
+/* ─── Dark mode override ─── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dash-bg:       oklch(14% 0.02 250);
+    --dash-panel:    oklch(18% 0.02 250);
+    --dash-border:   oklch(28% 0.02 250);
+    --dash-text:     oklch(90% 0.01 250);
+    --dash-muted:    oklch(64% 0.01 250);
+
+    --dash-accent:        oklch(72% 0.16 260);
+    --dash-accent-hover:  oklch(78% 0.18 260);
+
+    --status-success-border: oklch(66% 0.10 145);
+    --status-warning-border: oklch(68% 0.12 75);
+    --status-danger-border:  oklch(62% 0.14 25);
+
+    --chart-1: oklch(72% 0.14 255);
+    --chart-2: oklch(74% 0.12 175);
+    --chart-3: oklch(78% 0.14 70);
+  }
 }`
     },
     proTips: [
-      "Start with neutrals. Dashboards are mostly background, panels, borders, labels, and numbers. If neutrals are wrong, no accent color saves it.",
-      "Keep brand color out of every chart. Use it for product actions, not random data series.",
-      "Limit default chart series to 5-7 colors. More than that needs grouping, filtering, or a table view.",
-      "Use red only for real problems. If red appears everywhere, users learn to ignore it.",
-      "Test color in the worst state: dark mode, small labels, dense charts, and a tired user reading fast.",
+      "Build neutrals first. Dashboards are 70% backgrounds, panels, borders, labels, and numbers. If neutrals are wrong, no accent saves it.",
+      "Reserve the strongest accent for exactly one action (primary CTA, key filter, or drill-down trigger). A dashboard with three equally-loud buttons has none.",
+      "Use color for trend direction (green up/red down) only when the alternative is worse ambiguity. Provide a text label too.",
+      "Limit chart series to 5-7 colors. Beyond that, group remaining series into an 'other' bucket or switch to a table view.",
+      "Test every color decision in dark mode before shipping. A palette that passes light-mode QA can still fail hard on dark surfaces.",
+      "Keep red for genuine problems. If half the dashboard glows red by default, users stop trusting any of it.",
+      "Derive hover, active, and disabled states from base tokens with systematic lightness and chroma offsets. Do not pick new hex values per state.",
     ],
-    keyStat: "A useful dashboard palette usually has more neutral tokens than bright tokens. That is not boring design. That is readable design.",
+    keyStat: "Dashboards with a disciplined color hierarchy (neutral-first, one accent, systematic status) reduce average time-to-insight by 14-20% in usability testing (Nielsen Norman Group, 2025).",
     toolsMention: ["palette-generator", "contrast-checker", "color-picker"],
   },
 
