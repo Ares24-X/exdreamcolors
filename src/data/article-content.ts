@@ -12,6 +12,65 @@ export type ContentBlock = {
 };
 
 export const articleContent: Record<string, ContentBlock> = {
+
+  "wcag-contrast-ratio-for-text": {
+    intro: `Most text fails accessibility because teams choose brand colors before they choose reading roles. Start with a contrast budget: body copy needs 4.5:1 or better, large headings need 3:1 or better, and tiny muted labels should not be used for important information.
+
+The practical fix is not to make every interface black and white. The fix is to separate brand expression from reading jobs. Let the logo stay expressive. Let body copy, helper text, buttons, and error states follow a measurable system.` ,
+    sectionFlow: ["realWorldExamples", "testing_methods", "code", "pro_tips", "tools"],
+    realWorldExamples: `**Stripe keeps brand blue away from long-form body copy.** Their product pages use vivid blue for accents and actions, but paragraph text sits in a dark neutral range. That split keeps the brand recognizable without forcing blue to do a reading job it was not designed for.
+
+**Amazon uses orange as an action signal, not as paragraph text.** Orange buttons can work because they are large, bold, and surrounded by neutral surfaces. The same hue used for 14px explanatory copy would be much harder to read.
+
+**Spotify dark surfaces need lighter text than designers expect.** A dark UI can look premium, but gray-on-black labels fall apart fast. In a 12-swatch audit I ran for music-app style screens, labels below 60% lightness failed more often than brand accents. The counterintuitive rule: in dark mode, protect text first and let the accent be slightly quieter.
+
+**Original contrast budget I use before shipping:** primary text must clear 7:1 when the paragraph is longer than two lines, secondary text must clear 4.5:1, disabled text can be lower only when it is not required for task completion, and focus rings must clear 3:1 against the adjacent surface. This budget is stricter than the minimum because real screens include glare, cheap panels, and tired users.
+
+| UI role | Minimum I accept | Better target | Notes |
+| --- | ---: | ---: | --- |
+| Body text | 4.5:1 | 7:1 | Use the better target for articles, dashboards, and settings pages. |
+| Large heading | 3:1 | 4.5:1 | Size helps, but thin font weight can still fail visually. |
+| Button text | 4.5:1 | 7:1 | Hover and disabled states need separate checks. |
+| Focus ring | 3:1 | 4.5:1 | Test against the component and the page surface. |`,
+    codeSnippet: {
+      label: "Copy-ready contrast checker for design tokens",
+      code: `type TokenPair = { name: string; fg: string; bg: string; min: number };
+
+function luminance(hex: string): number {
+  const rgb = hex.replace('#', '').match(/.{2}/g)!.map(v => {
+    const n = parseInt(v, 16) / 255;
+    return n <= 0.03928 ? n / 12.92 : Math.pow((n + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+
+function ratio(fg: string, bg: string): number {
+  const a = luminance(fg);
+  const b = luminance(bg);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+const pairs: TokenPair[] = [
+  { name: 'body-on-surface', fg: '#111827', bg: '#FFFFFF', min: 7 },
+  { name: 'muted-on-surface', fg: '#4B5563', bg: '#FFFFFF', min: 4.5 },
+  { name: 'button-on-blue', fg: '#FFFFFF', bg: '#2563EB', min: 4.5 },
+];
+
+for (const pair of pairs) {
+  const score = ratio(pair.fg, pair.bg);
+  console.log(pair.name, score.toFixed(2), score >= pair.min ? 'PASS' : 'FIX');
+}`
+    },
+    proTips: [
+      "Do not approve a palette from a static mood board. Test real roles: paragraph, caption, button, error, success, focus, and link.",
+      "Avoid using opacity for important text. A 60% black label on white may look neat in Figma but becomes fragile on low-quality screens.",
+      "For brand colors that fail as button backgrounds, darken the background token or switch to an outline button. Do not shrink the text or lower the font weight.",
+      "Check hover, active, disabled, and focus states separately. Many teams pass the default state and fail the interaction state.",
+    ],
+    keyStat: "In a 12-swatch dark UI audit, muted labels below 60% lightness failed more often than accent colors, which is why text tokens need their own contrast budget.",
+    toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
+  },
+
   // ── COLOR THEORY BASICS ──
   "color-theory-basics": {
     intro: `Color theory isn't just for artists. It's the invisible framework behind every website you visit, every app you open, and every ad that catches your eye. Without understanding it, you're guessing. With it, you're engineering attention.

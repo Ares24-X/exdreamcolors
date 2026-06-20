@@ -77,6 +77,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "vintage-color-palette": { slug: "vintage-color-palette", title: "Vintage Color Palette", description: "Learn about vintage color palette." },
   "wcag-color-accessibility": { slug: "wcag-color-accessibility", title: "WCAG Accessibility", description: "Learn about wcag accessibility." },
   "wcag-contrast-checker-tool": { slug: "wcag-contrast-checker-tool", title: "WCAG Contrast Checker Tool", description: "Learn about wcag contrast checker tool." },
+  "wcag-contrast-ratio-for-text": { slug: "wcag-contrast-ratio-for-text", title: "WCAG Contrast Ratio for Text", description: "Pick accessible text and background pairs with a practical contrast budget, brand examples, and copy-ready testing code." },
   "web-app-color-best-practices": { slug: "web-app-color-best-practices", title: "Web App Color Best Practices", description: "Learn about web app color best practices." },
   "web-safe-colors-guide": { slug: "web-safe-colors-guide", title: "Web Safe Colors Guide", description: "Understanding web-safe colors, legacy palettes, and ensuring consistent color rendering on any display." },
   "what-is-hex-color": { slug: "what-is-hex-color", title: "What is HEX Color Code", description: "Learn about what is hex color code." },
