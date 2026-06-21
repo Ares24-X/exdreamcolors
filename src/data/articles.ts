@@ -25,6 +25,7 @@ export const articles: Article[] = [
   {"slug":"color-mood-board-creation","title":"Color Mood Board Creation","desc":"How to build and use color mood boards for design inspiration and client presentations — practical workflow from source gathering to palette extraction.","cat":"Design Tips"},
   {"slug":"color-palette-generator-free","title":"Color Palette Generator Free","desc":"Learn about free color palette generators — create beautiful palettes instantly.","cat":"Color Palettes"},
   {"slug":"color-palette-ideas","title":"Color Palette Ideas for Designers","desc":"Learn about color palette ideas for designers — curated palettes for every project.","cat":"Color Palettes"},
+  {"slug":"color-psychology-healthcare","title":"Color Psychology in Healthcare","desc":"How healthcare brands use color to build trust, reduce anxiety, and communicate care.","cat":"Color Psychology"},
   {"slug":"color-psychology-marketing","title":"Color Psychology in Marketing","desc":"Learn about color psychology in marketing — how colors influence buying decisions.","cat":"Color Psychology"},
   {"slug":"color-schemes-for-websites","title":"Color Schemes for Websites","desc":"Learn about color schemes for websites — monochromatic to triadic explained.","cat":"Design Tips"},
   {"slug":"color-temperature-warm-cool","title":"Color Temperature Warm vs Cool","desc":"Learn about color temperature — warm vs cool colors and when to use each.","cat":"Color Theory"},

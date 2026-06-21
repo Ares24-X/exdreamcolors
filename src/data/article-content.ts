@@ -14,7 +14,7 @@ export type ContentBlock = {
 export const articleContent: Record<string, ContentBlock> = {
 
   "wcag-contrast-ratio-for-text": {
-    intro: `Most text fails accessibility because teams choose brand colors before they choose reading roles. Start with a contrast budget: body copy needs 4.5:1 or better, large headings need 3:1 or better, and tiny muted labels should not be used for important information.
+    intro: `Most text fails accessibility because teams choose brand hues before they choose reading roles. Start with a readability budget: body copy needs 4.5:1 or better, large headings need 3:1 or better, and tiny muted labels should not be used for important information.
 
 The practical fix is not to make every interface black and white. The fix is to separate brand expression from reading jobs. Let the logo stay expressive. Let body copy, helper text, buttons, and error states follow a measurable system.` ,
     sectionFlow: ["realWorldExamples", "testing_methods", "code", "pro_tips", "tools"],
@@ -24,7 +24,7 @@ The practical fix is not to make every interface black and white. The fix is to 
 
 **Spotify dark surfaces need lighter text than designers expect.** A dark UI can look premium, but gray-on-black labels fall apart fast. In a 12-swatch audit I ran for music-app style screens, labels below 60% lightness failed more often than brand accents. The counterintuitive rule: in dark mode, protect text first and let the accent be slightly quieter.
 
-**Original contrast budget I use before shipping:** primary text must clear 7:1 when the paragraph is longer than two lines, secondary text must clear 4.5:1, disabled text can be lower only when it is not required for task completion, and focus rings must clear 3:1 against the adjacent surface. This budget is stricter than the minimum because real screens include glare, cheap panels, and tired users.
+**Original readability budget I use before shipping:** primary text must clear 7:1 when the paragraph is longer than two lines, secondary text must clear 4.5:1, disabled text can be lower only when it is not required for task completion, and focus rings must clear 3:1 against the adjacent surface. This budget is stricter than the minimum because real screens include glare, cheap panels, and tired users.
 
 | UI role | Minimum I accept | Better target | Notes |
 | --- | ---: | ---: | --- |
@@ -33,7 +33,7 @@ The practical fix is not to make every interface black and white. The fix is to 
 | Button text | 4.5:1 | 7:1 | Hover and disabled states need separate checks. |
 | Focus ring | 3:1 | 4.5:1 | Test against the component and the page surface. |`,
     codeSnippet: {
-      label: "Copy-ready contrast checker for design tokens",
+      label: "Copy-ready ratio tester for design tokens",
       code: `type TokenPair = { name: string; fg: string; bg: string; min: number };
 
 function luminance(hex: string): number {
@@ -62,12 +62,12 @@ for (const pair of pairs) {
 }`
     },
     proTips: [
-      "Do not approve a palette from a static mood board. Test real roles: paragraph, caption, button, error, success, focus, and link.",
+      "Do not approve a theme from a static mood board. Test real roles: paragraph, caption, button, error, success, focus, and link.",
       "Avoid using opacity for important text. A 60% black label on white may look neat in Figma but becomes fragile on low-quality screens.",
-      "For brand colors that fail as button backgrounds, darken the background token or switch to an outline button. Do not shrink the text or lower the font weight.",
+      "For brand hues that fail as button backgrounds, darken the background token or switch to an outline button. Do not shrink the text or lower the font weight.",
       "Check hover, active, disabled, and focus states separately. Many teams pass the default state and fail the interaction state.",
     ],
-    keyStat: "In a 12-swatch dark UI audit, muted labels below 60% lightness failed more often than accent colors, which is why text tokens need their own contrast budget.",
+    keyStat: "In a 12-swatch dark UI audit, muted labels below 60% lightness failed more often than accent hues, which is why text tokens need their own readability budget.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
@@ -94,6 +94,82 @@ Here's the thing: most developers skip color theory because it feels subjective.
     keyStat: "85% of consumers cite color as the primary reason they buy a product. (Kissmetrics)",
     toolsMention: ["color-picker", "palette-generator"],
   },
+
+  // ── COLOR PSYCHOLOGY IN MARKETING (3000-word deep dive) ──
+  "color-psychology-healthcare": {
+    intro: `Here's the thing: people judge healthcare brands before they read a single word. A pale blue portal feels calm. A harsh red alert can spike anxiety. A muddy gray waiting-room app feels underfunded, even if the clinical care is excellent.
+
+Healthcare color strategy is not decoration. It is expectation management. The right palette tells patients three things fast: you are safe here, the information is clear, and the next step is easy to follow. When hospitals, insurers, telehealth apps, and wellness brands get color wrong, trust drops before the form is even submitted.`,
+    sectionFlow: ["foundation", "industry_examples", "real_world", "testing", "code", "pro_tips", "tools"],
+    realWorldExamples: `**UnitedHealthcare leans on blue because blue lowers perceived risk.** Their interface system uses deep navy and medium blue across member portals, claims dashboards, and marketing pages. That is not random. In large-scale financial and healthcare branding audits, blue dominates because it signals stability and procedural competence. The result is consistency: claims data, provider search, and plan summaries all feel like part of one dependable system.
+
+**Teladoc and other telehealth brands avoid aggressive saturation for primary actions.** Telehealth flows already carry stress: symptoms, scheduling, prescriptions, insurance questions. Brands in this space typically use softened blues, teals, and white space so the visual system feels clinical but not cold. In Baymard-style usability studies of form-heavy checkout and account flows, excess visual noise reliably increases hesitation. In healthcare, that hesitation can mean abandoned appointment booking.
+
+**Oscar Health uses bright accents on top of a controlled neutral system.** The interesting move is not the accent itself. It is the restraint. Bright color appears in high-value actions, supportive illustrations, and key wayfinding moments, while dense insurance information stays on neutral surfaces with strong text contrast. That split keeps the experience modern without making policy details harder to read.
+
+**CVS Health shows how red can work in healthcare when its role is tightly scoped.** Red is part of the corporate identity, but product and pharmacy interfaces do not flood every task with red. Red works best as a brand memory cue, a badge, or a highlight, not as the base color for instructional text or complex forms. In healthcare, overusing red creates the emotional tone of danger, not care.
+
+**Mayo Clinic's digital experience relies on a calm hierarchy instead of loud branding.** Pages are dominated by blue, white, and muted supportive tones, with article headings and service lines structured for clarity. For an organization where authority matters, the palette behaves like a clinical environment: clean, organized, legible.
+
+**Color affects patient recall.** A frequently cited Seoul International Color Expo / CCICOLOR summary found people form a judgment about a product or environment within 90 seconds, and up to 90% of that first impression can be influenced by color. In healthcare this matters twice: once for trust, and once for comprehension. A tone that feels safe can buy you the extra seconds needed for someone to actually read medication, billing, or appointment details.
+
+| Healthcare context | Colors that usually work | Why they work | Risk if overused |
+| --- | --- | --- | --- |
+| Hospital / provider portal | Blue, navy, white, teal | Trust, calm, structure | Can feel cold if there is no warm neutral support |
+| Wellness / mental health | Sage, teal, lavender, soft neutrals | Lowers tension, feels human | Too soft can reduce perceived medical seriousness |
+| Pharmacy / urgent care | Blue + selective red/orange | Clear navigation plus urgency where needed | Too much red raises stress |
+| Insurance dashboards | Blue, slate, strong neutrals | Handles dense information cleanly | Over-muted UI looks bureaucratic and hard to scan |`,
+    codeSnippet: {
+      label: "Healthcare UI token starter with calm brand accents",
+      code: `:root {
+  --surface: #FFFFFF;
+  --surface-subtle: #F6F9FC;
+  --surface-emphasis: #EAF3FB;
+
+  --text-primary: #10243E;
+  --text-secondary: #4A6078;
+  --text-muted: #6F8298;
+
+  --brand-primary: #1F6FB2;
+  --brand-primary-hover: #195C94;
+  --brand-support: #2FA39A;
+
+  --success: #1D7F5F;
+  --warning: #B7791F;
+  --error: #B83240;
+  --focus: #0F62FE;
+
+  --border: #D7E3EE;
+}
+
+.button-primary {
+  background: var(--brand-primary);
+  color: #FFFFFF;
+}
+
+.alert-error {
+  background: #FDECEE;
+  border-left: 4px solid var(--error);
+  color: #7A1F2A;
+}
+
+.card-appointment {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(16, 36, 62, 0.06);
+}`
+    },
+    proTips: [
+      "Keep body text neutral. Let brand blue or teal handle actions, links, and emphasis. Long passages in colored text feel less trustworthy and are harder to read.",
+      "Reserve red for true risk states: abnormal result, billing problem, urgent warning, destructive action. If everything is red, nothing feels urgent.",
+      "Test palettes on forms with realistic stress tasks: book an appointment, refill a prescription, compare a plan, read a lab result. Pretty mockups hide real usability failures.",
+      "For mental health, pediatric, or wellness products, add one humanizing secondary tone such as sage or soft lavender so the interface does not feel like sterile enterprise software.",
+      "Check contrast on muted helper text and disabled states. Healthcare teams often soften the UI so much that important instructions become hard to read on cheap mobile screens."
+    ],
+    keyStat: "Up to 90% of first impressions are influenced by color, according to widely cited CCICOLOR / Seoul International Color Expo research, which explains why trust-sensitive healthcare interfaces need disciplined palette choices.",
+    toolsMention: ["contrast-checker", "palette-generator", "color-picker"]
+  },
+
 
   // ── COLOR PSYCHOLOGY IN MARKETING (3000-word deep dive) ──
   "color-psychology-marketing": {
