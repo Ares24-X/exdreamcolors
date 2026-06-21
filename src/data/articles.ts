@@ -11,6 +11,7 @@ export const articles: Article[] = [
   {"slug":"best-color-picker-tools","title":"Best Color Picker Tools for Designers","desc":"Learn about the best color picker tools — compare features, pricing, and workflows.","cat":"Guides"},
   {"slug":"brand-color-selection","title":"Brand Color Selection","desc":"Learn about strategic brand color selection — how the right colors build trust and recognition.","cat":"Marketing"},
   {"slug":"color-accessibility-guidelines","title":"Color Accessibility Guidelines","desc":"Learn about color accessibility guidelines — WCAG compliance made practical.","cat":"Accessibility"},
+  {"slug":"color-and-memory-retention","title":"Color and Memory Retention","desc":"How color improves recall, recognition, and learning — with practical guidance for educators, marketers, and product teams.","cat":"Color Psychology"},
   {"slug":"color-blind-friendly-palettes","title":"Color Blind Friendly Palettes","desc":"Learn about color blind friendly palettes — design choices that work for everyone.","cat":"Color Palettes"},
   {"slug":"color-code-converter","title":"Color Code Converter Tool","desc":"Learn about color code converter tools — HEX, RGB, HSL conversion explained.","cat":"Technical"},
   {"slug":"color-conversion-rate-optimization","title":"Color Conversion Rate Optimization","desc":"How specific colors affect conversion rates in CTAs, landing pages, and checkout flows — backed by real A/B test data.","cat":"Marketing"},

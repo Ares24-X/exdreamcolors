@@ -278,6 +278,63 @@ Blue dominates at 33% of top brands, concentrated in finance, tech, and healthca
     toolsMention: ["color-picker", "contrast-checker", "palette-generator"],
   },
 
+  "color-and-memory-retention": {
+    intro: `Here's the thing: people rarely remember the exact sentence you wrote, but they do remember the color-coded pattern that helped them understand it. A good color system acts like visual compression for the brain. It reduces search time, groups related ideas, and gives memory a shortcut.
+
+That matters in education, dashboards, onboarding flows, packaging, and marketing. If a learner remembers the green section for action steps, or a shopper remembers the yellow pill bottle cap from the right product line, color has already done its job. The trick is not using more color. The trick is using color with structure.`,
+    sectionFlow: ["foundation", "science", "real_world", "examples", "code", "pro_tips", "tools"],
+    realWorldExamples: `**Google's Material study on recognition is practical, not decorative.** In large interface systems, repeated use of consistent accent colors helps users learn where actions live. Gmail is a simple example: red used to anchor compose actions and notifications, while neutral surfaces carried reading tasks. Users do not remember every button label. They remember where the action color tends to appear.
+
+**Duolingo turns color into a memory lane.** Lesson states, streaks, reward moments, and difficulty cues are color-coded so users can scan progress without rereading every label. Its green success states and color-banded modules lower cognitive load because the user recognizes status from peripheral vision. That matters in a product built around repetition.
+
+**3M Post-it notes are the classic physical-world proof.** The original Canary Yellow note became memorable partly because the color was unusual inside office paperwork dominated by white paper. In product-memory terms, distinct color increased retrieval speed. When people say “the yellow note,” they are using color as a file name.
+
+**University learning research keeps reaching the same conclusion:** color improves recall when it highlights structure, not when it becomes noise. A widely cited study by Dzulkifli and Mustafar in *Malaysian Journal of Medical Sciences* found that color can improve attention and memory performance when used to organize and emphasize relevant information. The gain is not magical. It comes from cueing, grouping, and emotional salience.
+
+**Pharmacy and consumer packaging teams already design for this.** Tylenol, Advil, and other over-the-counter categories often use disciplined color zones to separate product variants. The point is not beauty. The point is faster shelf recognition and lower selection error. If pain relief, cold and flu, nighttime, and children's variants all share one brand but have different color signatures, customers can find the right one faster.
+
+**The New York Times uses restrained accent color in information graphics.** In election maps, COVID charts, and explanatory diagrams, the paper does not color every possible element. It uses color to establish category memory: one hue family for a party, another for the comparison, a neutral lane for context. Readers remember the story because the chart does not force them to relearn the legend every few seconds.
+
+| Context | Best memory use of color | What usually fails |
+| --- | --- | --- |
+| Online course | Keep one hue per module or task type | Recolor every card just to look lively |
+| Dashboard | Reserve strong colors for status and comparison | Five similar blues that users cannot distinguish |
+| Packaging | Give each variant a stable color zone | Using trend colors that change every season |
+| Onboarding flow | Use one action hue repeatedly | Mixing success, action, and info into the same hue |`,
+    codeSnippet: {
+      label: "Build a memory-friendly semantic color map",
+      code: `type MemoryRole = 'action' | 'success' | 'warning' | 'reference' | 'neutral';
+
+const semanticColors: Record<MemoryRole, { hex: string; usage: string }> = {
+  action:   { hex: '#2563EB', usage: 'Primary buttons, next steps, links' },
+  success:  { hex: '#16A34A', usage: 'Completed tasks, positive feedback' },
+  warning:  { hex: '#D97706', usage: 'Caution, expiring items, review needed' },
+  reference:{ hex: '#7C3AED', usage: 'Tips, examples, side notes' },
+  neutral:  { hex: '#475569', usage: 'Body text, labels, non-priority UI' },
+};
+
+function assignLessonColor(sectionType: MemoryRole) {
+  const token = semanticColors[sectionType];
+  return {
+    borderLeft: '4px solid ' + token.hex,
+    badgeBackground: token.hex + '1A',
+    label: token.usage,
+  };
+}
+
+console.log(assignLessonColor('action'));`
+    },
+    proTips: [
+      "Give each semantic job one color. If blue means action on one screen, do not make it warning or decorative on the next screen.",
+      "Use color to group repeated patterns: examples, exercises, alerts, and summaries. Memory improves when the same visual cue keeps the same meaning.",
+      "Do not rely on color alone. Pair it with icons, labels, or position so users with color vision deficiency still get the same cue.",
+      "For learning products, test delayed recall instead of first-click delight. A palette that looks exciting may still hurt retention if every section screams equally loud.",
+      "If you need more than four or five strong colors in one interface, your information architecture is probably doing too much visual work through color."
+    ],
+    keyStat: "A widely cited review by Dzulkifli and Mustafar found that color can improve attention and memory when it is used to emphasize and organize information, which is why structured color systems outperform purely decorative palettes.",
+    toolsMention: ["palette-generator", "contrast-checker", "color-picker"]
+  },
+
   // ── COLOR PALETTE ──
   "color-palette-ideas": {
     intro: `Every designer has a "palette graveyard" — dozens of abandoned color schemes that looked great on Dribbble but fell apart in production. Building a palette that survives the real world means dealing with accessibility scores, dark mode variants, data visualization needs, and that one stakeholder who "just doesn't like purple."
