@@ -60,7 +60,8 @@ export default function GradientGeneratorPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">CSS Gradient Generator</h1>
           <p className="text-lg text-gray-600">
-            Create beautiful CSS gradients with live preview. Linear and radial gradients supported.
+            Generate CSS gradients with live preview, copy-ready code, and practical presets for hero sections,
+            buttons, cards, dashboards, and marketing pages. Linear and radial gradients supported.
           </p>
         </div>
 
@@ -293,6 +294,29 @@ export default function GradientGeneratorPage() {
                     Gradient Text
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* SEO Guide */}
+            <div className="card">
+              <h2 className="text-xl font-semibold mb-4">How to Use This CSS Gradient Generator</h2>
+              <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+                <p>
+                  Use this CSS gradient generator when you need a fast visual way to test backgrounds before adding
+                  them to production code. Pick two colors, adjust the angle, switch between linear and radial output,
+                  then copy the generated CSS directly into your stylesheet or component.
+                </p>
+                <p>
+                  For readable UI, test gradients behind real text before shipping. A good hero background usually
+                  keeps one calm area for the headline, while button gradients need enough contrast against white or
+                  dark labels. If the preview feels noisy, reduce saturation or move the angle closer to 120-150 degrees.
+                </p>
+                <ul className="list-disc pl-5 space-y-2">
+                  <li><strong>Hero sections:</strong> use subtle blue, purple, or slate gradients with a text overlay.</li>
+                  <li><strong>Buttons:</strong> keep the color distance moderate so the label stays readable.</li>
+                  <li><strong>Cards:</strong> combine gradients with padding and shadows for product feature blocks.</li>
+                  <li><strong>Dashboards:</strong> use radial gradients as soft highlight layers behind key metrics.</li>
+                </ul>
               </div>
             </div>
           </div>

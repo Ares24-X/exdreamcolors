@@ -2,12 +2,12 @@ import { Metadata } from 'next';
 import ToolPageContent from '@/components/ToolPageContent';
 
 export const metadata: Metadata = {
-  title: 'Gradient Generator - Create CSS Gradients Online',
-  description: 'Free online CSS gradient generator. Create beautiful linear and radial gradients with live preview. Copy CSS code instantly. No registration required.',
-  keywords: ['gradient generator', 'CSS gradient', 'linear gradient', 'radial gradient', 'gradient maker', 'online gradient tool'],
+  title: 'CSS Gradient Generator - Generate Copy-Ready Gradient Code',
+  description: 'Free online CSS gradient generator for linear and radial backgrounds. Preview colors, adjust angle, and copy production-ready gradient CSS instantly.',
+  keywords: ['css gradient generator', 'css generator gradient', 'gradient generator', 'CSS gradient', 'linear gradient', 'radial gradient', 'gradient maker', 'online gradient tool'],
   openGraph: {
-    title: 'Gradient Generator - Create CSS Gradients Online',
-    description: 'Free CSS gradient generator with live preview. Create linear and radial gradients instantly.',
+    title: 'CSS Gradient Generator - Generate Copy-Ready Gradient Code',
+    description: 'Generate CSS gradients online with live preview and copy-ready code for hero sections, buttons, cards, and UI backgrounds.',
     url: 'https://exdreamcolors.win/gradient-generator/',
     type: 'website',
   },
@@ -19,7 +19,7 @@ export default function GradientGeneratorLayout({ children }: { children: React.
       {children}
       <ToolPageContent
         title="CSS Gradient Generator for Modern Interfaces and Web Projects"
-        description="Build polished backgrounds and visual transitions with this free online gradient generator designed for designers and developers who need fast experimentation and usable CSS output. Create linear or radial gradients in the browser, preview every change instantly, and copy production-friendly code for landing pages, hero sections, buttons, cards, and app surfaces without registration."
+        description="Build polished backgrounds and visual transitions with this free online CSS gradient generator designed for designers and developers who need fast experimentation and usable CSS output. Create linear or radial gradients in the browser, preview every change instantly, and copy production-friendly code for landing pages, hero sections, buttons, cards, and app surfaces without registration."
         howToSteps={[
           'Choose the gradient type and add the colors you want to blend together.',
           'Adjust angle, direction, and stop positions while watching the live preview update.',
