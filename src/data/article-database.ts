@@ -83,6 +83,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "wcag-color-accessibility": { slug: "wcag-color-accessibility", title: "WCAG Accessibility", description: "Learn about wcag accessibility." },
   "wcag-contrast-checker-tool": { slug: "wcag-contrast-checker-tool", title: "WCAG Contrast Checker Tool", description: "Learn about wcag contrast checker tool." },
   "wcag-contrast-checker-for-dark-mode": { slug: "wcag-contrast-checker-for-dark-mode", title: "WCAG Contrast Checker for Dark Mode", description: "Test dark mode text, buttons, and surface pairs against WCAG contrast targets with brand examples and copy-ready code." },
+  "wcag-contrast-checker-for-buttons": { slug: "wcag-contrast-checker-for-buttons", title: "WCAG Contrast Checker for Buttons", description: "Design accessible button color pairs that pass WCAG contrast checks in default, hover, disabled, and focus states." },
   "wcag-contrast-ratio-for-text": { slug: "wcag-contrast-ratio-for-text", title: "WCAG Contrast Ratio for Text", description: "Pick accessible text and background pairs with a practical contrast budget, brand examples, and copy-ready testing code." },
   "web-app-color-best-practices": { slug: "web-app-color-best-practices", title: "Web App Color Best Practices", description: "Learn about web app color best practices." },
   "web-safe-colors-guide": { slug: "web-safe-colors-guide", title: "Web Safe Colors Guide", description: "Understanding web-safe colors, legacy palettes, and ensuring consistent color rendering on any display." },

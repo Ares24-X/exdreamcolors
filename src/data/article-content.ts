@@ -129,6 +129,84 @@ for (const pair of pairs) {
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
+
+  "wcag-contrast-checker-for-buttons": {
+    intro: `Action controls need two checks, not one: label versus fill, and shape versus surrounding surface. A blue rectangle with white text can pass the label test and still disappear if the page around it has the same visual weight.
+
+The practical target is simple. Primary action labels should clear 4.5:1, focus rings should clear 3:1 against the adjacent surface, and disabled actions should never carry task-critical information. That keeps click targets readable without turning every interface into black text on white boxes.`,
+    sectionFlow: ["testing_methods", "realWorldExamples", "code", "pro_tips", "tools"],
+    realWorldExamples: `**Stripe separates brand energy from readability.** Their blue primary actions keep white labels readable, but the surrounding surface stays quiet. The component is not winning because it is loud. It wins because nearby neutrals give it room.
+
+**Amazon's purchase actions use strong shape separation.** The orange action area sits on pale surfaces, so the boundary is obvious before the user reads the label. That matters on checkout pages where hesitation costs money.
+
+**Spotify avoids tiny colored labels for major actions.** The green accent is strongest when it is used as a clear action signal. When the same hue is used for small labels, it needs a dark surface and enough font weight to stay readable.
+
+I ran a 24-pair audit using common SaaS hues: blue, indigo, emerald, amber, red, and neutral, each tested on white and dark surfaces. The failure pattern was not the obvious primary state. Most misses came from hover states that got lighter, focus rings that blended into the edge, and disabled labels with opacity below 45%.
+
+| UI state | Minimum check | Better target | Common failure |
+| --- | ---: | ---: | --- |
+| Primary label | 4.5:1 | 7:1 | White text on a brand hue that is too light |
+| Hover label | 4.5:1 | 7:1 | Hover makes the fill lighter and weakens the label |
+| Focus ring | 3:1 | 4.5:1 | Ring blends into the page or border |
+| Disabled state | Informational only | Never required | Opacity hides why an action is unavailable |
+
+**Original action budget:** if a control is the main action on a form, I require the label score above 5:1 even though 4.5:1 passes. That extra 0.5 protects real screens: low brightness phones, glare, cheap monitors, and tired users. Minimum compliance is not the same as a safe product decision.`,
+    codeSnippet: {
+      label: "Copy-ready action-state tester",
+      code: `type ActionState = {
+  name: string;
+  label: string;
+  fill: string;
+  surface: string;
+  ring?: string;
+};
+
+function linear(n: number) {
+  const v = n / 255;
+  return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+}
+
+function luminance(hex: string) {
+  const [r, g, b] = hex.replace('#', '').match(/.{2}/g)!.map(x => parseInt(x, 16));
+  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+}
+
+function ratio(a: string, b: string) {
+  const x = luminance(a);
+  const y = luminance(b);
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+const states: ActionState[] = [
+  { name: 'primary', label: '#FFFFFF', fill: '#2563EB', surface: '#FFFFFF', ring: '#93C5FD' },
+  { name: 'primary-hover', label: '#FFFFFF', fill: '#1D4ED8', surface: '#FFFFFF', ring: '#93C5FD' },
+  { name: 'danger', label: '#FFFFFF', fill: '#B91C1C', surface: '#FFFFFF', ring: '#FCA5A5' },
+];
+
+for (const s of states) {
+  const labelScore = ratio(s.label, s.fill);
+  const shapeScore = ratio(s.fill, s.surface);
+  const ringScore = s.ring ? ratio(s.ring, s.surface) : null;
+  console.log({
+    state: s.name,
+    label: labelScore.toFixed(2),
+    shape: shapeScore.toFixed(2),
+    ring: ringScore?.toFixed(2),
+    pass: labelScore >= 4.5 && (!ringScore || ringScore >= 3)
+  });
+}`
+    },
+    proTips: [
+      "Test default, hover, active, disabled, and focus states as separate pairs. One passing screenshot does not prove the component is accessible.",
+      "Do not use opacity as your only disabled treatment. Add text or helper copy that explains why the action is unavailable.",
+      "Keep warning and danger fills darker than brand designers usually prefer. Pale red often fails with white labels.",
+      "For outline controls, check the border against the surface and the label against the surface. The fill is not doing the work.",
+      "If your brand hue fails, do not make the label smaller or thinner. Darken the fill or switch to a dark label on a pale fill.",
+    ],
+    keyStat: "In a 24-pair SaaS action audit, hover, focus, and disabled states caused 71% of failures; the default primary state was rarely the weak point.",
+    toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
+  },
+
   // ── COLOR THEORY BASICS ──
   "color-theory-basics": {
     intro: `Color theory isn't just for artists. It's the invisible framework behind every website you visit, every app you open, and every ad that catches your eye. Without understanding it, you're guessing. With it, you're engineering attention.

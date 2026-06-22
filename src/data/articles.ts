@@ -79,6 +79,7 @@ export const articles: Article[] = [
   {"slug":"wcag-color-accessibility","title":"WCAG Accessibility","desc":"Learn about WCAG color accessibility — meet AA and AAA compliance standards.","cat":"Accessibility"},
   {"slug":"wcag-contrast-checker-tool","title":"WCAG Contrast Checker Tool","desc":"Learn about WCAG contrast checker tools — ensure your colors pass accessibility tests.","cat":"Accessibility"},
   {"slug":"wcag-contrast-checker-for-dark-mode","title":"WCAG Contrast Checker for Dark Mode","desc":"Test dark mode text, buttons, and surface pairs against WCAG contrast targets with brand examples and copy-ready code.","cat":"Accessibility"},
+  {"slug":"wcag-contrast-checker-for-buttons","title":"WCAG Contrast Checker for Buttons","desc":"Design accessible button color pairs that pass WCAG checks across default, hover, disabled, and focus states.","cat":"Accessibility"},
   {"slug":"wcag-contrast-ratio-for-text","title":"WCAG Contrast Ratio for Text","desc":"Pick accessible text and background pairs with a practical contrast budget, brand examples, and copy-ready testing code.","cat":"Accessibility"},
   {"slug":"web-app-color-best-practices","title":"Web App Color Best Practices","desc":"Learn about web app color best practices — design interfaces that users love.","cat":"Guides"},
   {"slug":"web-safe-colors-guide","title":"Web Safe Colors Guide","desc":"Understanding web-safe colors, legacy palettes, and ensuring consistent color rendering on any display.","cat":"Technical"},
