@@ -8,6 +8,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "analogous-colors": { slug: "analogous-colors", title: "Analogous Colors", description: "Learn about analogous colors." },
   "android-color-guidelines": { slug: "android-color-guidelines", title: "Android Color Guidelines", description: "Learn about android color guidelines." },
   "best-color-picker-tools": { slug: "best-color-picker-tools", title: "Best Color Picker Tools for Designers", description: "Learn about best color picker tools for designers." },
+  "button-color-ab-testing": { slug: "button-color-ab-testing", title: "Button Color A/B Testing", description: "A data-driven framework for testing CTA button colors with stronger hypotheses, cleaner experiments, and better conversion reads." },
   "brand-color-selection": { slug: "brand-color-selection", title: "Brand Color Selection", description: "Learn about brand color selection." },
   "color-accessibility-guidelines": { slug: "color-accessibility-guidelines", title: "Color Accessibility Guidelines", description: "Learn about color accessibility guidelines." },
   "color-and-memory-retention": { slug: "color-and-memory-retention", title: "Color and Memory Retention", description: "How color improves recall, recognition, and learning — with practical guidance for educators, marketers, and product teams." },

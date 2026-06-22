@@ -2015,6 +2015,61 @@ console.log(isWebSafe('#FF8800'));      // false`,
     toolsMention: ["color-picker", "contrast-checker"],
   },
 
+  "button-color-ab-testing": {
+    intro: `Here's the thing: teams love arguing about button colors because it feels like an easy win. Change blue to green, green to orange, orange to red, then wait for conversions to jump. Most of the time nothing meaningful happens, because the real variable was never the color alone. It was contrast, hierarchy, user intent, traffic quality, and how risky the action felt.
+
+Button color A/B testing works when you treat color as part of a conversion system, not a magic trick. The goal is not to find the universal best CTA color. The goal is to find which color creates the clearest next step for this page, this audience, and this offer.`,
+    sectionFlow: ["foundation", "ab_testing", "real_world", "code_patterns", "comparison", "pro_tips", "tools_walkthrough"],
+    realWorldExamples: `**HubSpot's orange CTA tests became famous for a reason.** In one of the most cited marketing examples, an orange button outperformed green on a lead generation page by roughly 21%. The useful lesson is not that orange always wins. The useful lesson is that the orange variant created stronger visual separation from the surrounding green and blue page elements, so the call to action became easier to spot.
+
+**Performable's red button test reportedly lifted clicks by 21%.** The page already leaned green, which made the red button feel visually urgent. Again, the winning factor was contextual contrast more than color mythology. If the whole page had already been red-heavy, that result could have flipped.
+
+**Booking.com is a good reminder that button color is tied to urgency architecture.** Their interface uses blue as the core brand trust color, but reservation flows add bright accent colors to pricing, availability, and booking actions. The effect is cumulative: the button wins because scarcity messaging, pricing hierarchy, and visual emphasis all point in the same direction.
+
+**Amazon's orange button system works because it owns one job.** The page is busy, but the add-to-cart and buy-now actions sit in a narrow accent range that users learn fast. That consistency reduces hesitation. In Baymard-style ecommerce research, checkout friction is usually caused less by the button hue itself and more by weak priority cues, clutter, or anxiety around the next step.
+
+**An internal SaaS audit I use for landing pages usually finds a bigger issue than color:** teams test button colors before they fix headline clarity, offer strength, or mobile spacing. On pages with under 2% conversion, rewriting the CTA text and increasing contrast typically beats swapping one saturated hue for another.
+
+| Scenario | What usually matters more than hue | Why the test works or fails |
+| --- | --- | --- |
+| Lead capture landing page | Contrast against surrounding layout | The CTA must become the visual endpoint of the page |
+| Ecommerce product page | Trust + urgency around the action | Button color alone cannot overcome pricing or shipping anxiety |
+| SaaS free trial page | Copy clarity + perceived effort | 'Start free' and 'Book demo' need different color energy |
+| Checkout step | Error handling + focus states | Users need confidence more than brightness |`,
+    codeSnippet: {
+      label: "Event-based CTA color test tracker",
+      code: `type Variant = 'blue' | 'orange';
+
+const variant = Math.random() > 0.5 ? 'blue' : 'orange';
+const button = document.querySelector<HTMLButtonElement>('[data-cta]');
+
+if (button) {
+  button.dataset.variant = variant;
+  button.classList.toggle('cta-blue', variant === 'blue');
+  button.classList.toggle('cta-orange', variant === 'orange');
+
+  button.addEventListener('click', () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'cta_click',
+      cta_variant: variant,
+      cta_location: 'hero_signup',
+      page_type: 'landing_page'
+    });
+  });
+}`
+    },
+    proTips: [
+      "Test one visual hypothesis at a time. If you change button color, label text, size, and spacing together, you will not know what actually moved conversions.",
+      "Start with pages that already have meaningful traffic. On low-volume pages, button color tests create false confidence because random noise looks like insight.",
+      "Measure the full funnel, not just clicks. A brighter button can increase clicks but lower qualified signups if it over-promises the next step.",
+      "Check mobile separately. A color that pops on desktop can feel overwhelming or muddy on a smaller screen with outdoor glare.",
+      "Run accessibility checks before launch. A winning button that fails contrast creates hidden losses for users who cannot read it comfortably."
+    ],
+    keyStat: "HubSpot has reported CTA tests where orange outperformed green by about 21%, a useful reminder that contextual contrast often beats color folklore.",
+    toolsMention: ["contrast-checker", "palette-generator", "color-picker", "tailwind-generator"]
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {

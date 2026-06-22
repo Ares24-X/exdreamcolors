@@ -9,6 +9,7 @@ export const articles: Article[] = [
   {"slug":"analogous-colors","title":"Analogous Colors","desc":"Learn about analogous colors — how adjacent colors on the wheel create smooth, harmonious palettes.","cat":"Color Theory"},
   {"slug":"android-color-guidelines","title":"Android Color Guidelines","desc":"Learn about Android color guidelines for Material Design apps and mobile UI consistency.","cat":"Guides"},
   {"slug":"best-color-picker-tools","title":"Best Color Picker Tools for Designers","desc":"Learn about the best color picker tools — compare features, pricing, and workflows.","cat":"Guides"},
+  {"slug":"button-color-ab-testing","title":"Button Color A/B Testing","desc":"A data-driven framework for testing CTA button colors with stronger hypotheses, cleaner experiments, and better conversion reads.","cat":"Marketing"},
   {"slug":"brand-color-selection","title":"Brand Color Selection","desc":"Learn about strategic brand color selection — how the right colors build trust and recognition.","cat":"Marketing"},
   {"slug":"color-accessibility-guidelines","title":"Color Accessibility Guidelines","desc":"Learn about color accessibility guidelines — WCAG compliance made practical.","cat":"Accessibility"},
   {"slug":"color-and-memory-retention","title":"Color and Memory Retention","desc":"How color improves recall, recognition, and learning — with practical guidance for educators, marketers, and product teams.","cat":"Color Psychology"},
