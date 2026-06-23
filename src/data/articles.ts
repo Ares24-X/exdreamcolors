@@ -32,6 +32,7 @@ export const articles: Article[] = [
   {"slug":"color-schemes-for-websites","title":"Color Schemes for Websites","desc":"Learn about color schemes for websites — monochromatic to triadic explained.","cat":"Design Tips"},
   {"slug":"color-temperature-warm-cool","title":"Color Temperature Warm vs Cool","desc":"Learn about color temperature — warm vs cool colors and when to use each.","cat":"Color Theory"},
   {"slug":"color-theory-basics","title":"Color Theory Basics","desc":"Learn color theory basics — the color wheel, relationships, and practical applications.","cat":"Color Theory"},
+  {"slug":"color-theory-for-photographers","title":"Color Theory for Photographers","desc":"How color relationships, white balance, and grading apply to photography — from golden hour warmth to editorial cool tones.","cat":"Guides"},
   {"slug":"color-tools-comparison","title":"Color Tools Comparison","desc":"Compare the best color tools — find the right tool for your workflow.","cat":"Guides"},
   {"slug":"color-trends-2025","title":"Color Trends 2025","desc":"Learn about color trends from 2025 — insights that still shape design today.","cat":"Trends"},
   {"slug":"complementary-colors","title":"Complementary Colors","desc":"Learn about complementary colors — opposites on the wheel that create maximum contrast.","cat":"Color Theory"},

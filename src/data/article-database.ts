@@ -97,6 +97,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "dashboard-color-palette-guide": { slug: "dashboard-color-palette-guide", title: "Dashboard Color Palette Guide", description: "Build neutral-first dashboard palettes with disciplined status colors, chart series separation, dark mode support, and alert systems that go beyond a red dot." },
   "form-validation-color-accessibility": { slug: "form-validation-color-accessibility", title: "Form Validation Color Accessibility Guide", description: "Design form validation colors that users can understand without relying on red alone." },
   "color-mood-board-creation": { slug: "color-mood-board-creation", title: "Color Mood Board Creation", description: "How to build and use color mood boards for design inspiration and client presentations — practical workflow from source gathering to palette extraction." },
+  "color-theory-for-photographers": { slug: "color-theory-for-photographers", title: "Color Theory for Photographers", description: "How color relationships, white balance, and grading apply to photography — from golden hour warmth to editorial cool tones." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);
