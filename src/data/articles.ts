@@ -48,6 +48,7 @@ export const articles: Article[] = [
   {"slug":"gradient-design-trends-2026","title":"Gradient Design Trends 2026","desc":"Modern gradient styles, mesh gradients, and color transitions shaping UI design in 2026.","cat":"Trends"},
   {"slug":"hex-to-rgb-converter","title":"Hex to RGB Converter","desc":"Learn about HEX to RGB conversion — understand color formats used in CSS and design.","cat":"Technical"},
   {"slug":"high-contrast-color-combinations","title":"High Contrast Color Combinations","desc":"Learn about high contrast color combinations — bold designs that still pass WCAG.","cat":"Accessibility"},
+  {"slug":"hsl-vs-hsv-color-models","title":"HSL vs HSV Color Models","desc":"Understand the real differences between HSL and HSV — when each model wins, conversion math, and practical CSS/design tool usage.","cat":"Technical"},
   {"slug":"how-to-choose-website-colors","title":"How to Choose Website Colors","desc":"Learn how to choose website colors — a practical framework for any project.","cat":"Guides"},
   {"slug":"ui-color-hierarchy-guide","title":"UI Color Hierarchy Guide","desc":"Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing.","cat":"Guides"},
   {"slug":"ui-dark-mode-color-strategy","title":"UI Dark Mode Color Strategy","desc":"Designing color systems that work beautifully in both light and dark modes — real strategies from Stripe, Linear, and Vercel.","cat":"Technical"},

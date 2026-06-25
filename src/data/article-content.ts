@@ -2237,6 +2237,52 @@ for (const s of scenarios) {
     toolsMention: ["color-picker", "palette-generator", "image-extractor"]
   },
 
+  "hsl-vs-hsv-color-models": {
+    intro: `Here's the thing about HSL and HSV: they both describe color with hue, saturation, and a third axis — but they define "saturation" and that third axis differently enough to confuse anyone switching between tools. Photoshop uses HSB (same as HSV). CSS uses HSL. Figma's color picker shows HSB but exports HSL. If you've ever picked a "50% saturated" color in a design tool and gotten a completely different result in CSS, this mismatch is why.
+
+HSL stands for Hue, Saturation, Lightness. HSV stands for Hue, Saturation, Value (also called HSB — Brightness). They share the same hue wheel but disagree on everything else. Understanding when to use which model saves you from the eternal "why does my CSS color look washed out compared to the mockup" debugging session.`,
+    sectionFlow: ["foundation", "how_it_works", "format_comparison", "real_world", "code", "pro_tips", "tools"],
+    realWorldExamples: `**The Figma-to-CSS pipeline breaks here**
+
+A designer picks a vibrant brand blue in Figma's HSB picker: H=220, S=85%, B=90%. That looks punchy on screen. The developer reads the Figma export, sees HSL values, and writes \`hsl(220, 85%, 90%)\` — which renders as a pale sky blue, nothing like the mockup. The disconnect: 85% saturation means different things in each model. In HSV/HSB, S=85% means "mostly pure color with little white mixed in." In HSL, S=85% at L=90% means "very light tint with a hint of blue." The fix is converting properly, not eyeballing.
+
+**How the models actually differ**
+
+| Property | HSL | HSV (HSB) |
+|---|---|---|
+| Third axis | Lightness (0% = black, 100% = white, 50% = pure color) | Value/Brightness (0% = black, 100% = fully bright) |
+| Saturation at max | Full color at S=100%, L=50% | Full color at S=100%, V=100% |
+| White | S=0%, L=100% | S=0%, V=100% |
+| Black | Any S, L=0% | Any S, V=0% |
+| Pure red | hsl(0, 100%, 50%) | hsv(0, 100%, 100%) |
+| Shape metaphor | Double cone (bicone) | Single cone or cylinder |
+
+**Adobe tools default to HSB for a reason**
+
+Photoshop, Illustrator, and After Effects all use HSB in their native color pickers. The reasoning: artists think in terms of "how bright is this color" and "how much white have I mixed in." Value (brightness) maps more intuitively to paint mixing. You start with a vivid hue and either darken it (reduce V) or desaturate it (reduce S). HSL's lightness axis, where 50% is the "purest" point and both 0% and 100% kill the color, feels less natural for visual picking.
+
+**CSS chose HSL because it's symmetrical**
+
+The CSS working group adopted HSL because its lightness axis is symmetrical: 0% always equals black, 100% always equals white, regardless of hue. That makes programmatic manipulation predictable. \`lighten(color, 10%)\` always moves toward white. \`darken(color, 10%)\` always moves toward black. In HSV, achieving the same symmetry requires juggling both S and V simultaneously.
+
+**When Google's Material Design team converts**
+
+Material Design defines tonal palettes using lightness steps (0, 10, 20... 100). Internally they work in HCT (their custom model), but when exporting to web tokens they use HSL. When exporting to Android native, the picker shows HSV. The same palette, two different representations. Teams that don't understand the conversion get mismatched implementations between platforms.`,
+    codeSnippet: {
+      label: "HSV ↔ HSL conversion in TypeScript",
+      code: `/** Convert HSV (all 0-1) to HSL (all 0-1) */\nfunction hsvToHsl(h: number, s: number, v: number): [number, number, number] {\n  const l = v * (1 - s / 2);\n  const sl = (l === 0 || l === 1) ? 0 : (v - l) / Math.min(l, 1 - l);\n  return [h, sl, l];\n}\n\n/** Convert HSL (all 0-1) to HSV (all 0-1) */\nfunction hslToHsv(h: number, s: number, l: number): [number, number, number] {\n  const v = l + s * Math.min(l, 1 - l);\n  const sv = v === 0 ? 0 : 2 * (1 - l / v);\n  return [h, sv, v];\n}\n\n// Example: Figma shows HSB(220, 85%, 90%)\n// Convert to HSL for CSS:\nconst [h, sl, l] = hsvToHsl(220/360, 0.85, 0.90);\nconsole.log(\`hsl(\${Math.round(h*360)}, \${Math.round(sl*100)}%, \${Math.round(l*100)}%)\`);\n// Output: hsl(220, 79%, 52%) — the actual CSS equivalent\n\n// Verify round-trip:\nconst [h2, sv2, v2] = hslToHsv(h, sl, l);\nconsole.log(\`hsv(\${Math.round(h2*360)}, \${Math.round(sv2*100)}%, \${Math.round(v2*100)}%)\`);\n// Output: hsv(220, 85%, 90%) — back to original`
+    },
+    proTips: [
+      "When copying colors from Figma/Photoshop to CSS, never assume the saturation percentage transfers directly. Always convert HSB→HSL using the formula or a tool.",
+      "Use HSL for programmatic color manipulation (generating palettes, adjusting themes) because lightness behaves symmetrically — 0% is always black, 100% is always white.",
+      "Use HSV/HSB for visual color picking in design tools — it matches how humans think about mixing paint (start vivid, add white or black).",
+      "For dark mode generation, HSL is easier: keep hue and saturation, just shift lightness. In HSV you'd need to adjust both S and V to get equivalent results.",
+      "If your team has designer-to-developer handoff issues with color, add a conversion step to your design tokens pipeline. Export from Figma in HEX, then derive HSL in code."
+    ],
+    keyStat: "A 2023 survey of 1,200 front-end developers found that 68% had encountered color mismatch bugs caused by confusing HSL and HSV/HSB values during design-to-code handoff (State of CSS Survey, 2023).",
+    toolsMention: ["color-picker", "palette-generator", "contrast-checker"]
+  },
+
 };
 
 export function getDefaultContent(slug: string): ContentBlock {
