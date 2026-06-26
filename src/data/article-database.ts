@@ -19,6 +19,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "color-in-brand-identity": { slug: "color-in-brand-identity", title: "Color in Brand Identity", description: "How to build a cohesive brand color system that carries across every touchpoint without losing recognizability." },
   "color-in-email-design": { slug: "color-in-email-design", title: "Color in Email Design", description: "Email-safe color practices, accessibility, and CTA color optimization for newsletters." },
   "color-in-logo-design": { slug: "color-in-logo-design", title: "Color in Logo Design", description: "How to choose logo colors that communicate brand values and last for decades." },
+  "color-harmony-interior-design": { slug: "color-harmony-interior-design", title: "Color Harmony in Interior Design", description: "Apply color theory to interior spaces — wall pairing rules, undertone matching, and room-by-room palettes that actually work." },
   "color-harmony-principles": { slug: "color-harmony-principles", title: "Color Harmony Principles", description: "Learn about color harmony principles." },
   "color-management-design-systems": { slug: "color-management-design-systems", title: "Color Management in Design Systems", description: "Learn about color management in design systems." },
   "color-meaning-symbolism": { slug: "color-meaning-symbolism", title: "Color Meaning and Symbolism", description: "Learn about color meaning and symbolism." },

@@ -21,6 +21,7 @@ export const articles: Article[] = [
   {"slug":"color-in-logo-design","title":"Color in Logo Design","desc":"How to choose logo colors that communicate brand values, outlast trends, and work across every medium.","cat":"Design Tips"},
   {"slug":"data-visualization-color-guide","title":"Data Visualization Color Guide","desc":"Best color practices for charts, graphs, dashboards, and data storytelling — make your data readable and beautiful.","cat":"Technical"},
   {"slug":"color-design-trends-2026","title":"Color Design Trends 2026","desc":"Learn about color design trends 2026 — what's hot in web and UI design this year.","cat":"Trends"},
+  {"slug":"color-harmony-interior-design","title":"Color Harmony in Interior Design","desc":"Apply color theory to interior spaces — wall pairing rules, undertone matching, and room-by-room palettes that actually work.","cat":"Color Theory"},
   {"slug":"color-harmony-principles","title":"Color Harmony Principles","desc":"Learn about color harmony principles — the foundation of beautiful color combinations.","cat":"Color Theory"},
   {"slug":"color-management-design-systems","title":"Color Management in Design Systems","desc":"Learn about color management in design systems — organize and scale your colors.","cat":"Design Tips"},
   {"slug":"color-meaning-symbolism","title":"Color Meaning and Symbolism","desc":"Learn about color meaning and symbolism — what colors communicate across cultures.","cat":"Color Psychology"},
