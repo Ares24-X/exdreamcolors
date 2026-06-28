@@ -57,6 +57,7 @@ export const articles: Article[] = [
   {"slug":"ios-app-color-guidelines","title":"iOS App Color Guidelines","desc":"Learn about iOS app color guidelines — Apple's Human Interface color principles.","cat":"Guides"},
   {"slug":"landing-page-color-tips","title":"Landing Page Color Tips","desc":"Learn landing page color tips — how to use color to boost conversions.","cat":"Marketing"},
   {"slug":"material-design-colors","title":"Material Design Colors","desc":"Learn about Material Design colors — Google's comprehensive color system explained.","cat":"Design Tips"},
+  {"slug":"material-you-dynamic-color","title":"Material You Dynamic Color","desc":"How Android's Material You extracts wallpaper colors and builds full UI themes — the algorithm, real implementation, and what it means for app design.","cat":"Trends"},
   {"slug":"minimalist-color-palette","title":"Minimalist Color Palette","desc":"Learn about minimalist color palettes — less is more in modern design.","cat":"Color Palettes"},
   {"slug":"micro-interactions-color-feedback","title":"Micro-interactions and Color Feedback","desc":"Use color shifts in buttons, forms, loading states, and confirmations to make interfaces feel faster, clearer, and easier to trust.","cat":"Design Tips"},
   {"slug":"monochromatic-colors","title":"Monochromatic Colors","desc":"Learn about monochromatic colors — variations of a single hue for clean design.","cat":"Color Theory"},
