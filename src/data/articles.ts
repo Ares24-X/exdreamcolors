@@ -18,6 +18,7 @@ export const articles: Article[] = [
   {"slug":"color-conversion-rate-optimization","title":"Color Conversion Rate Optimization","desc":"How specific colors affect conversion rates in CTAs, landing pages, and checkout flows — backed by real A/B test data.","cat":"Marketing"},
   {"slug":"color-in-brand-identity","title":"Color in Brand Identity","desc":"How top brands build cohesive color systems that stay recognizable and trustworthy across every channel.","cat":"Design Tips"},
   {"slug":"color-in-email-design","title":"Color in Email Design","desc":"Email-safe color practices, accessibility, and CTA color optimization for newsletters.","cat":"Design Tips"},
+  {"slug":"color-in-game-design","title":"Color in Game Design","desc":"How top studios use color for wayfinding, mood, threat signaling, and player guidance in video games.","cat":"Design Tips"},
   {"slug":"color-in-logo-design","title":"Color in Logo Design","desc":"How to choose logo colors that communicate brand values, outlast trends, and work across every medium.","cat":"Design Tips"},
   {"slug":"data-visualization-color-guide","title":"Data Visualization Color Guide","desc":"Best color practices for charts, graphs, dashboards, and data storytelling — make your data readable and beautiful.","cat":"Technical"},
   {"slug":"color-design-trends-2026","title":"Color Design Trends 2026","desc":"Learn about color design trends 2026 — what's hot in web and UI design this year.","cat":"Trends"},

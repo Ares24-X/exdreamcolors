@@ -102,6 +102,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "color-mood-board-creation": { slug: "color-mood-board-creation", title: "Color Mood Board Creation", description: "How to build and use color mood boards for design inspiration and client presentations — practical workflow from source gathering to palette extraction." },
   "color-theory-for-photographers": { slug: "color-theory-for-photographers", title: "Color Theory for Photographers", description: "How color relationships, white balance, and grading apply to photography — from golden hour warmth to editorial cool tones." },
   "material-you-dynamic-color": { slug: "material-you-dynamic-color", title: "Material You Dynamic Color", description: "How Android's Material You extracts wallpaper colors and builds full UI themes — the algorithm, real implementation, and what it means for app design." },
+  "color-in-game-design": { slug: "color-in-game-design", title: "Color in Game Design", description: "How top studios use color for wayfinding, mood setting, threat signaling, and player guidance in video games — with examples from Nintendo, FromSoftware, Supergiant, and Valve." },
 };
 
 export const articleSlugs = Object.keys(articleDatabase);
