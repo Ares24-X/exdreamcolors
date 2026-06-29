@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ArticleSeoLinks from "@/components/ArticleSeoLinks";
 import { articleDatabase, articleSlugs } from "@/data/article-database";
 import { articleContent, getDefaultContent, type ContentBlock } from "@/data/article-content";
 import { notFound } from "next/navigation";
@@ -77,6 +78,8 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </div>
         </section>
       )}
+
+      <ArticleSeoLinks slug={params.slug} />
 
       {/* Related links */}
       <footer className="mt-16 pt-8 border-t border-slate-200">

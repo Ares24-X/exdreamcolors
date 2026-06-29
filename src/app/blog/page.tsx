@@ -55,6 +55,17 @@ export default function BlogPage() {
           </p>
         </div>
 
+        <section className="mb-10 rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left">
+          <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-2">Start here</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Color Accessibility Hub</h2>
+          <p className="text-gray-700 mb-4">
+            A practical path through WCAG contrast, accessible palettes, form validation colors, dashboards, and color tokens.
+          </p>
+          <Link href="/color-accessibility-hub/" className="inline-flex rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 transition-colors">
+            Open the hub →
+          </Link>
+        </section>
+
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-2 mb-10">
           {CATEGORIES.map((cat) => {
