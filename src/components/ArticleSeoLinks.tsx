@@ -11,6 +11,7 @@ const toolLinks = [
 ];
 
 const hubs = [
+  { href: "/color-accessibility-hub/", title: "Color Accessibility Hub", match: ["contrast", "wcag", "accessibility", "color blind", "form", "validation", "dark mode"] },
   { href: "/color-accessibility-guidelines/", title: "Color Accessibility Guide", match: ["contrast", "wcag", "accessibility", "color blind", "form", "validation"] },
   { href: "/color-palette-generator-free/", title: "Color Palette Generator Guide", match: ["palette", "harmony", "brand", "mood", "seasonal"] },
   { href: "/css-color-variables/", title: "CSS Color Variables Guide", match: ["css", "token", "tailwind", "oklch", "developer"] },
