@@ -861,21 +861,34 @@ Choose wrong, and you're locked into a mistake for years. Choose right, and your
     intro: `Designing for color blindness is not "designing for a small minority." 300 million people worldwide are color blind. That's the entire population of the United States. More specifically: 8% of men and 0.5% of women have some form of color vision deficiency.
 
 The brutal reality: if your design uses red/green to communicate ANYTHING (errors/success, buy/sell, hot/cold), you're failing ~5% of your male users. Here's how to fix it.`,
-    sectionFlow: ["types_of_cvd", "simulation", "design_patterns", "testing_tools"],
+    sectionFlow: ["types_of_cvd", "safe_pairs", "simulation", "design_patterns", "testing_tools"],
     realWorldExamples: `**Trevor Henderson's redesign of UK traffic lights** added shape-coding: green = circle, yellow = triangle, red = square. Color-blind drivers could identify the signal by shape alone. This is the gold standard for inclusive design.
 
 **Trello's color-blind mode** replaces their default color labels with pattern overlays (stripes, dots, crosshatch) in addition to color. Users can toggle it in settings. The feature was built in a 2-day hackathon by a single engineer who was color-blind.
 
-**Financial trading platforms** (Bloomberg Terminal, Robinhood) use directional arrows ↑↓ alongside red/green color coding, because a significant percentage of traders are color-blind men.`,
+**Financial trading platforms** (Bloomberg Terminal, Robinhood) use directional arrows ↑↓ alongside red/green color coding, because a significant percentage of traders are color-blind men.
+
+**Safe color pairs that work for all CVD types:**
+| Pair | Deuteranopia | Protanopia | Tritanopia |
+|------|:---:|:---:|:---:|
+| Blue #2563eb + Orange #ea580c | ✓ | ✓ | ✓ |
+| Blue #1d4ed8 + Yellow #ca8a04 | ✓ | ✓ | ✓ |
+| Purple #7c3aed + Yellow #eab308 | ✓ | ✓ | ✓ |
+| Dark blue #1e3a5f + Light gray #d1d5db | ✓ | ✓ | ✓ |
+| Red #dc2626 + Blue #2563eb | ✓ | ✓ | ✗ |
+| Green #16a34a + Red #dc2626 | ✗ | ✗ | ✓ |`,
     codeSnippet: {
-      label: "Accessible status indicators (don't rely on color alone)",
-      code: `/* BAD: Color-only error */\n.status { color: red; } /* Invisible to deuteranopes */\n\n/* GOOD: Color + icon + text */\n.status-error { color: #dc2626; }\n.status-error::before { content: "✕ "; font-weight: bold; }`,
+      label: "Accessible status indicators with redundant signals",
+      code: `/* BAD: Color-only error */\n.status { color: red; } /* Invisible to deuteranopes */\n\n/* GOOD: Color + icon + text + shape */\n.status-error {\n  color: #dc2626;\n  border-left: 4px solid currentColor;\n}\n.status-error::before {\n  content: "✕ Error: ";\n  font-weight: bold;\n}\n.status-success {\n  color: #16a34a;\n  border-left: 4px solid currentColor;\n}\n.status-success::before {\n  content: "✓ Success: ";\n  font-weight: bold;\n}\n\n/* Accessible chart pattern fills (SVG) */\n.series-1 { fill: #2563eb; }\n.series-2 { fill: #ea580c; fill-opacity: 1;\n  background-image: url("data:image/svg+xml,..."); /* diagonal lines */ }`,
     },
     proTips: [
       "Never use red-green alone for status. Always add an icon, text label, or pattern.",
       "Chrome DevTools → Rendering → 'Emulate vision deficiencies' lets you simulate protanopia, deuteranopia, and tritanopia in real-time.",
       "Blue-orange is the most universally accessible color pair. If your palette must work for color-blind users, default to blue + orange.",
+      "Pre-ship checklist: 1) Simulate all 3 CVD types in DevTools, 2) Check that every status/state is distinguishable without color, 3) Verify charts have labels or patterns alongside hue, 4) Test with Sim Daltonism (Mac) or Color Oracle (Windows).",
+      "For data visualization, space hues at least 30° apart in OKLCH and vary lightness by 20%+ between adjacent series.",
     ],
+    keyStat: "8% of men (1 in 12) have red-green color blindness. In a 50-person company, statistically 2 male employees cannot distinguish your red error states from green success states.",
     toolsMention: ["contrast-checker", "palette-generator"],
   },
 
