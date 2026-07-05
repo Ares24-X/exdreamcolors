@@ -16,7 +16,9 @@ export const articleContent: Record<string, ContentBlock> = {
   "wcag-contrast-ratio-for-text": {
     intro: `Most text fails accessibility because teams choose brand hues before they choose reading roles. Start with a readability budget: body copy needs 4.5:1 or better, large headings need 3:1 or better, and tiny muted labels should not be used for important information.
 
-The practical fix is not to make every interface black and white. The fix is to separate brand expression from reading jobs. Let the logo stay expressive. Let body copy, helper text, buttons, and error states follow a measurable system.` ,
+The practical fix is not to make every interface black and white. The fix is to separate brand expression from reading jobs. Let the logo stay expressive. Let body copy, helper text, buttons, and error states follow a measurable system.
+
+Use the [Contrast Checker](/contrast-checker/) to validate your text tokens against real surfaces. For the full accessibility picture — forms, charts, dark mode, and color blindness — see the [Color Accessibility Hub](/color-accessibility-hub/).` ,
     sectionFlow: ["realWorldExamples", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe keeps brand blue away from long-form body copy.** Their product pages use vivid blue for accents and actions, but paragraph text sits in a dark neutral range. That split keeps the brand recognizable without forcing blue to do a reading job it was not designed for.
 
@@ -248,7 +250,9 @@ console.table(
   "wcag-contrast-checker-for-buttons": {
     intro: `Action controls need two checks, not one: label versus fill, and shape versus surrounding surface. A blue rectangle with white text can pass the label test and still disappear if the page around it has the same visual weight.
 
-The practical target is simple. Primary action labels should clear 4.5:1, focus rings should clear 3:1 against the adjacent surface, and disabled actions should never carry task-critical information. That keeps click targets readable without turning every interface into black text on white boxes.`,
+The practical target is simple. Primary action labels should clear 4.5:1, focus rings should clear 3:1 against the adjacent surface, and disabled actions should never carry task-critical information. That keeps click targets readable without turning every interface into black text on white boxes.
+
+Test your button pairs now with the [Contrast Checker](/contrast-checker/). For related guides on text, forms, and dark mode buttons, see the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["testing_methods", "realWorldExamples", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe separates brand energy from readability.** Their blue primary actions keep white labels readable, but the surrounding surface stays quiet. The component is not winning because it is loud. It wins because nearby neutrals give it room.
 
@@ -557,7 +561,7 @@ This guide skips the theory and focuses on the stuff that actually breaks palett
 
 Accessibility is not charity work. It is engineering. In the EU, Canada, the US (government and private sector), and Australia, color contrast failures are now litigated. The Web Content Accessibility Guidelines (WCAG) 2.2 define clear, measurable standards: specific ratios for text, UI components, graphical objects, and focus indicators.
 
-This guide covers the exact ratios you need to hit, which legal frameworks apply to your market, how to audit your existing palette, and the design patterns that fix failures without making everything grayscale.`,
+This guide covers the exact ratios you need to hit, which legal frameworks apply to your market, how to audit your existing palette, and the design patterns that fix failures without making everything grayscale. Start testing your palette with the [Contrast Checker](/contrast-checker/), and explore the full set of accessibility guides in the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["why_it_matters", "wcag_levels", "testing_methods", "fixing_issues", "pro_tips", "tools"],
     realWorldExamples: `**Domino's Pizza lost a Supreme Court case (2019)** over website accessibility. A blind customer could not order pizza online. The Court refused to hear Domino's appeal, confirming that the ADA applies to websites. Domino's had to rebuild their entire ordering system and now maintains a dedicated accessibility team.
 
@@ -1084,7 +1088,9 @@ Choose wrong, and you're locked into a mistake for years. Choose right, and your
   "color-blind-friendly-palettes": {
     intro: `Designing for color blindness is not "designing for a small minority." 300 million people worldwide are color blind. That's the entire population of the United States. More specifically: 8% of men and 0.5% of women have some form of color vision deficiency.
 
-The brutal reality: if your design uses red/green to communicate ANYTHING (errors/success, buy/sell, hot/cold), you're failing ~5% of your male users. Here's how to fix it.`,
+The brutal reality: if your design uses red/green to communicate ANYTHING (errors/success, buy/sell, hot/cold), you're failing ~5% of your male users. Here's how to fix it.
+
+Validate your palette choices with the [Contrast Checker](/contrast-checker/) and browse all color accessibility resources in the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["types_of_cvd", "safe_pairs", "simulation", "design_patterns", "testing_tools"],
     realWorldExamples: `**Trevor Henderson's redesign of UK traffic lights** added shape-coding: green = circle, yellow = triangle, red = square. Color-blind drivers could identify the signal by shape alone. This is the gold standard for inclusive design.
 
@@ -2005,7 +2011,7 @@ A single red icon on a dense dashboard is invisible to colorblind users and easy
 
 I audited 40 checkout and signup forms across SaaS, e-commerce, and government sites. 62% relied on red borders alone for error indication. Of those, 78% failed WCAG 2.2 SC 1.4.1 (Use of Color) because the border was the only differentiator between valid and invalid states. The fix is straightforward: pair color with text, icons, and spatial cues so no single channel carries the entire message.
 
-Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing.`,
+Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing. Check your error/success token pairs with the [Contrast Checker](/contrast-checker/). For the broader accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["real_world", "code", "pro_tips"],
     realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (7.8:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
 
@@ -2714,7 +2720,9 @@ Material Design defines tonal palettes using lightness steps (0, 10, 20... 100).
   "accessible-data-visualization": {
     intro: `Around 8% of men and 0.5% of women have some form of color vision deficiency. That is roughly 1 in 12 male users looking at your dashboard right now. If the only way to tell "revenue up" from "revenue down" is green versus red, those users are guessing.
 
-The fix is not to remove color. Color still helps the majority. The fix is to never let color do the job alone. Pair it with shape, pattern, label, or position so the meaning survives even when the hue disappears. This guide covers practical techniques for line charts, bar charts, pie charts, maps, and status indicators — with code you can drop into D3, Chart.js, or plain SVG.`,
+The fix is not to remove color. Color still helps the majority. The fix is to never let color do the job alone. Pair it with shape, pattern, label, or position so the meaning survives even when the hue disappears. This guide covers practical techniques for line charts, bar charts, pie charts, maps, and status indicators — with code you can drop into D3, Chart.js, or plain SVG.
+
+Verify your chart palette separations with the [Contrast Checker](/contrast-checker/). For related guides on forms, buttons, and dark mode, see the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["foundation", "simulation", "real_world", "code", "testing", "pro_tips", "tools"],
     realWorldExamples: `**Google Maps stopped relying on red/green pins for traffic.** They shifted to a red-yellow-green gradient with distinct lightness steps, and added line thickness changes on routes. A deuteranopic user can still distinguish heavy traffic from light traffic by brightness alone. Google reported a 23% improvement in correct route selection among colorblind beta testers after the redesign.
 
