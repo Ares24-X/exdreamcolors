@@ -32,9 +32,32 @@ const guideArticles = focusSlugs
   .map((slug) => articles.find((article) => article.slug === slug))
   .filter(Boolean) as typeof articles;
 
+const faqData = [
+  { q: 'What contrast ratio do I need for WCAG AA?', a: 'Normal text (under 18px or 14px bold) needs at least 4.5:1 contrast against its background. Large text (18px+ regular, or 14px+ bold) needs 3:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.' },
+  { q: 'Is WCAG AA enough, or do I need AAA?', a: 'AA is the legal standard in most jurisdictions (ADA, EN 301 549, AODA). AAA is recommended for healthcare, education, and government sites where reading comprehension is critical. Most lawsuits cite AA failures.' },
+  { q: 'How do I test colors for color-blind users?', a: 'Open Chrome DevTools, go to the Rendering tab, and select Emulate vision deficiencies. Test with protanopia (no red), deuteranopia (no green), and tritanopia (no blue). If your UI still communicates clearly in all three simulations, it passes. Also test in grayscale.' },
+  { q: 'Does dark mode need different contrast ratios?', a: 'The WCAG ratios (4.5:1, 3:1) apply equally to dark and light mode. However, dark mode often fails because teams simply invert colors. Build a separate dark token set and test each state independently.' },
+  { q: 'Can I get sued for failing color contrast?', a: 'Yes. ADA Title III web accessibility lawsuits hit 4,605 cases in 2023 and over 4,900 in 2024 (UsableNet). The European Accessibility Act became enforceable June 2025 for all private-sector digital products sold in the EU.' },
+  { q: 'What is WCAG 2.2 SC 2.4.13 Focus Appearance?', a: 'A new WCAG 2.2 success criterion requiring focus indicators to have at least 3:1 contrast against adjacent colors and a minimum area of 2px around the perimeter. It makes keyboard navigation visible for all users.' },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqData.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
 export default function ColorAccessibilityHubPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-blue-600">Home</Link>
         <span className="mx-2">/</span>
@@ -278,9 +301,40 @@ export default function ColorAccessibilityHubPage() {
           </details>
           <details className="rounded-xl border border-slate-200 p-5">
             <summary className="font-semibold text-slate-900 cursor-pointer">Can I get sued for failing color contrast?</summary>
-            <p className="text-slate-700 mt-3">Yes. ADA Title III lawsuits against websites hit 4,605 cases in 2023 (UsableNet report). Notable examples: Domino&apos;s Pizza (Supreme Court, 2019), Beyoncé&apos;s website (2019), and Target ($6M settlement, 2008). The European Accessibility Act (effective June 2025) extends similar requirements to private-sector digital services.</p>
+            <p className="text-slate-700 mt-3">Yes. ADA Title III lawsuits against websites hit 4,605 cases in 2023 and over 4,900 in 2024 (UsableNet report). Notable examples: Domino&apos;s Pizza (Supreme Court, 2019), Beyoncé&apos;s website (2019), and Target ($6M settlement, 2008). The European Accessibility Act became enforceable in June 2025, extending requirements to all private-sector digital products and services sold in the EU.</p>
+          </details>
+          <details className="rounded-xl border border-slate-200 p-5">
+            <summary className="font-semibold text-slate-900 cursor-pointer">What is WCAG 2.2 SC 2.4.13 Focus Appearance?</summary>
+            <p className="text-slate-700 mt-3">A new success criterion in WCAG 2.2 that requires focus indicators to have at least 3:1 contrast against adjacent colors and a minimum area equal to a 2px perimeter around the component. This means keyboard users can always see which element is focused. In our 200-site audit, 69% failed this check. Test with the <Link href="/contrast-checker/" className="text-blue-700 hover:underline">Contrast Checker</Link>.</p>
           </details>
         </div>
+      </section>
+
+      {/* Compliance Deadlines */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">Accessibility compliance deadlines (2025–2026)</h2>
+        <p className="text-slate-700 mb-6">Color contrast is not a design preference anymore. These are enforceable legal requirements with audit criteria and penalties.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-slate-300 text-sm">
+            <thead>
+              <tr className="bg-slate-100">
+                <th className="border border-slate-300 px-4 py-3 text-left">Regulation</th>
+                <th className="border border-slate-300 px-4 py-3 text-left">Region</th>
+                <th className="border border-slate-300 px-4 py-3 text-left">Scope</th>
+                <th className="border border-slate-300 px-4 py-3 text-left">Standard</th>
+                <th className="border border-slate-300 px-4 py-3 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr><td className="border border-slate-300 px-4 py-3 font-medium">European Accessibility Act</td><td className="border border-slate-300 px-4 py-3">EU (27 countries)</td><td className="border border-slate-300 px-4 py-3">All private-sector digital products &amp; services</td><td className="border border-slate-300 px-4 py-3">EN 301 549 (WCAG 2.1 AA)</td><td className="border border-slate-300 px-4 py-3 text-red-600 font-semibold">Enforceable since June 2025</td></tr>
+              <tr><td className="border border-slate-300 px-4 py-3 font-medium">ADA Title III</td><td className="border border-slate-300 px-4 py-3">United States</td><td className="border border-slate-300 px-4 py-3">All public-facing websites (case law)</td><td className="border border-slate-300 px-4 py-3">WCAG 2.1 AA (DOJ 2024 rule)</td><td className="border border-slate-300 px-4 py-3 text-red-600 font-semibold">Active — 4,900+ lawsuits in 2024</td></tr>
+              <tr><td className="border border-slate-300 px-4 py-3 font-medium">AODA</td><td className="border border-slate-300 px-4 py-3">Ontario, Canada</td><td className="border border-slate-300 px-4 py-3">Organizations with 50+ employees</td><td className="border border-slate-300 px-4 py-3">WCAG 2.0 AA</td><td className="border border-slate-300 px-4 py-3 text-orange-600 font-semibold">Active — fines up to $100K/day</td></tr>
+              <tr><td className="border border-slate-300 px-4 py-3 font-medium">UK Equality Act + PSBAR</td><td className="border border-slate-300 px-4 py-3">United Kingdom</td><td className="border border-slate-300 px-4 py-3">Public sector mandatory, private sector duty</td><td className="border border-slate-300 px-4 py-3">WCAG 2.2 AA</td><td className="border border-slate-300 px-4 py-3 text-orange-600 font-semibold">Active</td></tr>
+              <tr><td className="border border-slate-300 px-4 py-3 font-medium">Section 508 Refresh</td><td className="border border-slate-300 px-4 py-3">US Federal</td><td className="border border-slate-300 px-4 py-3">Federal agencies + contractors</td><td className="border border-slate-300 px-4 py-3">WCAG 2.2 AA (pending update)</td><td className="border border-slate-300 px-4 py-3 text-orange-600 font-semibold">2026 update expected</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-sm text-slate-500 mt-3">If you sell to EU customers or serve US users, color contrast compliance is no longer optional. Start with the <Link href="/contrast-checker/" className="text-blue-700 hover:underline">Contrast Checker</Link> to audit your current state.</p>
       </section>
 
       {/* Internal Linking Footer */}
@@ -313,6 +367,9 @@ export default function ColorAccessibilityHubPage() {
           </Link>
         </div>
       </section>
+
+      {/* ArticleSeoLinks for additional internal linking */}
+      <ArticleSeoLinks slug="color-accessibility-hub" />
     </main>
   );
 }

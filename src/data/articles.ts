@@ -6,6 +6,7 @@ export interface Article {
 }
 
 export const articles: Article[] = [
+  {"slug":"color-accessibility-hub","title":"Color Accessibility Hub","desc":"A practical hub for color accessibility: WCAG contrast checks, accessible palettes, form validation colors, dashboard color systems, and design tokens.","cat":"Accessibility"},
   {"slug":"analogous-colors","title":"Analogous Colors","desc":"Learn about analogous colors — how adjacent colors on the wheel create smooth, harmonious palettes.","cat":"Color Theory"},
   {"slug":"android-color-guidelines","title":"Android Color Guidelines","desc":"Learn about Android color guidelines for Material Design apps and mobile UI consistency.","cat":"Guides"},
   {"slug":"best-color-picker-tools","title":"Best Color Picker Tools for Designers","desc":"Learn about the best color picker tools — compare features, pricing, and workflows.","cat":"Guides"},
