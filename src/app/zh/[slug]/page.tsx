@@ -158,6 +158,17 @@ function ZhSectionRenderer({ type, content, index }: { type: string; content: Co
     );
   }
 
+  // Use testingMethods content for testing-related sections
+  if (type === "testing_methods" || type === "testing" || type === "simulation" || type === "wcag_levels") {
+    return (
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">{label}</h2>
+        <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(content.testingMethods || content.realWorldExamples || "") }} />
+      </section>
+    );
+  }
+
   return (
     <section className="mb-10">
       <h2 className="text-2xl font-bold text-slate-900 mb-4">{label}</h2>

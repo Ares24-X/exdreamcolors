@@ -163,7 +163,7 @@ function SectionRenderer({ type, content, index }: { type: string; content: Cont
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Testing & Standards</h2>
           <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.realWorldExamples) }} />
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.testingMethods || content.realWorldExamples) }} />
         </section>
       );
 
