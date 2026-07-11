@@ -6,7 +6,7 @@ import ArticleSeoLinks from '@/components/ArticleSeoLinks';
 export const metadata: Metadata = {
   title: 'Color Accessibility Hub: WCAG Contrast, Forms, Dashboards, and Tokens',
   description: 'A practical hub for color accessibility: WCAG contrast checks, accessible palettes, form validation colors, dashboard color systems, and design tokens.',
-  keywords: ['color accessibility', 'WCAG contrast checker', 'accessible color palette', '508 color contrast checker', 'dashboard color accessibility'],
+  keywords: ['color accessibility', 'WCAG contrast checker', 'accessible color palette', '508 color contrast checker', 'dashboard color accessibility', 'WCAG 3.0 APCA contrast', 'color accessibility audit 2026'],
   openGraph: {
     title: 'Color Accessibility Hub: WCAG Contrast, Forms, Dashboards, and Tokens',
     description: 'Practical color accessibility guides and free tools for WCAG contrast, palettes, forms, dashboards, and tokens.',
@@ -37,9 +37,10 @@ const faqData = [
   { q: 'Is WCAG AA enough, or do I need AAA?', a: 'AA is the legal standard in most jurisdictions (ADA, EN 301 549, AODA). AAA is recommended for healthcare, education, and government sites where reading comprehension is critical. Most lawsuits cite AA failures.' },
   { q: 'How do I test colors for color-blind users?', a: 'Open Chrome DevTools, go to the Rendering tab, and select Emulate vision deficiencies. Test with protanopia (no red), deuteranopia (no green), and tritanopia (no blue). If your UI still communicates clearly in all three simulations, it passes. Also test in grayscale.' },
   { q: 'Does dark mode need different contrast ratios?', a: 'The WCAG ratios (4.5:1, 3:1) apply equally to dark and light mode. However, dark mode often fails because teams simply invert colors. Build a separate dark token set and test each state independently.' },
-  { q: 'Can I get sued for failing color contrast?', a: 'Yes. ADA Title III web accessibility lawsuits hit 4,605 cases in 2023 and over 4,900 in 2024 (UsableNet). The European Accessibility Act became enforceable June 2025 for all private-sector digital products sold in the EU. In 2025, EAA enforcement actions began with fines up to 5% of annual revenue for non-compliant digital products.' },
+  { q: 'Can I get sued for failing color contrast?', a: 'Yes. ADA Title III web accessibility lawsuits hit 4,605 cases in 2023, over 4,900 in 2024, and are projected above 5,200 in 2025 (UsableNet). The European Accessibility Act became enforceable June 2025 for all private-sector digital products sold in the EU. First EAA enforcement fines were issued in Q1 2026, with penalties up to 5% of annual revenue.' },
   { q: 'What is WCAG 2.2 SC 2.4.13 Focus Appearance?', a: 'A new WCAG 2.2 success criterion requiring focus indicators to have at least 3:1 contrast against adjacent colors and a minimum area equal to a 2px perimeter around the component. It makes keyboard navigation visible for all users.' },
   { q: 'How do I make data visualizations accessible?', a: 'Never rely on color alone to convey meaning. Use lightness-separated palettes (minimum 20 OKLCH points between series), add pattern fills for print, direct-label chart lines when possible, and include shape markers. Test all charts through protanopia, deuteranopia, and tritanopia simulations in Chrome DevTools.' },
+  { q: 'What is APCA and how does it differ from WCAG 2 contrast?', a: 'APCA (Accessible Perceptual Contrast Algorithm) is the contrast model being developed for WCAG 3.0. Unlike WCAG 2 which uses a single ratio for text regardless of polarity, APCA accounts for text size, weight, and whether light text is on dark or dark text is on light. APCA values range from 0 to ~108 (Lc notation). Body text needs Lc 75+, large headings Lc 60+, and non-text elements Lc 45+. WCAG 3.0 is still in draft and not yet enforceable.' },
 ];
 
 const jsonLd = {
@@ -277,6 +278,69 @@ export default function ColorAccessibilityHubPage() {
   return ((Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05)).toFixed(2);
 }
 // Usage: contrastRatio('#1a1a2e', '#ffffff') → "16.57"`}</pre>
+        </div>
+      </section>
+
+      {/* WCAG 3.0 / APCA Preview */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">WCAG 3.0 and APCA: what changes for contrast</h2>
+        <p className="text-slate-700 mb-4">WCAG 3.0 (still in Working Draft as of mid-2026) replaces the simple luminance ratio with APCA — the Accessible Perceptual Contrast Algorithm. Here is what designers need to know now:</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 mb-4">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-slate-900">Dimension</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">WCAG 2.2 (current)</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">WCAG 3.0 / APCA (draft)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr><td className="px-4 py-3 font-medium">Metric</td><td className="px-4 py-3">Luminance contrast ratio (1:1 – 21:1)</td><td className="px-4 py-3">Lc value (0 – ~108), polarity-aware</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Text size sensitivity</td><td className="px-4 py-3">Two thresholds only (normal vs large)</td><td className="px-4 py-3">Continuous scale: size × weight → required Lc</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Dark-on-light vs light-on-dark</td><td className="px-4 py-3">Same ratio required for both</td><td className="px-4 py-3">Different thresholds: light text on dark needs higher Lc</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Body text minimum</td><td className="px-4 py-3">4.5:1</td><td className="px-4 py-3">Lc 75+ (roughly equivalent to 7:1 for dark-on-light)</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Large heading minimum</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3">Lc 60+ (accounts for weight and size together)</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Non-text / UI components</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3">Lc 45+ (icons, borders, focus rings)</td></tr>
+              <tr><td className="px-4 py-3 font-medium">Legal status</td><td className="px-4 py-3 text-green-700 font-semibold">Enforceable standard</td><td className="px-4 py-3 text-orange-600 font-semibold">Working Draft — not enforceable yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="rounded-xl bg-amber-50 border border-amber-200 p-5">
+          <p className="text-amber-900 font-semibold mb-2">Practical advice for today:</p>
+          <ul className="text-amber-800 text-sm space-y-1 list-disc list-inside">
+            <li>Keep meeting WCAG 2.2 AA — it is the enforceable standard in all jurisdictions.</li>
+            <li>If you already target 7:1 for body text, you will likely pass APCA Lc 75 without changes.</li>
+            <li>Start testing dark mode more carefully — APCA penalizes light-on-dark harder than WCAG 2.2 does.</li>
+            <li>Use the <Link href="/contrast-checker/" className="text-amber-900 font-semibold hover:underline">Contrast Checker</Link> for WCAG 2.2 compliance today.</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* Contrast Failure Decision Tree */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">Which WCAG criterion did you fail? Quick diagnosis</h2>
+        <p className="text-slate-700 mb-6">Use this decision tree when an audit flags a color contrast issue. Identify the element type, then look up the exact criterion and fix.</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-slate-900">Element</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Criterion</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Minimum</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Fix guide</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr><td className="px-4 py-3">Body text, labels, captions</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">4.5:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Large headings (≥18px)</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Button text on button bg</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">4.5:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Button shape vs page surface</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.11</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Focus ring / indicator</td><td className="px-4 py-3 font-mono text-xs">SC 2.4.13</td><td className="px-4 py-3">3:1 + 2px area</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Form error uses color only</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.1</td><td className="px-4 py-3">2+ non-color signals</td><td className="px-4 py-3"><Link href="/form-validation-color-accessibility/" className="text-blue-700 hover:underline">Form validation guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Chart series same brightness</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.1 + 1.4.11</td><td className="px-4 py-3">Pattern / label / shape</td><td className="px-4 py-3"><Link href="/accessible-data-visualization/" className="text-blue-700 hover:underline">Data viz guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Dark mode text too dim</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">4.5:1 on dark bg</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 hover:underline">Dark mode guide</Link></td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
