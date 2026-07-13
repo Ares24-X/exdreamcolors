@@ -49,7 +49,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "gradient-design-trends-2026": { slug: "gradient-design-trends-2026", title: "Gradient Design Trends 2026", description: "Modern gradient styles, mesh gradients, and color transitions shaping UI design in 2026." },
   "gradient-generator-guide": { slug: "gradient-generator-guide", title: "Gradient Generator Guide", description: "Learn how to use Gradient Generator Guide effectively." },
   "hex-to-rgb-converter": { slug: "hex-to-rgb-converter", title: "Hex to RGB Converter", description: "Learn about hex to rgb converter." },
-  "high-contrast-color-combinations": { slug: "high-contrast-color-combinations", title: "High Contrast Color Combinations", description: "Learn about high contrast color combinations." },
+  "high-contrast-color-combinations": { slug: "high-contrast-color-combinations", title: "High Contrast Color Combinations", description: "50 tested high-contrast color pairs for text, buttons, and UI — with exact hex codes, WCAG ratios, and copy-ready CSS tokens for light and dark mode." },
   "hsl-vs-hsv-color-models": { slug: "hsl-vs-hsv-color-models", title: "HSL vs HSV Color Models", description: "Understand the real differences between HSL and HSV — when each model wins, conversion math, and practical CSS/design tool usage." },
   "how-to-choose-website-colors": { slug: "how-to-choose-website-colors", title: "How to Choose Website Colors", description: "Learn about how to choose website colors." },
   "ui-color-hierarchy-guide": { slug: "ui-color-hierarchy-guide", title: "UI Color Hierarchy Guide", description: "Learn how to build a clear UI color hierarchy for buttons, text, surfaces, charts, and status states without guessing." },
