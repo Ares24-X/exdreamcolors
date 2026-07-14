@@ -9,6 +9,7 @@ export type ContentBlock = {
   codeSnippet?: { label: string; code: string };
   proTips: string[];
   keyStat?: string;                // data point or statistic to add credibility
+  chartAudit?: string;             // chart-specific audit data with accessibility tables
   toolsMention?: string[];         // which exdreamcolors tools to recommend (different per article)
 };
 
@@ -2719,15 +2720,48 @@ Use the [Contrast Checker](/contrast-checker/) to verify your own brand error co
   }
 }`
     },
+    testingMethods: `**Color-blind safe validation palette — works for protanopia, deuteranopia, and tritanopia:**
+
+| State | Token | Hex | On white | On tinted bg | CVD-safe reason |
+| --- | --- | --- | ---: | ---: | --- |
+| Error | --validation-error | #B91C1C | 7.8:1 | 7.1:1 on #FEF2F2 | High luminance contrast; icon + text redundancy |
+| Warning | --validation-warning | #92400E | 5.5:1 | 5.0:1 on #FFFBEB | Orange-brown stays distinct from red under deuteranopia |
+| Success | --validation-success | #047857 | 5.1:1 | 4.7:1 on #ECFDF5 | Blue-shifted green; pair with checkmark icon |
+| Info | --validation-info | #1E40AF | 8.9:1 | 8.2:1 on #EFF6FF | Blue is unaffected by red-green CVD |
+
+Key: Never rely on the red/green distinction alone. Protanopia and deuteranopia users cannot separate these hues. The combination of distinct lightness levels + icon shapes + text messages makes each state identifiable without color.
+
+**Testing workflow for form validation accessibility:**
+
+1. **Grayscale test (10 seconds):** Apply \`filter: grayscale(100%)\` to the page. If error and success states look identical, add border width or icon differences.
+2. **CVD simulation (Chrome DevTools):** Rendering > Emulate vision deficiencies > cycle all three types. Error/success must remain distinguishable in each.
+3. **Keyboard-only flow:** Tab through the form, trigger errors, verify focus lands on the first error or the summary banner.
+4. **Screen reader test (VoiceOver or NVDA):** Submit the form with errors. Verify aria-invalid triggers announcements and aria-describedby reads the error message.
+5. **Windows High Contrast mode:** Ensure borders use semantic system colors (Mark, CanvasText) and do not disappear.
+6. **Mobile sunlight test:** Open the form on a phone at lowest brightness in direct sunlight. Error indicators must remain visible.
+
+**Common failure matrix — what breaks and where:**
+
+| Test | What fails | Fix |
+| --- | --- | --- |
+| Grayscale | Error border invisible vs default border | Increase border width from 1px to 2-4px on error |
+| Deuteranopia | Success green identical to neutral gray | Add checkmark icon; use blue-shifted green (#047857) |
+| Keyboard | Focus never moves to error | Add \`focus()\` call to first invalid field or summary |
+| Screen reader | Error not announced | Add \`role="alert"\` or \`aria-live="assertive"\` to error container |
+| High Contrast | All custom colors overridden to same color | Use border patterns (width, style) not just color |
+
+For button-specific focus and contrast guidance, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For color-blind palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token architecture that handles validation states across light and dark mode, see [Accessible Color Token System](/accessible-color-token-system/).`,
     proTips: [
-      "Pair color with text and an icon. Red alone is not a validation system — it fails SC 1.4.1 (Use of Color).",
-      "Test error colors on your actual error background tint, not just white. #b91c1c drops from 7.8:1 on white to 7.1:1 on #fef2f2.",
-      "Add a 4px left border on the field group, not just the input. This gives a spatial landmark that works in forced-colors mode.",
-      "Move focus to the error summary or first invalid field after submit. Without this, keyboard users cannot find what broke.",
+      "Pair color with text and an icon. Red alone is not a validation system — it fails SC 1.4.1 (Use of Color). See the full [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the complete rule set.",
+      "Test error colors on your actual error background tint, not just white. #b91c1c drops from 7.8:1 on white to 7.1:1 on #fef2f2. Use the [Contrast Checker](/contrast-checker/) with your real surface tokens.",
+      "Add a 4px left border on the field group, not just the input. This gives a spatial landmark that works in forced-colors mode and under [color blindness simulations](/color-blind-friendly-palettes/).",
+      "Move focus to the error summary or first invalid field after submit. Without this, keyboard users cannot find what broke. See [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/) for focus ring contrast requirements.",
       "Do not remove helper text when an error appears. Stack the error below the helper so users can reference both.",
-      "Test with Windows High Contrast mode. CSS custom properties for color are overridden — use semantic border patterns that survive.",
+      "Test with Windows High Contrast mode. CSS custom properties for color are overridden — use semantic border patterns that survive. Define validation tokens in your [Accessible Color Token System](/accessible-color-token-system/).",
       "Use aria-describedby (not aria-label) to link error messages. Screen readers announce the error when the input receives focus.",
       "Avoid green success checks that disappear. Users lose trust when transient feedback contradicts the final submit result.",
+      "Dark mode forms need separate validation tokens. Light-mode red (#B91C1C) works on white but looks dim on #111827. Use #FCA5A5 for dark surfaces (8.4:1). See [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/) for the full dark token set.",
+      "Build a validation state matrix: map each state (error, warning, success, info) × each surface (white, gray-50, card, dark-base, dark-card) and verify every pair passes. Budget 15 minutes with the [Contrast Checker](/contrast-checker/) — it prevents post-launch fire drills.",
     ],
     keyStat: "In a 40-form audit, 62% relied on red borders alone for errors — and 78% of those failed WCAG SC 1.4.1 (Use of Color).",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
@@ -3299,7 +3333,7 @@ The fix is not to remove color. Color still helps the majority. The fix is to ne
 I tested 50 production dashboards across fintech, healthcare, and SaaS analytics in Q2 2025. 72% used red/green as the only differentiator for positive/negative values. After applying the techniques below, every one passed WCAG 2.2 SC 1.4.1 (Use of Color) and SC 1.4.11 (Non-text Contrast).
 
 Verify your chart palette separations with the [Contrast Checker](/contrast-checker/). For related guides on forms, buttons, and dark mode, see the [Color Accessibility Hub](/color-accessibility-hub/). For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token-based approaches, see [Accessible Color Token System](/accessible-color-token-system/).`,
-    sectionFlow: ["foundation", "simulation", "real_world", "code", "testing", "pro_tips", "tools"],
+    sectionFlow: ["real_world", "code", "testing_methods", "chart_audit", "pro_tips", "tools"],
     realWorldExamples: `**Google Maps stopped relying on red/green pins for traffic.** They shifted to a red-yellow-green gradient with distinct lightness steps, and added line thickness changes on routes. A deuteranopic user can still distinguish heavy traffic from light traffic by brightness alone. Google reported a 23% improvement in correct route selection among colorblind beta testers after the redesign.
 
 **Stripe's dashboard uses shape + color for status indicators.** A successful payment gets a green dot AND a checkmark icon. A failed payment gets a red dot AND an X icon. Even in grayscale, the shapes communicate status instantly. Their accessibility audit in 2024 showed zero support tickets from colorblind users about payment status confusion — down from an average of 40/month before the redesign.
@@ -3363,15 +3397,69 @@ function addDirectLabels(
   });
 }`
     },
+    testingMethods: `**Five-step chart accessibility testing workflow:**
+
+**1. Grayscale screenshot test (30 seconds, zero tools):** Take a screenshot, convert to grayscale (Cmd+Shift+U in macOS Preview, or use a CSS filter: \`filter: grayscale(100%)\`). If any two series merge into the same gray shade, their lightness values are too close. Adjust one by at least 20 OKLCH lightness points.
+
+**2. Chrome DevTools CVD simulation (built-in, no install):** Open DevTools → More tools → Rendering → scroll to "Emulate vision deficiencies." Cycle through protanopia, deuteranopia, and tritanopia. If a chart still communicates clearly in all three, it passes. If not, add pattern fills, shape markers, or lightness separation.
+
+**3. Automated CI check with axe-core:** Add chart accessibility checks to your CI pipeline. axe-core can detect SVG elements missing accessible labels and flag color-only indicators.
+
+\`\`\`bash
+# axe-core in Playwright test suite
+npm install @axe-core/playwright
+
+// test/accessibility.spec.ts
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('chart accessibility audit', async ({ page }) => {
+  await page.goto('/dashboard');
+  const results = await new AxeBuilder({ page })
+    .include('svg, canvas, [role="img"]')
+    .analyze();
+  expect(results.violations).toEqual([]);
+});
+\`\`\`
+
+**4. Keyboard-only navigation test:** Tab through every chart element. Every data point, tooltip, and interactive legend entry should be reachable and readable. If tooltips only appear on hover, add a tab index or use aria-describedby.
+
+**5. Screen reader audit:** Open VoiceOver (macOS) or NVDA (Windows) and navigate through the chart. Does the reader announce meaningful descriptions? Add \`aria-label="{description}"\` to SVGs and \`role="img"\` to chart containers.
+
+**Testing matrix by chart type:**
+
+| Chart type | Grayscale test | CVD simulation | Keyboard nav | Screen reader | Pattern fallback |
+| --- | --- | --- | --- | --- | --- |
+| Line chart | Check line lightness | All 3 CVD types | Tab through data points | aria-label on SVG | Dash patterns (solid/dashed/dotted) |
+| Bar chart | Bar lightness separation | Deuteranopia critical | Each bar focusable | Describe each bar's value | Hatch fills or numeric labels |
+| Pie/Donut | Slice lightness steps | Protanopia critical | Each slice reachable | Summarize percentages | Direct labels + pattern fills |
+| Heatmap | Monochrome gradient check | All 3 CVD types | Cell-by-cell navigation | Data table alternative | Numeric values in cells |
+| Scatter/Bubble | Marker shape distinction | Shape + size redundant | Point-by-point navigation | Summarize correlation | Distinct shape per series |
+| Stacked area | Layer lightness stacking | Deuteranopia critical | Each area reachable | Describe trend direction | Pattern fills per layer |
+
+**Pre-ship chart accessibility checklist:**
+
+1. Every series distinguishable in grayscale screenshot
+2. All three CVD types simulated and verified in Chrome DevTools
+3. Direct labels present on chart when ≤6 series
+4. Pattern fills defined as fallback for print and monochrome displays
+5. Axis labels have ≥4.5:1 contrast on surface
+6. Interactive tooltips accessible via Tab key (not hover-only)
+7. aria-label or role="img" with description on SVG/canvas elements
+8. Legend uses shape markers matching the chart (not color-only squares)
+9. Status indicator colors have icon or text redundancy (SC 1.4.1)
+10. Dark mode tested separately — lightness separation often shifts on dark surfaces`,
+
     proTips: [
-      "Simulate your charts through protanopia, deuteranopia, and tritanopia filters before shipping. Chrome DevTools has a built-in CVD simulator under Rendering > Emulate vision deficiencies.",
+      "Simulate your charts through protanopia, deuteranopia, and tritanopia filters before shipping. Chrome DevTools has a built-in CVD simulator under Rendering > Emulate vision deficiencies. For palette construction guidance, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/).",
       "Use direct labels on lines and bars whenever density allows. A legend forces the user to decode color in working memory — direct labels remove that cognitive load for everyone, not just colorblind users.",
-      "Keep your chart series to 6 or fewer distinct colors. Beyond that, even normal-vision users struggle to map legend entries to data. If you need more series, use small multiples instead.",
-      "Test in grayscale by printing or using a CSS filter. If two series merge into the same gray, their lightness values are too close — adjust one by at least 20 OKLCH lightness points.",
-      "For traffic-light status indicators (red/yellow/green), always add a secondary signal: icon shape, text label, or position. Never let a standalone colored dot carry critical meaning.",
-      "OKLCH lightness-spaced 6-color chart palette (tested safe for all three CVD types): oklch(35% 0.15 260) Deep Blue, oklch(55% 0.18 145) Green, oklch(62% 0.16 50) Orange, oklch(40% 0.14 310) Purple, oklch(80% 0.14 90) Yellow, oklch(48% 0.19 25) Red. Minimum lightness gap between any two: 7 points.",
-      "Pre-ship chart accessibility checklist: (1) Every series distinguishable in grayscale screenshot (2) Direct labels present when ≤6 series (3) Pattern fills available for print/monochrome (4) Legend uses shape markers matching the chart (5) Axis labels have ≥4.5:1 contrast (6) Interactive tooltips accessible via keyboard (7) aria-label or aria-describedby on SVG/canvas (8) Tested in Chrome CVD simulator for all three types (9) Status colors have icon or text redundancy (10) Dark mode tested separately with adjusted lightness values.",
-      "For React/D3 projects, export your accessible palette as design tokens: store hex, OKLCH, and pattern-id together so engineers can't accidentally use color without its pattern pair. See [Accessible Color Token System](/accessible-color-token-system/) for the full token architecture."
+      "Keep your chart series to 6 or fewer distinct colors. Beyond that, even normal-vision users struggle to map legend entries to data. If you need more series, use small multiples instead. Build series palettes with the [Palette Generator](/palette-generator/).",
+      "Test in grayscale by printing or using a CSS filter. If two series merge into the same gray, their lightness values are too close — adjust one by at least 20 OKLCH lightness points. See [OKLCH Color Design Guide](/oklch-color-design-guide/) for perceptual lightness spacing.",
+      "For traffic-light status indicators (red/yellow/green), always add a secondary signal: icon shape, text label, or position. Never let a standalone colored dot carry critical meaning. See [Form Validation Color Accessibility](/form-validation-color-accessibility/) for the same principle applied to form states.",
+      "OKLCH lightness-spaced 6-color chart palette (tested safe for all three CVD types): oklch(35% 0.15 260) Deep Blue, oklch(55% 0.18 145) Green, oklch(62% 0.16 50) Orange, oklch(40% 0.14 310) Purple, oklch(80% 0.14 90) Yellow, oklch(48% 0.19 25) Red. Minimum lightness gap between any two: 7 points. Verify each against your dashboard surface with the [Contrast Checker](/contrast-checker/).",
+      "Pre-ship chart accessibility checklist: (1) Every series distinguishable in grayscale screenshot (2) Direct labels present when ≤6 series (3) Pattern fills available for print/monochrome (4) Legend uses shape markers matching the chart (5) Axis labels have ≥4.5:1 contrast (6) Interactive tooltips accessible via keyboard (7) aria-label or aria-describedby on SVG/canvas (8) Tested in Chrome CVD simulator for all three types (9) Status colors have icon or text redundancy (10) Dark mode tested separately with adjusted lightness values. Full contrast reference: [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/).",
+      "For React/D3 projects, export your accessible palette as design tokens: store hex, OKLCH, and pattern-id together so engineers can't accidentally use color without its pattern pair. See [Accessible Color Token System](/accessible-color-token-system/) for the full token architecture.",
+      "Dashboard-specific guidance: chart colors must also work alongside form validation colors, alerts, and status badges. See [Dashboard Color Palette Guide](/dashboard-color-palette-guide/) for the full system approach. For the broader accessibility picture, start at the [Color Accessibility Hub](/color-accessibility-hub/)."
     ],
     keyStat: "Microsoft's Power BI accessibility testing showed chart comprehension rose from 64% to 91% among deuteranopic users after adding pattern fills alongside color (Microsoft Inclusive Design Report, 2024). In my own 50-dashboard audit, adding direct labels improved task-completion speed by 34% for all users — not just colorblind ones.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker", "image-extractor"]
