@@ -895,7 +895,7 @@ console.log(failures.length + ' contrast failures found');`
       "Automated tools catch only 30-40% of accessibility issues (GDS study). Always supplement axe-core scans with manual keyboard testing and screen reader verification.",
       "When brand colors fail contrast, do not just darken them. Create a 'reading variant' token: same hue, adjusted lightness. Brand stays for logos and accents; reading variant goes on text.",
     ],
-    keyStat: "96.3% of the top 1 million homepages have detectable WCAG color contrast failures, and 81% of those failures are specifically low-contrast text. (WebAIM Million 2025)",
+    keyStat: "95.9% of the top 1 million homepages have detectable WCAG failures (up from 2025), and 83.9% fail on low-contrast text — 56.1 detectable errors per page on average. The six most common failure types are unchanged from prior years. (WebAIM Million 2026)",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
