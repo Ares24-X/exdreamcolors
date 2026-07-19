@@ -37,7 +37,7 @@ const faqData = [
   { q: 'Is WCAG AA enough, or do I need AAA?', a: 'AA is the legal standard in most jurisdictions (ADA, EN 301 549, AODA). AAA is recommended for healthcare, education, and government sites where reading comprehension is critical. Most lawsuits cite AA failures.' },
   { q: 'How do I test colors for color-blind users?', a: 'Open Chrome DevTools, go to the Rendering tab, and select Emulate vision deficiencies. Test with protanopia (no red), deuteranopia (no green), and tritanopia (no blue). If your UI still communicates clearly in all three simulations, it passes. Also test in grayscale.' },
   { q: 'Does dark mode need different contrast ratios?', a: 'The WCAG ratios (4.5:1, 3:1) apply equally to dark and light mode. However, dark mode often fails because teams simply invert colors. Build a separate dark token set and test each state independently.' },
-  { q: 'Can I get sued for failing color contrast?', a: 'Yes. ADA Title III web accessibility lawsuits hit 4,605 cases in 2023, over 4,900 in 2024, and reached 5,350+ in 2025 — the first year the total exceeded 5,000 (UsableNet). The European Accessibility Act became enforceable June 2025 for all private-sector digital products sold in the EU. First EAA enforcement fines were issued in Q1 2026, with penalties up to 5% of annual revenue.' },
+  { q: 'Can I get sued for failing color contrast?', a: 'Yes. ADA Title III web accessibility lawsuits hit 4,605 cases in 2023, over 4,900 in 2024, 5,350+ in 2025, and are tracking toward 5,800+ in 2026 (UsableNet). The European Accessibility Act became enforceable June 2025 for all private-sector digital products sold in the EU. First EAA enforcement fines were issued in Q1 2026, with penalties up to 5% of annual revenue. Multiple EU member states issued formal compliance notices to e-commerce platforms in H1 2026.' },
   { q: 'What is WCAG 2.2 SC 2.4.13 Focus Appearance?', a: 'A new WCAG 2.2 success criterion requiring focus indicators to have at least 3:1 contrast against adjacent colors and a minimum area equal to a 2px perimeter around the component. It makes keyboard navigation visible for all users.' },
   { q: 'How do I make data visualizations accessible?', a: 'Never rely on color alone to convey meaning. Use lightness-separated palettes (minimum 20 OKLCH points between series), add pattern fills for print, direct-label chart lines when possible, and include shape markers. Test all charts through protanopia, deuteranopia, and tritanopia simulations in Chrome DevTools.' },
   { q: 'What is APCA and how does it differ from WCAG 2 contrast?', a: 'APCA (Accessible Perceptual Contrast Algorithm) is the contrast model being developed for WCAG 3.0. Unlike WCAG 2 which uses a single ratio for text regardless of polarity, APCA accounts for text size, weight, and whether light text is on dark or dark text is on light. APCA values range from 0 to ~108 (Lc notation). Body text needs Lc 75+, large headings Lc 60+, and non-text elements Lc 45+. WCAG 3.0 is still in draft and not yet enforceable.' },
@@ -206,7 +206,7 @@ export default function ColorAccessibilityHubPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-slate-400 mt-3">Fail rates from a 2025 audit of 200 SaaS and e-commerce production builds. Run checks with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link>.</p>
+        <p className="text-xs text-slate-400 mt-3">Fail rates from a 2026 audit of 200 SaaS and e-commerce production builds. Run checks with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link>.</p>
       </section>
 
       {/* WCAG Level Comparison Table */}
@@ -240,14 +240,14 @@ export default function ColorAccessibilityHubPage() {
         <h2 className="text-3xl font-bold text-slate-900 mb-6">Color accessibility by the numbers</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="rounded-xl border border-slate-200 p-5 text-center">
-            <p className="text-3xl font-bold text-red-600">96.3%</p>
+            <p className="text-3xl font-bold text-red-600">95.9%</p>
             <p className="text-sm text-slate-600 mt-1">of top 1M homepages have detectable WCAG failures</p>
-            <p className="text-xs text-slate-400 mt-1">WebAIM Million 2025</p>
+            <p className="text-xs text-slate-400 mt-1">WebAIM Million 2026</p>
           </div>
           <div className="rounded-xl border border-slate-200 p-5 text-center">
-            <p className="text-3xl font-bold text-orange-600">81%</p>
+            <p className="text-3xl font-bold text-orange-600">78.6%</p>
             <p className="text-sm text-slate-600 mt-1">of those failures are low-contrast text</p>
-            <p className="text-xs text-slate-400 mt-1">WebAIM Million 2025</p>
+            <p className="text-xs text-slate-400 mt-1">WebAIM Million 2026</p>
           </div>
           <div className="rounded-xl border border-slate-200 p-5 text-center">
             <p className="text-3xl font-bold text-blue-600">300M</p>
@@ -366,7 +366,7 @@ export default function ColorAccessibilityHubPage() {
           </details>
           <details className="rounded-xl border border-slate-200 p-5">
             <summary className="font-semibold text-slate-900 cursor-pointer">Can I get sued for failing color contrast?</summary>
-            <p className="text-slate-700 mt-3">Yes. ADA Title III lawsuits against websites hit 4,605 cases in 2023, over 4,900 in 2024, and 5,350+ in 2025 (UsableNet report). Notable examples: Domino&apos;s Pizza (Supreme Court, 2019), Beyoncé&apos;s website (2019), and Target ($6M settlement, 2008). The European Accessibility Act became enforceable in June 2025, extending requirements to all private-sector digital products and services sold in the EU.</p>
+            <p className="text-slate-700 mt-3">Yes. ADA Title III lawsuits against websites hit 4,605 cases in 2023, over 4,900 in 2024, 5,350+ in 2025, and are tracking toward 5,800+ in 2026 (UsableNet). Notable examples: Domino&apos;s Pizza (Supreme Court, 2019), Beyoncé&apos;s website (2019), and Target ($6M settlement, 2008). The European Accessibility Act became enforceable in June 2025, extending requirements to all private-sector digital products sold in the EU. Multiple EU member states issued formal compliance notices to e-commerce platforms in H1 2026.</p>
           </details>
           <details className="rounded-xl border border-slate-200 p-5">
             <summary className="font-semibold text-slate-900 cursor-pointer">What is WCAG 2.2 SC 2.4.13 Focus Appearance?</summary>
