@@ -217,6 +217,16 @@ function SectionRenderer({ type, content, index }: { type: string; content: Cont
         </section>
       );
 
+    case "chart_audit":
+    case "audit_data":
+      return content.chartAudit ? (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Chart Accessibility Audit Data</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.chartAudit) }} />
+        </section>
+      ) : null;
+
     case "code_patterns":
     case "code":
       return content.codeSnippet ? (
