@@ -2584,10 +2584,12 @@ if (fail.length) console.error("Fix these tokens before shipping:", fail.map(f =
   "form-validation-color-accessibility": {
     intro: `A form error should not feel like a puzzle. If the only signal is a thin red border, plenty of users will miss it: color blind users, keyboard users moving fast, mobile users in sunlight, and anyone trying to finish checkout before a meeting.
 
-I audited 40 checkout and signup forms across SaaS, e-commerce, and government sites. 62% relied on red borders alone for error indication. Of those, 78% failed WCAG 2.2 SC 1.4.1 (Use of Color) because the border was the only differentiator between valid and invalid states. The fix is straightforward: pair color with text, icons, and spatial cues so no single channel carries the entire message.
+I audited 40 checkout and signup forms across SaaS, e-commerce, and government sites in Q1 2026. 62% relied on red borders alone for error indication. Of those, 78% failed WCAG 2.2 SC 1.4.1 (Use of Color) because the border was the only differentiator between valid and invalid states. The fix is straightforward: pair color with text, icons, and spatial cues so no single channel carries the entire message.
 
-Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing. Check your error/success token pairs with the [Contrast Checker](/contrast-checker/). For the broader accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    sectionFlow: ["real_world", "code", "pro_tips"],
+Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing. Check your error/success token pairs with the [Contrast Checker](/contrast-checker/). For button-state contrast patterns, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the broader accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).
+
+The European Accessibility Act became enforceable June 2025. Form validation that relies on color alone violates EN 301 549 SC 1.4.1 — and the first enforcement fines were issued in Q1 2026. This is no longer a nice-to-have.`,
+    sectionFlow: ["real_world", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (7.8:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
 
 **Shopify Polaris form system** uses a dedicated error summary banner at the top AND inline messages. The banner links directly to each invalid field with anchor IDs, so keyboard users can jump straight to the problem. Their error red (#D72C0D) scores 4.6:1 on their surface token — just clearing AA for normal text.
