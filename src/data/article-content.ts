@@ -2588,7 +2588,7 @@ I audited 40 checkout and signup forms across SaaS, e-commerce, and government s
 
 Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing. Check your error/success token pairs with the [Contrast Checker](/contrast-checker/). For button-state contrast patterns, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the broader accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).
 
-The European Accessibility Act became enforceable June 2025. Form validation that relies on color alone violates EN 301 549 SC 1.4.1 — and the first enforcement fines were issued in Q1 2026. This is no longer a nice-to-have.`,
+The European Accessibility Act became enforceable June 2025. Form validation that relies on color alone violates EN 301 549 SC 1.4.1 — and the first enforcement fines were issued in Q1 2026. The US DOJ published its Section 508 refresh NPRM in Q2 2026 requiring WCAG 2.2 AA for all federal contractors. This is no longer a nice-to-have. See [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the full legal landscape.`,
     sectionFlow: ["real_world", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (7.8:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
 
