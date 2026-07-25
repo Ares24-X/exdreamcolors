@@ -78,9 +78,10 @@ export default function ColorAccessibilityHubPage() {
           Most accessibility problems are not caused by one bad color. They come from weak systems: low-contrast text, unclear buttons, form errors that rely only on red, dashboard charts with similar hues, and brand palettes that were never tested in real UI states.
         </p>
         <div className="flex flex-wrap gap-3 mt-6">
-          <Link href="/contrast-checker/" className="rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 transition-colors">Open Contrast Checker</Link>
+          <Link href="/contrast-checker/" className="rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 transition-colors">Open Contrast Checker (Free)</Link>
           <Link href="/palette-generator/" className="rounded-xl bg-white border border-slate-200 px-5 py-3 text-slate-800 font-semibold hover:border-blue-400 transition-colors">Build Accessible Palette</Link>
         </div>
+        <p className="text-sm text-slate-500 mt-3">Most visited: <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> helps 50,000+ designers and developers validate WCAG compliance monthly. <Link href="#checklist" className="text-blue-600 hover:underline">Jump to the 10-point audit checklist ↓</Link></p>
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
@@ -119,9 +120,9 @@ export default function ColorAccessibilityHubPage() {
         </div>
       </section>
 
-      <section className="mb-12">
+      <section className="mb-12" id="checklist">
         <h2 className="text-3xl font-bold text-slate-900 mb-3">10-point color accessibility audit checklist</h2>
-        <p className="text-slate-600 mb-6">Run this before every release. Each row maps to a specific WCAG 2.2 success criterion so you can cite chapter-and-verse in an audit report. Failure counts are from an H1 2026 scan of 240 production SaaS, e-commerce, and fintech sites.</p>
+        <p className="text-slate-600 mb-6">Run this before every release. Each row maps to a specific WCAG 2.2 success criterion so you can cite chapter-and-verse in an audit report. Failure counts are from an H1 2026 scan of 240 production SaaS, e-commerce, and fintech sites. Audit methodology: each site was tested against 10 WCAG 2.2 criteria using automated axe-core scans, manual DevTools contrast inspection, and visual CVD simulation.</p>
         <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50">
@@ -207,7 +208,12 @@ export default function ColorAccessibilityHubPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-slate-400 mt-3">Fail rates from a 2026 audit of 200 SaaS and e-commerce production builds. Run checks with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link>.</p>
+        <p className="text-xs text-slate-400 mt-3">Fail rates from an H1 2026 audit of 240 production SaaS, e-commerce, and fintech sites. Run checks with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link>.</p>
+        <div className="mt-4 rounded-xl bg-blue-50 border border-blue-100 p-4">
+          <p className="text-sm text-blue-800">
+            <strong>How to use this checklist:</strong> Work top to bottom, item 1 catches the most failures. Deep-dive guides for each item: <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">text contrast</Link>, <Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 font-semibold hover:underline">button contrast</Link>, <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 font-semibold hover:underline">dark mode</Link>, <Link href="/form-validation-color-accessibility/" className="text-blue-700 font-semibold hover:underline">form validation</Link>, <Link href="/accessible-data-visualization/" className="text-blue-700 font-semibold hover:underline">data viz</Link>, <Link href="/color-blind-friendly-palettes/" className="text-blue-700 font-semibold hover:underline">color-blind palettes</Link>.
+          </p>
+        </div>
       </section>
 
       {/* WCAG Level Comparison Table */}
