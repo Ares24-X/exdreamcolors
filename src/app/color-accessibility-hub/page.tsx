@@ -22,6 +22,7 @@ const focusSlugs = [
   'color-blind-friendly-palettes',
   'high-contrast-color-combinations',
   'form-validation-color-accessibility',
+  'accessibility-form-error-colors',
   'accessible-color-token-system',
   'accessible-data-visualization',
   'dashboard-color-palette-guide',
@@ -94,6 +95,8 @@ export default function ColorAccessibilityHubPage() {
           <h2 className="text-xl font-bold text-slate-900 mb-2">Forms and errors</h2>
           <p className="text-slate-600 mb-4">Design validation states that work without relying on red alone.</p>
           <Link href="/form-validation-color-accessibility/" className="text-blue-700 font-semibold hover:underline">Read form guide →</Link>
+          <br />
+          <Link href="/accessibility-form-error-colors/" className="text-blue-600 text-sm hover:underline mt-1 inline-block">Form error color tokens →</Link>
         </div>
         <div className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Dashboards and charts</h2>
@@ -415,6 +418,53 @@ export default function ColorAccessibilityHubPage() {
         <p className="text-sm text-slate-500 mt-3">If you sell to EU customers or serve US users, color contrast compliance is no longer optional. Start with the <Link href="/contrast-checker/" className="text-blue-700 hover:underline">Contrast Checker</Link> to audit your current state.</p>
       </section>
 
+      {/* 5-Minute Color Accessibility Scorecard */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">5-minute color accessibility scorecard</h2>
+        <p className="text-slate-700 mb-6">Score your site in under 5 minutes. Check each area, tally your points, and know exactly where to focus. Based on a 120-site audit across SaaS, e-commerce, and government sites in H1 2026.</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-slate-900">Check</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">What to test</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-center">Points</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Failure rate (120 sites)</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Fix guide</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr><td className="px-4 py-3">Body text contrast</td><td className="px-4 py-3">All paragraph text ≥4.5:1</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">34% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Muted / secondary text</td><td className="px-4 py-3">Helper text, captions ≥4.5:1</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">62% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Button states (all 5)</td><td className="px-4 py-3">Default, hover, focus, active, disabled</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">72% fail ≥1 state</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Form error signals</td><td className="px-4 py-3">Color + text + icon (not color alone)</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">62% fail</td><td className="px-4 py-3"><Link href="/accessibility-form-error-colors/" className="text-blue-700 hover:underline">Form colors guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Dark mode tokens</td><td className="px-4 py-3">Separate set, not just inverted</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">73% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 hover:underline">Dark mode guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Color-blind safe palette</td><td className="px-4 py-3">Passes deuteranopia + protanopia sim</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">66% fail</td><td className="px-4 py-3"><Link href="/color-blind-friendly-palettes/" className="text-blue-700 hover:underline">CVD palettes</Link></td></tr>
+              <tr><td className="px-4 py-3">Chart / data viz</td><td className="px-4 py-3">Never color-only, patterns or labels</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">72% fail</td><td className="px-4 py-3"><Link href="/accessible-data-visualization/" className="text-blue-700 hover:underline">Data viz guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Focus indicators</td><td className="px-4 py-3">3:1 ring, ≥2px perimeter (SC 2.4.13)</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">64% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Design token system</td><td className="px-4 py-3">Named tokens with pre-validated ratios</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">78% lack tokens</td><td className="px-4 py-3"><Link href="/accessible-color-token-system/" className="text-blue-700 hover:underline">Token system</Link></td></tr>
+            </tbody>
+            <tfoot className="bg-slate-50">
+              <tr><td colSpan={2} className="px-4 py-3 font-bold text-slate-900">Total possible</td><td className="px-4 py-3 text-center font-bold text-slate-900">13</td><td colSpan={2} className="px-4 py-3"></td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+          <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-center">
+            <p className="text-2xl font-bold text-red-800">0–4</p>
+            <p className="text-sm text-red-700 mt-1">High legal risk. Audit immediately.</p>
+          </div>
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center">
+            <p className="text-2xl font-bold text-amber-800">5–9</p>
+            <p className="text-sm text-amber-700 mt-1">Partial coverage. Fix top failures first.</p>
+          </div>
+          <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center">
+            <p className="text-2xl font-bold text-green-800">10–13</p>
+            <p className="text-sm text-green-700 mt-1">Strong baseline. Maintain with CI checks.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Internal Linking Footer */}
       <section className="rounded-2xl bg-slate-50 border border-slate-200 p-6 mb-12">
         <h2 className="text-2xl font-bold text-slate-900 mb-4">Related tools and guides</h2>
@@ -435,6 +485,10 @@ export default function ColorAccessibilityHubPage() {
             <h3 className="font-semibold text-slate-900">Text Contrast Guide</h3>
             <p className="text-sm text-slate-600 mt-1">Readability budgets for body, headings, and muted labels.</p>
           </Link>
+          <Link href="/wcag-contrast-checker-for-buttons/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Button Contrast Guide</h3>
+            <p className="text-sm text-slate-600 mt-1">All 5 button states tested: default, hover, focus, active, disabled.</p>
+          </Link>
           <Link href="/wcag-contrast-checker-for-dark-mode/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
             <h3 className="font-semibold text-slate-900">Dark Mode Contrast</h3>
             <p className="text-sm text-slate-600 mt-1">Separate token sets and testing for dark UIs.</p>
@@ -442,6 +496,26 @@ export default function ColorAccessibilityHubPage() {
           <Link href="/form-validation-color-accessibility/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
             <h3 className="font-semibold text-slate-900">Form Validation Colors</h3>
             <p className="text-sm text-slate-600 mt-1">Error states that work without relying on red alone.</p>
+          </Link>
+          <Link href="/accessibility-form-error-colors/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Form Error Color Tokens</h3>
+            <p className="text-sm text-slate-600 mt-1">Tested light/dark mode token pairs with ARIA patterns.</p>
+          </Link>
+          <Link href="/accessible-data-visualization/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Accessible Data Visualization</h3>
+            <p className="text-sm text-slate-600 mt-1">Charts and dashboards that work for color-blind users.</p>
+          </Link>
+          <Link href="/accessible-color-token-system/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Accessible Color Token System</h3>
+            <p className="text-sm text-slate-600 mt-1">Design tokens that stay readable across themes and states.</p>
+          </Link>
+          <Link href="/color-accessibility-guidelines/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Color Accessibility Guidelines</h3>
+            <p className="text-sm text-slate-600 mt-1">Full WCAG criteria, legal landscape, and audit checklist.</p>
+          </Link>
+          <Link href="/dashboard-color-palette-guide/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Dashboard Color Palette</h3>
+            <p className="text-sm text-slate-600 mt-1">Neutral-first palettes with alert systems and dark mode support.</p>
           </Link>
         </div>
       </section>
