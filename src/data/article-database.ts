@@ -34,7 +34,7 @@ export const articleDatabase: Record<string, ArticleMeta> = {
   "color-tools-comparison": { slug: "color-tools-comparison", title: "Color Tools Comparison", description: "Learn about color tools comparison." },
   "color-trends-2025": { slug: "color-trends-2025", title: "Color Trends 2025", description: "Learn about color trends 2025." },
   "complementary-colors": { slug: "complementary-colors", title: "Complementary Colors", description: "Learn about complementary colors." },
-  "contrast-checker-guide": { slug: "contrast-checker-guide", title: "Contrast Checker Guide", description: "Learn how to use Contrast Checker Guide effectively." },
+  "contrast-checker-guide": { slug: "contrast-checker-guide", title: "Contrast Checker Guide", description: "A step-by-step workflow for using contrast checkers: input methods, WCAG AA/AAA thresholds, APCA Lc values, batch token auditing, and CI integration for automated contrast testing." },
   "css-color-variables": { slug: "css-color-variables", title: "CSS Color Variables Guide", description: "Learn about css color variables guide." },
   "css-custom-properties-colors": { slug: "css-custom-properties-colors", title: "CSS Custom Properties Colors", description: "Learn about css custom properties colors." },
   "css-gradient-generator-online": { slug: "css-gradient-generator-online", title: "CSS Gradient Generator Online", description: "Learn about css gradient generator online." },
