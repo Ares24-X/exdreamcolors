@@ -18,6 +18,7 @@ const focusSlugs = [
   'wcag-contrast-ratio-for-text',
   'wcag-contrast-checker-for-buttons',
   'wcag-contrast-checker-for-dark-mode',
+  'wcag-color-accessibility',
   'color-accessibility-guidelines',
   'color-blind-friendly-palettes',
   'high-contrast-color-combinations',
