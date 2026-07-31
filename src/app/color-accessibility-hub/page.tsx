@@ -467,6 +467,115 @@ export default function ColorAccessibilityHubPage() {
       </section>
 
       {/* Internal Linking Footer */}
+      {/* CI/CD Automated Contrast Testing Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">Automate color accessibility in CI/CD</h2>
+        <p className="text-slate-700 mb-4">Manual DevTools checks catch issues once. CI pipelines catch them forever. Here are copy-ready configurations for the three most common setups — each blocks PRs that introduce contrast regressions.</p>
+        <div className="space-y-6">
+          <div className="rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-2">GitHub Actions + axe-core + Playwright</h3>
+            <p className="text-sm text-slate-600 mb-3">Runs a full-page accessibility scan on every PR. Fails the check if any contrast violation is found on rendered pages.</p>
+            <div className="rounded-lg bg-slate-900 p-4 overflow-x-auto">
+              <pre className="text-xs text-green-300 font-mono whitespace-pre">{`# .github/workflows/a11y.yml
+name: Color Accessibility Check
+on: [pull_request]
+jobs:
+  contrast-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci && npm run build
+      - run: npx serve out -l 3000 &
+      - run: npx wait-on http://localhost:3000
+      - run: |
+          npx playwright install chromium
+          npx playwright test tests/a11y-contrast.spec.ts
+
+# tests/a11y-contrast.spec.ts
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+const pages = [
+  '/contrast-checker/',
+  '/color-accessibility-hub/',
+  '/wcag-contrast-ratio-for-text/',
+];
+
+for (const url of pages) {
+  test(\`no contrast violations on \${url}\`, async ({ page }) => {
+    await page.goto(\`http://localhost:3000\${url}\`);
+    const results = await new AxeBuilder({ page })
+      .withRules(['color-contrast'])
+      .analyze();
+    expect(results.violations).toHaveLength(0);
+  });
+}`}</pre>
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-2">Design token CI check (no browser needed)</h3>
+            <p className="text-sm text-slate-600 mb-3">Validates every foreground/background token pair in your design system JSON against WCAG AA thresholds. Runs in under 2 seconds.</p>
+            <div className="rounded-lg bg-slate-900 p-4 overflow-x-auto">
+              <pre className="text-xs text-green-300 font-mono whitespace-pre">{`// scripts/check-token-contrast.mjs
+import { readFileSync } from 'fs';
+
+const tokens = JSON.parse(readFileSync('tokens.json', 'utf8'));
+
+function luminance(hex) {
+  const rgb = hex.replace('#','').match(/../g)
+    .map(c => { const s = parseInt(c,16)/255;
+      return s <= 0.03928 ? s/12.92 : ((s+0.055)/1.055)**2.4; });
+  return 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2];
+}
+function ratio(a, b) {
+  const [l1,l2] = [luminance(a),luminance(b)];
+  return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
+}
+
+const failures = [];
+for (const pair of tokens.contrastPairs) {
+  const r = ratio(pair.fg, pair.bg);
+  const min = pair.isLarge ? 3 : 4.5;
+  if (r < min) failures.push({ ...pair, ratio: r.toFixed(2), required: min });
+}
+if (failures.length) {
+  console.table(failures);
+  process.exit(1);
+}
+console.log('✓ All', tokens.contrastPairs.length, 'pairs pass WCAG AA');`}</pre>
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-2">Lighthouse CI budget (zero-config)</h3>
+            <p className="text-sm text-slate-600 mb-3">Set an accessibility score floor. If a PR drops the score below 95, the build fails. Takes 3 minutes to set up.</p>
+            <div className="rounded-lg bg-slate-900 p-4 overflow-x-auto">
+              <pre className="text-xs text-green-300 font-mono whitespace-pre">{`// lighthouserc.js
+module.exports = {
+  ci: {
+    collect: {
+      url: [
+        'http://localhost:3000/',
+        'http://localhost:3000/contrast-checker/',
+        'http://localhost:3000/color-accessibility-hub/',
+      ],
+      startServerCommand: 'npx serve out -l 3000',
+    },
+    assert: {
+      assertions: {
+        'categories:accessibility': ['error', { minScore: 0.95 }],
+        'color-contrast': 'error',
+      },
+    },
+  },
+};`}</pre>
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-slate-600 mt-4">All three methods complement each other. Token checks catch design-system regressions instantly. Playwright + axe-core catches rendered-page issues that token checks miss (like text on images). Lighthouse CI provides an aggregate score gate. Use the <Link href="/contrast-checker/" className="text-blue-700 hover:underline">Contrast Checker</Link> for manual spot-checks during development. See <Link href="/color-accessibility-guidelines/" className="text-blue-700 hover:underline">Color Accessibility Guidelines</Link> for the full audit methodology.</p>
+      </section>
+
       <section className="rounded-2xl bg-slate-50 border border-slate-200 p-6 mb-12">
         <h2 className="text-2xl font-bold text-slate-900 mb-4">Related tools and guides</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
