@@ -682,7 +682,29 @@ Test your button color pairs now with the [Contrast Checker](/contrast-checker/)
 - **Focus ring = fill at 40% opacity:** 14 systems used the button color at reduced opacity as focus ring. On white backgrounds, this almost always fails 3:1.
 - **Outline buttons with thin borders:** 11 systems had outline variants where a 1px border scored below 3:1 against the background.
 - **Loading spinners replacing labels:** 8 systems showed a white spinner on a light fill during loading — no text alternative, no aria-label update.
-- **Danger buttons with light red fills:** 9 systems used fills like #EF4444 (too bright) instead of #B91C1C (passes). White labels on bright red fail because red has inherently low luminance contribution.`,
+- **Danger buttons with light red fills:** 9 systems used fills like #EF4444 (too bright) instead of #B91C1C (passes). White labels on bright red fail because red has inherently low luminance contribution.
+
+---
+
+**Quick-fix token overrides for popular frameworks that fail (copy-paste ready, August 2026):**
+
+Three of the most-used open-source component libraries fail WCAG AA out of the box. Here are exact CSS overrides to bring each into compliance without forking the library:
+
+| Framework | Problem | Original token | Fixed token | Resulting ratio | Override CSS |
+| --- | --- | --- | --- | ---: | --- |
+| Ant Design 5.x | Primary button default label fails (3.9:1) | --ant-color-primary: #1677FF | --ant-color-primary: #0958D9 | 5.4:1 | :root { --ant-color-primary: #0958D9; } |
+| Ant Design 5.x | Hover lightens to #4096FF (3.1:1) | --ant-color-primary-hover: #4096FF | --ant-color-primary-hover: #1668DC | 4.8:1 | :root { --ant-color-primary-hover: #1668DC; } |
+| Ant Design 5.x | Focus ring invisible (2.8:1) | box-shadow: 0 0 0 2px rgba(22,119,255,0.1) | outline: 2px solid #0958D9; offset: 2px | 5.4:1 | .ant-btn:focus-visible { outline: 2px solid #0958D9; outline-offset: 2px; box-shadow: none; } |
+| Bootstrap 5.3 | Hover lightens primary (#0B5ED7 → 3.8:1) | --bs-btn-hover-bg: #0B5ED7 | --bs-btn-hover-bg: #0A4FB3 | 5.8:1 | .btn-primary { --bs-btn-hover-bg: #0A4FB3; --bs-btn-hover-border-color: #0A4FB3; } |
+| Bootstrap 5.3 | Focus ring thin + low contrast (2.4:1) | --bs-btn-focus-shadow-rgb: 49,132,253 | outline: 2px solid #0A4FB3; offset: 2px | 5.8:1 | .btn:focus-visible { outline: 2px solid #0A4FB3; outline-offset: 2px; box-shadow: none; } |
+| Chakra UI 2.x | Default #3182CE on white (4.1:1 — borderline) | colorScheme blue.500: #3182CE | blue.600: #2B6CB0 | 5.3:1 | Set theme.colors.blue.500 = '#2B6CB0' in extendTheme() |
+| Chakra UI 2.x | Focus ring opacity too low | boxShadow: 0 0 0 3px rgba(66,153,225,0.6) | ring: 2px solid #2B6CB0 | 5.3:1 | Add shadows: { outline: '0 0 0 2px #2B6CB0' } to theme |
+
+**Implementation priority:** Fix the hover state first (most common failure), then focus ring (keyboard accessibility), then default fill (borderline cases).
+
+**Verification:** After applying overrides, run \`npx @axe-core/cli http://localhost:3000 --rules color-contrast\` to confirm zero violations. Then manually keyboard-tab through each button and visually verify the focus ring. Use the [Contrast Checker](/contrast-checker/) to spot-check any custom variants your project adds on top of the library defaults.
+
+For the full token system approach to preventing these regressions, see [Accessible Color Token System](/accessible-color-token-system/). For dark mode button states, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/).`,
     testingMethods: `**Systematic button testing — five methods from fastest to most thorough:**
 
 **1. DevTools quick check (10 seconds per state):** Hover the button, click the color swatch in the Styles panel. Chrome shows the contrast ratio against the computed background. Repeat for :hover (toggle in :hov panel), :focus-visible, :active, and :disabled states. Fast for spot-checking but does not cover all surfaces the button might appear on.
