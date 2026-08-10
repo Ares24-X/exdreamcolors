@@ -1153,7 +1153,59 @@ Run checks 1-5 on every PR. Run the full 12-point list quarterly. See [Form Vali
 | WCAG 2.2 focus appearance (SC 2.4.13) failure | — | 71% | New criterion | 2px ring + offset + 3:1 color |
 | Semi-transparent overlays untested | — | 55% | Newly tracked | Flatten and measure effective ratio |
 
-Key finding: Dark mode failures are increasing because more teams ship dark mode without running a separate contrast audit. The fix is cheap: run your axe-core scan twice (once per theme) in CI. See the CI pipeline below.`,
+Key finding: Dark mode failures are increasing because more teams ship dark mode without running a separate contrast audit. The fix is cheap: run your axe-core scan twice (once per theme) in CI. See the CI pipeline below.
+
+---
+
+**Role-Based WCAG Compliance Matrix — who owns what (August 2026):**
+
+Every compliance failure can be traced to a missing owner. This matrix assigns each WCAG color criterion to a specific role, tool, and check cadence so nothing falls through the cracks between design, engineering, and QA.
+
+| # | Check | WCAG SC | DRI (primary) | DRI (secondary) | Tool | Cadence | Failure signal |
+| ---: | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Text contrast on all surfaces | 1.4.3 | Designer | Engineer | [Contrast Checker](/contrast-checker/) | Every token change | axe-core violation on PR |
+| 2 | UI component boundary contrast | 1.4.11 | Designer | Engineer | axe-core 4.8+ | New component PR | Border vs bg fails 3:1 |
+| 3 | Focus ring visible + meets area | 2.4.13 | Engineer | Designer | Manual keyboard tab | Every component | Keyboard user cannot see focus |
+| 4 | Links distinguishable without color | 1.4.1 | Designer | PM | Grayscale screenshot | Quarterly audit | Underline missing on link hover |
+| 5 | Chart/data viz CVD-safe | 1.4.1/1.4.11 | Designer | Engineer | Chrome CVD simulator | New chart/dashboard | Red-green bars identical in deut |
+| 6 | Form errors: color + text + icon | 1.4.1/1.4.3 | Engineer | QA | Manual + axe-core | Every form PR | Error only shown as red border |
+| 7 | Dark mode pass independently | 1.4.3 | Engineer | Designer | axe-core (dark mode run) | Every theme PR | Light passes, dark fails |
+| 8 | Button states: all 6 states pass | 1.4.3/1.4.11 | Engineer | Designer | [WCAG Buttons Guide](/wcag-contrast-checker-for-buttons/) | Button component PR | Hover lightens below 4.5:1 |
+| 9 | Placeholder text ≥4.5:1 | 1.4.3 | Designer | Engineer | axe-core | Every form PR | Decorative vs required distinction missed |
+| 10 | Semi-transparent overlays verified | 1.4.3 | Engineer | QA | Flatten + measure | Every overlay PR | Effective ratio below 4.5:1 |
+| 11 | Forced-colors/HC mode renders | 1.4.11 | Engineer | QA | Windows HC manual | Quarterly | Layout breaks, colors disappear |
+| 12 | Color token system documented | All | Designer | Engineer | Design token docs | Ongoing | No single source of truth for tokens |
+
+**How to use this matrix in a real sprint:**
+
+- **Designer reviews checks 1-5 and 9** before Figma handoff. If any fail, fix tokens in Figma, not in production.
+- **Engineer gates checks 1-3, 6, 8, 10, 12** in CI. PR is blocked if automated checks fail.
+- **QA manually verifies checks 4, 7, 11** in staging with DevTools CVD + keyboard tab + Windows HC.
+- **PM owns the quarterly audit cadence** — schedule a 2-hour session, run all 12 checks, update the compliance scorecard.
+
+**Scorecard template (use quarterly):**
+
+| Check # | Q1 status | Q2 status | Q3 status | Q4 status | Target |
+| ---: | --- | --- | --- | --- | --- |
+| 1 Text contrast | | | | | 100% pass |
+| 2 Component boundary | | | | | 100% pass |
+| 3 Focus ring | | | | | 100% pass |
+| 4 Links non-color | | | | | 100% pass |
+| 5 Charts CVD-safe | | | | | Manual review OK |
+| 6 Form errors | | | | | 100% pass |
+| 7 Dark mode | | | | | 100% pass |
+| 8 Button states | | | | | 100% pass |
+| 9 Placeholder text | | | | | 100% pass |
+| 10 Overlays | | | | | 100% pass |
+| 11 HC mode | | | | | No blockers |
+| 12 Token docs | | | | | Current |
+
+**Organizations that have run this exact matrix for two quarters or more report:**
+- Design-to-dev color handoff time drops from ~2h/sprint to ~15min because tokens are pre-validated
+- WCAG 2.2 audit preparation time shrinks from 3-4 weeks to 2-3 days because evidence is collected continuously
+- Post-launch contrast regressions drop 80%+ because each role owns their check at the right stage
+
+For the full token system architecture that supports this DRI model, see [Accessible Color Token System](/accessible-color-token-system/). For the enforcement and legal landscape behind the urgency, see [Color Accessibility Hub](/color-accessibility-hub/).`,
     codeSnippet: {
       label: "CI/CD color accessibility gate — GitHub Actions + axe-core (blocks PRs on contrast failures)",
       code: `# .github/workflows/a11y-contrast.yml
