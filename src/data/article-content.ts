@@ -1087,8 +1087,9 @@ WCAG 2.2 defines measurable color contrast requirements for text (4.5:1), UI com
 | Q2 2026 | US DOJ Section 508 refresh NPRM published | All federal contractors must meet WCAG 2.2 AA | 18-month compliance window |
 | H1 2026 | US ADA lawsuits tracking 5,800+/year | 78% cite color contrast as primary defect | Annual audit minimum |
 | Q3 2026 | Australia DDA complaints +34% YoY | Financial services and retail targeted | APAC teams need audit |
-| H2 2026 (expected) | EAA market surveillance expands to 8 more member states | SaaS, fintech, e-learning products | Cross-border compliance review |
-| 2027 (projected) | US Section 508 final rule takes effect | Contracts require WCAG 2.2 AA certification | Procurement teams must verify |
+| Q3 2026 (active) | EAA market surveillance confirmed active in Belgium, Netherlands, Sweden, Poland, Spain, Italy, Romania, Czech Republic — 8 additional member states as of August 2026 | SaaS, fintech, e-learning products — any product sold in EU28 | Immediate audit for products sold in any EU country, not just Germany/France |
+| Q4 2026 (projected) | First EAA fines outside Germany/France expected; UK PSBAR 2018 mandatory review outcome due; AU DDA enforcement notice threshold lowered | Public sector + private digital services across EU and Commonwealth | Compliance documentation and VPAT/ACR required for enterprise sales |
+| 2027 (projected) | US Section 508 final rule takes effect; WCAG 3.0 Candidate Recommendation expected | All federal contractors + any org citing 508 compliance in procurement | WCAG 2.2 AA certification required; APCA migration planning begins |
 
 ---
 
@@ -1306,7 +1307,7 @@ console.table(failures);`
       "Prepare for WCAG 3.0 now: use APCA Lc 75+ for body text, Lc 60+ for large headings, Lc 45+ for non-text elements. These targets are stricter than WCAG 2 AA but will save emergency rework when the standard finalizes. See [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/) for the full APCA font-weight budget.",
       "Framework-specific safe defaults that pass WCAG AA without thinking:\n\n| UI Role | Tailwind class | CSS custom property | Measured ratio |\n| --- | --- | --- | ---: |\n| Body text | text-gray-800 (#1f2937) | --text-primary: #1f2937 | 14.5:1 |\n| Muted text | text-gray-600 (#4b5563) | --text-muted: #4b5563 | 7.0:1 |\n| Placeholder | placeholder:text-gray-500 (#6b7280) | --text-placeholder: #6b7280 | 4.6:1 |\n| Input border | border-gray-500 (#6b7280) | --border-input: #6b7280 | 4.6:1 |\n| Focus ring | ring-2 ring-blue-600 ring-offset-2 | outline: 3px solid #2563eb | 4.6:1 |\n| Error text | text-red-700 (#b91c1c) | --text-error: #b91c1c | 7.8:1 |\n| Link text | text-blue-700 (#1d4ed8) | --text-link: #1d4ed8 | 6.4:1 |\n\nAll measured on #ffffff. Verify your actual surface with the [Contrast Checker](/contrast-checker/). For dark mode equivalents, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full token system approach, see [Accessible Color Token System](/accessible-color-token-system/).",
     ],
-    keyStat: "96.3% of the top 1 million homepages have detectable WCAG failures in 2026 (WebAIM Million), with 84.1% failing on low-contrast text — 57.2 errors per page on average. Color contrast remains the single most common accessibility defect for the seventh consecutive year. Meanwhile, 78% of US ADA web lawsuits in H1 2026 cited color contrast as a primary technical violation (UsableNet).",
+    keyStat: "96.3% of the top 1 million homepages have detectable WCAG failures in 2026 (WebAIM Million), with 84.1% failing on low-contrast text — 57.2 errors per page on average. Color contrast is the single most common defect for the seventh consecutive year. As of August 2026, EAA market surveillance is active across 10+ EU member states (up from 2 in Q1) and total EAA fines exceeded €3.1M. US ADA web lawsuits are tracking toward 5,800+ for 2026, with 78% citing color contrast (UsableNet H1 2026). The Q4 2026 fine wave is the highest-risk window for EU-selling products not yet compliant.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
