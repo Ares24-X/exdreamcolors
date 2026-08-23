@@ -5,6 +5,8 @@ const config: Config = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // markdown renderer emits utility classes from plain strings
+    './src/lib/**/*.{js,ts}',
   ],
   theme: {
     extend: {

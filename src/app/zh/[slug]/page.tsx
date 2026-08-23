@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { articleDatabase, articleSlugs } from "@/data/article-database";
 import { articleContent, getDefaultContent, type ContentBlock } from "@/data/article-content";
+import { renderMarkdown, renderInlineMarkdown, renderTipMarkdown } from "@/lib/markdown";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -51,7 +52,11 @@ export default function ZhArticlePage({ params }: { params: { slug: string } }) 
 
       <div className="text-lg leading-relaxed text-slate-700 mb-10">
         {content.intro.split("\n\n").map((p, i) => (
-          <p key={i} className={i > 0 ? "mt-4" : ""}>{p}</p>
+          <p
+            key={i}
+            className={i > 0 ? "mt-4" : ""}
+            dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(p) }}
+          />
         ))}
       </div>
 
@@ -150,7 +155,7 @@ function ZhSectionRenderer({ type, content, index }: { type: string; content: Co
           {content.proTips.map((tip, i) => (
             <li key={i} className="flex gap-3 text-slate-700">
               <span className="text-blue-500 font-bold flex-shrink-0">▸</span>
-              <span>{tip}</span>
+              <div className="min-w-0 flex-1" dangerouslySetInnerHTML={{ __html: renderTipMarkdown(tip) }} />
             </li>
           ))}
         </ul>
@@ -178,10 +183,4 @@ function ZhSectionRenderer({ type, content, index }: { type: string; content: Co
   );
 }
 
-function renderMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/^/, "<p>")
-    .replace(/$/, "</p>");
-}
+// Markdown rendering is shared via src/lib/markdown.ts.
