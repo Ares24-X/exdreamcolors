@@ -130,6 +130,8 @@ function ZhSectionRenderer({ type, content, index }: { type: string; content: Co
     comparison: "对比分析",
     code_patterns: "代码示例",
     code: "代码示例",
+    chart_audit: "图表可访问性审计",
+    audit_data: "审计数据",
   };
 
   const label = zhLabels[type] || type.replace(/_/g, " ");
@@ -161,6 +163,17 @@ function ZhSectionRenderer({ type, content, index }: { type: string; content: Co
         </ul>
       </section>
     );
+  }
+
+  // Chart/audit sections have their own content field — never fall back to realWorldExamples
+  if (type === "chart_audit" || type === "audit_data") {
+    return content.chartAudit ? (
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">{label}</h2>
+        <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(content.chartAudit) }} />
+      </section>
+    ) : null;
   }
 
   // Use testingMethods content for testing-related sections
