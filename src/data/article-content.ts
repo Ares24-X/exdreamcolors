@@ -10,6 +10,7 @@ export type ContentBlock = {
   proTips: string[];
   keyStat?: string;                // data point or statistic to add credibility
   chartAudit?: string;             // chart-specific audit data with accessibility tables
+  overMedia?: string;              // text-over-image/video/gradient scrim contrast data
   toolsMention?: string[];         // which exdreamcolors tools to recommend (different per article)
 };
 
@@ -221,7 +222,7 @@ The practical fix is not to make every interface black and white. The fix is to 
 I audited 50 SaaS marketing sites and product dashboards in Q2 2026. 31 of 50 failed WCAG AA on at least one text role — and in 24 of those cases the failure was on muted secondary text, not the hero headline. The smallest text on the page carries the highest risk because it combines thin weight, small size, and often a low-contrast gray. With the European Accessibility Act now enforceable and US lawsuits passing 5,800 cases annually in 2026, text contrast is no longer a design preference — it is a compliance requirement with measurable audit criteria.
 
 Use the [Contrast Checker](/contrast-checker/) to validate your text tokens against real surfaces. For button-specific guidance, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For dark mode token pairs, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full accessibility picture — forms, charts, dark mode, and color blindness — see the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    sectionFlow: ["realWorldExamples", "testing_methods", "code", "pro_tips", "tools"],
+    sectionFlow: ["realWorldExamples", "over_media", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe keeps brand blue away from long-form body copy.** Their product pages use vivid blue (#635BFF) for accents and actions, but paragraph text sits at #3C4257 on white — a 9.2:1 ratio. That split keeps the brand recognizable without forcing blue to do a reading job it was not designed for.
 
 **Amazon uses orange as an action signal, not as paragraph text.** Orange buttons (#FF9900 text on dark) can work because they are large, bold, and surrounded by neutral surfaces. The same hue at 14px on white scores only 2.3:1 — a hard fail. Amazon's body text uses #0F1111 on white (17.9:1).
@@ -290,6 +291,85 @@ Here is how the same color pair performs under both models:
 | 200 (extra-light) | 11:1 / Lc 90 | 7:1 / Lc 75 | Avoid for body; acceptable only for display |
 
 Apply these now as internal design-system guardrails. When WCAG 3.0 finalizes, your tokens will already comply.`,
+    overMedia: `Hero text sitting on a photo is the one case where contrast cannot be read off a token table. The background is thousands of different pixels, so the ratio changes per letter. WCAG still applies: SC 1.4.3 is measured against the *actual* backdrop behind the glyphs, which means the worst-case pixel decides whether you pass.
+
+I recalculated every number in this section with the WCAG relative-luminance formula, compositing the overlay onto the image the way a browser does (source-over on sRGB values). The results contradict the most common design-system default.
+
+**White text over a black scrim — measured ratios by overlay opacity**
+
+The columns are the image pixel *underneath* the scrim. #FFFFFF is the worst case (blown-out sky, snow, a white product shot); #808080 is mid-gray.
+
+| Black scrim opacity | Over #FFFFFF | Over #E8F0FA sky | Over #D9C7A0 sand | Over #808080 |
+| ---: | ---: | ---: | ---: | ---: |
+| 0% (no scrim) | 1.00:1 | 1.15:1 | 1.66:1 | 3.95:1 |
+| 20% | 1.61:1 | 1.83:1 | 2.60:1 | 5.71:1 |
+| 30% | 2.11:1 | 2.40:1 | 3.35:1 | 6.94:1 |
+| 40% | 2.85:1 | 3.22:1 | 4.39:1 | 8.48:1 |
+| 50% | 3.98:1 | 4.44:1 | 5.89:1 | 10.37:1 |
+| 60% | 5.74:1 | 6.32:1 | 8.04:1 | 12.60:1 |
+| 70% | 8.52:1 | 9.19:1 | 11.01:1 | 15.06:1 |
+
+**The finding that matters: rgba(0,0,0,0.4) is the most common hero scrim in the wild, and it fails.** At 40% over a bright pixel, white body text lands at 2.85:1 — below the 3:1 large-text floor and well below the 4.5:1 body-text requirement. Even 50%, the other popular default, only reaches 3.98:1 over white. It still fails AA for normal-size text.
+
+**Minimum black-scrim opacity to actually pass, by worst-case pixel:**
+
+| Target | Over #FFFFFF | Over #E8F0FA sky | Over #D9C7A0 sand |
+| --- | ---: | ---: | ---: |
+| 3:1 (large text ≥24px, SC 1.4.3) | 42% | 38% | 26% |
+| 4.5:1 (normal body text) | 54% | 51% | 41% |
+| 7:1 (AAA / thin weights) | 66% | 63% | 56% |
+
+Round up, do not round down. **Use 55% for large hero headlines and 60% for any body copy over an uncontrolled image.** If that looks too heavy for the art direction, change the composition — do not thin the scrim.
+
+**Gradient scrims fail at the top, where the text usually starts**
+
+The linear-gradient(transparent, rgba(0,0,0,0.7)) pattern is popular because it looks refined. The problem is that the effective opacity only reaches the full 70% at the very bottom edge:
+
+| Vertical position | Effective alpha | Ratio for white text over a white pixel |
+| --- | ---: | ---: |
+| 0% (top of gradient) | 0.00 | 1.00:1 |
+| 25% down | 0.17 | 1.51:1 |
+| 50% down | 0.35 | 2.44:1 |
+| 75% down | 0.52 | 4.35:1 |
+| 100% (bottom) | 0.70 | 8.52:1 |
+
+A caption whose first line sits in the upper half of that gradient is reading at 1.5–2.4:1. **Measure a gradient scrim at the topmost text baseline, not at the bottom of the element.** The fix is a two-stop gradient that starts at a non-zero alpha: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.75)).
+
+**The inverse pattern: dark text on a white scrim**
+
+Over dark photography, a light scrim with near-black text often looks better and passes more easily. #111827 text over a white scrim on a dark photo measures 5.23:1 at 50% opacity, 6.99:1 at 60%, and 9.11:1 at 70%. A 60% white scrim clears AA for body text with headroom.
+
+**Things that do not count as contrast**
+
+text-shadow and -webkit-text-stroke improve perceived legibility, but no WCAG 2.x success criterion gives you credit for them — the ratio is still computed from the text color against the backdrop color. Treat them as a bonus on top of a compliant scrim, never as the mechanism that gets you to 4.5:1. Same for backdrop-filter: blur() — blurring a bright image leaves it bright, so the luminance barely moves. Pair blur with an opaque tint if you want it to do accessibility work.
+
+**Safe pattern: put the scrim on the text container, not the image**
+
+\`\`\`css
+.hero { position: relative; }
+.hero img { width: 100%; height: 100%; object-fit: cover; }
+
+/* scrim sized to the copy, so opacity can be high without
+   flattening the whole photograph */
+.hero__copy {
+  position: relative;
+  background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.75));
+  padding: 2rem;
+  color: #fff;
+}
+
+/* video needs the same treatment, plus a paused-frame check:
+   the worst-case pixel may only appear mid-playback */
+@supports (backdrop-filter: blur(8px)) {
+  .hero__copy { backdrop-filter: blur(8px); }
+}
+\`\`\`
+
+**Audit workflow for text over media**
+
+Screenshot the rendered hero, then sample the lightest pixel that falls directly behind a glyph — not the average of the image. Paste that hex and your text color into the [Contrast Checker](/contrast-checker/) and read the ratio. For video, pause at three or four frames and repeat, because a single bright frame is enough to fail the criterion. If the image is user-uploaded or CMS-driven, you cannot audit your way to safety: enforce a minimum scrim opacity in the component so an editor cannot ship an unreadable hero.
+
+For the token-level version of this rule, see [Accessible Color Token System](/accessible-color-token-system/). For the same problem in dark interfaces, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For pairings that survive busy backdrops, see [High Contrast Color Combinations](/high-contrast-color-combinations/).`,
     testingMethods: `**Five testing methods, from fastest to most thorough:**
 
 **1. Browser DevTools (0 setup, instant):** Right-click any text element → Inspect → look at the contrast ratio in the color picker tooltip. Chrome, Edge, and Firefox all show the ratio with AA/AAA pass/fail indicators. Works for spot-checking single elements but does not scale to full-page audits.

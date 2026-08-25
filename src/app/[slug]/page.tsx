@@ -225,6 +225,16 @@ function SectionRenderer({ type, content, index }: { type: string; content: Cont
         </section>
       );
 
+    case "over_media":
+    case "text_over_image":
+      return content.overMedia ? (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Text Over Images, Video, and Gradients</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-3"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content.overMedia) }} />
+        </section>
+      ) : null;
+
     case "chart_audit":
     case "audit_data":
       return content.chartAudit ? (
