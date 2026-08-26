@@ -261,6 +261,33 @@ ${contrastRatio.toFixed(2)}:1`}
           </div>
         </div>
 
+        {/* Accessibility guides */}
+        <div className="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl">
+          <h2 className="text-2xl font-bold mb-2 text-slate-900">Not sure which ratio you need?</h2>
+          <p className="text-slate-700 mb-4">
+            Normal text needs 4.5:1, large text and UI components need 3:1, and focus rings need 3:1 with a 2px
+            perimeter. The{' '}
+            <Link href="/color-accessibility-hub/" className="text-blue-700 font-semibold hover:underline">
+              Color Accessibility Hub
+            </Link>{' '}
+            maps each check to its WCAG success criterion, with a 10-point audit checklist and copy-paste token fixes.
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link href="/wcag-contrast-ratio-for-text/" className="px-3 py-2 bg-white border border-blue-200 rounded-lg text-blue-700 font-medium hover:border-blue-400">
+              Text contrast →
+            </Link>
+            <Link href="/wcag-contrast-checker-for-buttons/" className="px-3 py-2 bg-white border border-blue-200 rounded-lg text-blue-700 font-medium hover:border-blue-400">
+              Buttons &amp; focus rings →
+            </Link>
+            <Link href="/wcag-contrast-checker-for-dark-mode/" className="px-3 py-2 bg-white border border-blue-200 rounded-lg text-blue-700 font-medium hover:border-blue-400">
+              Dark mode →
+            </Link>
+            <Link href="/form-validation-color-accessibility/" className="px-3 py-2 bg-white border border-blue-200 rounded-lg text-blue-700 font-medium hover:border-blue-400">
+              Form errors →
+            </Link>
+          </div>
+        </div>
+
         {/* Related Tools */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Related Tools</h2>

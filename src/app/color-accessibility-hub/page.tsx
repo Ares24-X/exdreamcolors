@@ -298,33 +298,33 @@ export default function ColorAccessibilityHubPage() {
           <pre className="text-sm text-green-300 font-mono whitespace-pre">{`:root {
   /* Fix #1: Muted/secondary text — most common failure (78% of sites)
      Problem: gray text below 4.5:1 on white
-     Before:  #9ca3af on #ffffff = 2.9:1 (FAIL)
-     After:   #4b5563 on #ffffff = 7.0:1 (AAA) */
+     Before:  #9ca3af on #ffffff = 2.54:1 (FAIL)
+     After:   #4b5563 on #ffffff = 7.56:1 (AAA) */
   --text-muted: #4b5563;
 
   /* Fix #2: Placeholder text — invisible to many users
      Problem: light gray placeholder fails when conveying required info
-     Before:  #d1d5db on #ffffff = 1.8:1 (FAIL)
-     After:   #6b7280 on #ffffff = 4.6:1 (AA) */
+     Before:  #d1d5db on #ffffff = 1.47:1 (FAIL)
+     After:   #6b7280 on #ffffff = 4.83:1 (AA) */
   --text-placeholder: #6b7280;
 
   /* Fix #3: Focus ring — 69% of sites fail SC 2.4.13
      Problem: thin 1px ring or low-contrast outline
-     Fix:     3px solid ring at 4.6:1 + offset for visibility */
+     Fix:     3px solid ring at 5.17:1 + offset for visibility */
   --ring-focus: #2563eb;
   --ring-width: 3px;
   --ring-offset: 2px;
 
   /* Fix #4: Form border on gray surface — fails SC 1.4.11
-     Problem: #e5e7eb border on #f9fafb = 1.3:1 (invisible)
-     After:   #6b7280 border on #f9fafb = 4.2:1 (passes 3:1) */
+     Problem: #e5e7eb border on #f9fafb = 1.18:1 (invisible)
+     After:   #6b7280 border on #f9fafb = 4.63:1 (passes 3:1) */
   --border-input: #6b7280;
 
   /* Fix #5: Disabled button text — intentionally low but not for info
      Problem: teams put required instructions in disabled elements
      Rule:    never put actionable info in disabled state.
      If you must show info: use aria-describedby on a visible element */
-  --text-disabled: #9ca3af; /* 2.9:1 — acceptable ONLY if decorative */
+  --text-disabled: #9ca3af; /* 2.54:1 — acceptable ONLY if decorative */
 }
 
 /* Focus ring utility — apply to all interactive elements */
@@ -336,10 +336,10 @@ export default function ColorAccessibilityHubPage() {
 /* Dark mode overrides — tested on #111827 surface */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-muted: #d1d5db;     /* on #111827 = 11.3:1 (AAA) */
-    --text-placeholder: #9ca3af; /* on #111827 = 6.3:1 (AA) */
-    --border-input: #9ca3af;   /* on #111827 = 6.3:1 (passes 3:1) */
-    --ring-focus: #60a5fa;     /* on #111827 = 5.8:1 */
+    --text-muted: #d1d5db;     /* on #111827 = 12.04:1 (AAA) */
+    --text-placeholder: #9ca3af; /* on #111827 = 6.99:1 (AA) */
+    --border-input: #9ca3af;   /* on #111827 = 6.99:1 (passes 3:1) */
+    --ring-focus: #60a5fa;     /* on #111827 = 6.98:1 */
   }
 }`}</pre>
         </div>
@@ -633,7 +633,7 @@ export default function ColorAccessibilityHubPage() {
                 <div className="space-y-2 text-sm">
                   <p><strong>Element:</strong> Chart axis labels, timestamps, helper text</p>
                   <p><strong>Color:</strong> #9CA3AF on #FFFFFF</p>
-                  <p><strong>Measured ratio:</strong> 2.85:1</p>
+                  <p><strong>Measured ratio:</strong> 2.54:1</p>
                   <p><strong>WCAG verdict:</strong> Fail SC 1.4.3 — needs 4.5:1 minimum</p>
                   <p><strong>Impact:</strong> 23% of dashboard text unreadable for users with low vision</p>
                 </div>
@@ -642,7 +642,7 @@ export default function ColorAccessibilityHubPage() {
                 <p className="text-sm font-semibold text-green-800 mb-2">✓ After (fixed)</p>
                 <div className="space-y-2 text-sm">
                   <p><strong>New color:</strong> #6B7280 on #FFFFFF</p>
-                  <p><strong>Measured ratio:</strong> 4.61:1</p>
+                  <p><strong>Measured ratio:</strong> 4.83:1</p>
                   <p><strong>WCAG verdict:</strong> Pass AA (barely — target 5:1 for safety margin)</p>
                   <p><strong>Fix time:</strong> 1 design token change, 15min deploy</p>
                   <p><strong>Support tickets drop:</strong> "Can\'t read chart labels" tickets dropped 87% (18 → 2/month)</p>
@@ -652,7 +652,7 @@ export default function ColorAccessibilityHubPage() {
             <div className="rounded-lg bg-slate-900 p-4">
               <pre className="text-xs text-green-300 font-mono overflow-x-auto">{`/* Token fix: darken muted text by 12 OKLCH lightness points */
 --text-muted-light: #9CA3AF;  /* L 69% → fail */
---text-muted-light: #6B7280;  /* L 57% → pass 4.6:1 */`}</pre>
+--text-muted-light: #6B7280;  /* L 57% → pass 4.83:1 */`}</pre>
             </div>
             <p className="text-sm text-slate-600 mt-3"><strong>Lesson:</strong> Muted/secondary text is the #1 contrast failure in production. Test it on every surface, not just white. Use the <Link href="/contrast-checker/" className="text-blue-700 hover:underline">Contrast Checker</Link> with your actual card/section backgrounds.</p>
           </div>

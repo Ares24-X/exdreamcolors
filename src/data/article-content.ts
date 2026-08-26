@@ -778,22 +778,37 @@ The WCAG rules for buttons cover three separate checks: label text versus fill (
 
 I audited 60 component libraries and design systems in Q1 2026 — Material UI, Chakra, Radix, Shadcn, Ant Design, and 55 custom systems from SaaS products. 43 of 60 (72%) had at least one button state that failed WCAG AA. The failure was almost never the primary default state. It was hover (38%), disabled (29%), or focus ring (22%). Only 11% failed on the default primary.
 
+One measurement makes the pattern concrete. Ant Design's primary fill lightens on hover from #1677FF to #4096FF, and the white label drops from 4.10:1 to 2.99:1. Bootstrap darkens from #0D6EFD to #0B5ED7 and the same label climbs from 4.50:1 to 5.84:1. Identical component, opposite direction, and only one of them stays readable.
+
 Test your button color pairs now with the [Contrast Checker](/contrast-checker/). For text-specific contrast guidance, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/). For dark mode button states, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
     sectionFlow: ["realWorldExamples", "testing_methods", "code", "pro_tips", "tools"],
-    realWorldExamples: `**Brand button audit — measured ratios across all states (Q1 2026):**
+    realWorldExamples: `**Brand button audit — measured label-on-fill ratios (Q1 2026, re-verified August 2026):**
 
-| Design System | Primary Fill | Label | Default Ratio | Hover Ratio | Focus Ring vs Surface | Verdict |
-| --- | --- | --- | ---: | ---: | ---: | --- |
-| Stripe | #635BFF | #FFFFFF | 4.7:1 | 5.2:1 | 3.4:1 | Pass all states |
-| GitHub Primer | #1F883D | #FFFFFF | 4.5:1 | 5.0:1 | 3.1:1 | Pass all states |
-| Linear | #5E6AD2 | #FFFFFF | 4.5:1 | 4.8:1 | 4.2:1 | Pass all states |
-| Vercel | #000000 | #FFFFFF | 21:1 | 17.9:1 | 5.8:1 | Pass all states |
-| Shopify Polaris | #303030 | #FFFFFF | 12.6:1 | 10.8:1 | 3.8:1 | Pass all states |
-| Ant Design | #1677FF | #FFFFFF | 3.9:1 | 3.5:1 | 2.8:1 | Fail (default + hover + ring) |
-| Bootstrap default | #0D6EFD | #FFFFFF | 4.5:1 | 3.8:1 | 2.4:1 | Fail (hover + ring) |
-| Tailwind UI | #4F46E5 | #FFFFFF | 5.6:1 | 6.2:1 | 3.9:1 | Pass all states |
-| Chakra UI | #3182CE | #FFFFFF | 4.1:1 | 4.5:1 | 3.0:1 | Fail (default label) |
-| Radix Themes | #3E63DD | #FFFFFF | 5.1:1 | 5.5:1 | 4.0:1 | Pass all states |
+Every ratio below is the button label against the button fill, computed from the published hex values with the WCAG 2.2 relative luminance formula. You can reproduce any row by pasting the two hex codes into the [Contrast Checker](/contrast-checker/).
+
+| Design System | Primary Fill | Label | Label vs Fill | AA normal text (4.5:1) |
+| --- | --- | --- | ---: | --- |
+| Vercel | #000000 | #FFFFFF | 21.00:1 | Pass (AAA) |
+| Shopify Polaris | #303030 | #FFFFFF | 13.20:1 | Pass (AAA) |
+| Tailwind UI | #4F46E5 | #FFFFFF | 6.29:1 | Pass (AA) |
+| Radix Themes | #3E63DD | #FFFFFF | 5.21:1 | Pass (AA) |
+| Stripe | #635BFF | #FFFFFF | 4.70:1 | Pass (AA) |
+| Linear | #5E6AD2 | #FFFFFF | 4.70:1 | Pass (AA) |
+| GitHub Primer | #1F883D | #FFFFFF | 4.52:1 | Pass (AA, 0.02 margin) |
+| Bootstrap 5.3 | #0D6EFD | #FFFFFF | 4.50:1 | Pass (AA, zero margin) |
+| Ant Design 5.x | #1677FF | #FFFFFF | 4.10:1 | Fail |
+| Chakra UI 2.x | #3182CE | #FFFFFF | 4.03:1 | Fail |
+
+**Read the margins, not just the verdict.** GitHub Primer clears 4.5:1 by 0.02 and Bootstrap lands exactly on it. Any downstream theme tweak — a slightly lighter brand blue, a hover that lightens, an off-white label like #FAFAFA instead of #FFFFFF — pushes both into failure. Treat a sub-0.2 margin as a failure waiting to ship.
+
+**Hover direction is the actual predictor of failure.** Measured against a white label:
+
+| System | Stock hover fill | Label vs hover fill | Direction | Result |
+| --- | --- | ---: | --- | --- |
+| Bootstrap 5.3 | #0B5ED7 | 5.84:1 | Darkens | Improves to AA |
+| Ant Design 5.x | #4096FF | 2.99:1 | Lightens | Drops well below AA |
+
+Same category of component, opposite outcome, and the only variable is direction. Bootstrap darkens on hover and its label ratio climbs from 4.50:1 to 5.84:1. Ant Design lightens and the label collapses from 4.10:1 to 2.99:1 — worse than the muted-gray-text problem most audits open with. This is why "hover must darken" is a hard rule rather than a style preference.
 
 **Key patterns from passing systems:**
 
@@ -826,19 +841,21 @@ Test your button color pairs now with the [Contrast Checker](/contrast-checker/)
 
 **Quick-fix token overrides for popular frameworks that fail (copy-paste ready, August 2026):**
 
-Three of the most-used open-source component libraries fail WCAG AA out of the box. Here are exact CSS overrides to bring each into compliance without forking the library:
+Two of the most-used open-source component libraries ship a primary button that fails WCAG AA on the default label, and a third passes by a margin thin enough to break on any theme tweak. Here are exact CSS overrides to bring each into compliance without forking the library. Every "resulting ratio" is the white label against the replacement fill, computed with the WCAG 2.2 formula:
 
 | Framework | Problem | Original token | Fixed token | Resulting ratio | Override CSS |
 | --- | --- | --- | --- | ---: | --- |
-| Ant Design 5.x | Primary button default label fails (3.9:1) | --ant-color-primary: #1677FF | --ant-color-primary: #0958D9 | 5.4:1 | :root { --ant-color-primary: #0958D9; } |
-| Ant Design 5.x | Hover lightens to #4096FF (3.1:1) | --ant-color-primary-hover: #4096FF | --ant-color-primary-hover: #1668DC | 4.8:1 | :root { --ant-color-primary-hover: #1668DC; } |
-| Ant Design 5.x | Focus ring invisible (2.8:1) | box-shadow: 0 0 0 2px rgba(22,119,255,0.1) | outline: 2px solid #0958D9; offset: 2px | 5.4:1 | .ant-btn:focus-visible { outline: 2px solid #0958D9; outline-offset: 2px; box-shadow: none; } |
-| Bootstrap 5.3 | Hover lightens primary (#0B5ED7 → 3.8:1) | --bs-btn-hover-bg: #0B5ED7 | --bs-btn-hover-bg: #0A4FB3 | 5.8:1 | .btn-primary { --bs-btn-hover-bg: #0A4FB3; --bs-btn-hover-border-color: #0A4FB3; } |
-| Bootstrap 5.3 | Focus ring thin + low contrast (2.4:1) | --bs-btn-focus-shadow-rgb: 49,132,253 | outline: 2px solid #0A4FB3; offset: 2px | 5.8:1 | .btn:focus-visible { outline: 2px solid #0A4FB3; outline-offset: 2px; box-shadow: none; } |
-| Chakra UI 2.x | Default #3182CE on white (4.1:1 — borderline) | colorScheme blue.500: #3182CE | blue.600: #2B6CB0 | 5.3:1 | Set theme.colors.blue.500 = '#2B6CB0' in extendTheme() |
-| Chakra UI 2.x | Focus ring opacity too low | boxShadow: 0 0 0 3px rgba(66,153,225,0.6) | ring: 2px solid #2B6CB0 | 5.3:1 | Add shadows: { outline: '0 0 0 2px #2B6CB0' } to theme |
+| Ant Design 5.x | Primary button default label fails (4.10:1) | --ant-color-primary: #1677FF | --ant-color-primary: #0958D9 | 6.16:1 | :root { --ant-color-primary: #0958D9; } |
+| Ant Design 5.x | Hover lightens to #4096FF, label drops to 2.99:1 | --ant-color-primary-hover: #4096FF | --ant-color-primary-hover: #1668DC | 5.19:1 | :root { --ant-color-primary-hover: #1668DC; } |
+| Ant Design 5.x | Focus ring at 0.1 alpha is effectively invisible | box-shadow: 0 0 0 2px rgba(22,119,255,0.1) | outline: 2px solid #0958D9; offset: 2px | 6.16:1 vs white | .ant-btn:focus-visible { outline: 2px solid #0958D9; outline-offset: 2px; box-shadow: none; } |
+| Bootstrap 5.3 | Default label sits exactly on 4.50:1 with zero margin | --bs-btn-bg: #0D6EFD | --bs-btn-bg: #0A58CA | 6.44:1 | .btn-primary { --bs-btn-bg: #0A58CA; --bs-btn-border-color: #0A58CA; } |
+| Bootstrap 5.3 | Focus ring thin and low contrast against white | --bs-btn-focus-shadow-rgb: 49,132,253 | outline: 2px solid #0A4FB3; offset: 2px | 7.55:1 vs white | .btn:focus-visible { outline: 2px solid #0A4FB3; outline-offset: 2px; box-shadow: none; } |
+| Chakra UI 2.x | Default #3182CE label fails (4.03:1) | colorScheme blue.500: #3182CE | blue.600: #2B6CB0 | 5.42:1 | Set theme.colors.blue.500 = '#2B6CB0' in extendTheme() |
+| Chakra UI 2.x | Focus ring opacity too low to read on white | boxShadow: 0 0 0 3px rgba(66,153,225,0.6) | ring: 2px solid #2B6CB0 | 5.42:1 vs white | Add shadows: { outline: '0 0 0 2px #2B6CB0' } to theme |
 
-**Implementation priority:** Fix the hover state first (most common failure), then focus ring (keyboard accessibility), then default fill (borderline cases).
+**Note on Bootstrap's hover:** its stock hover fill #0B5ED7 darkens and takes the label to 5.84:1, so the hover itself is not the defect. The problem is the default state's zero margin and the low-contrast focus ring. Ant Design is the opposite case, where the hover lightens and is the worst state in the component.
+
+**Implementation priority:** Fix any state measuring below 4.5:1 first, starting with lightening hovers since they produce the lowest ratios. Then replace opacity-based focus rings with solid outlines. Then raise default fills that pass by less than a 0.2 margin.
 
 **Verification:** After applying overrides, run \`npx @axe-core/cli http://localhost:3000 --rules color-contrast\` to confirm zero violations. Then manually keyboard-tab through each button and visually verify the focus ring. Use the [Contrast Checker](/contrast-checker/) to spot-check any custom variants your project adds on top of the library defaults.
 
@@ -958,7 +975,7 @@ console.table(auditButton(primaryButton));`
       "Pre-ship button accessibility checklist: (1) Label ≥4.5:1 on default fill (2) Label ≥4.5:1 on hover fill (3) Fill ≥3:1 vs surface in all states (4) Focus ring ≥3:1 vs surface with ≥2px area (5) Disabled state never used for required info (6) Loading state has aria-label (7) All states tested on both light and dark surfaces (8) Outline variants: border ≥3:1 vs surface (9) Tested in Chrome CVD simulator (10) Keyboard-tabbed through the full flow.",
       "For design token enforcement: define button.fill.primary, button.on-fill.primary, and button.ring.primary as linked tokens. CI should reject any PR where the trio fails the 3-check rule. See [Accessible Color Token System](/accessible-color-token-system/) for implementation patterns."
     ],
-    keyStat: "In a 60-library component audit (Q1 2026), hover states caused 38% of button contrast failures, disabled states caused 29%, and focus rings caused 22%. The default primary state — what most teams test — caused only 11% of failures.",
+    keyStat: "In a 60-library component audit (Q1 2026), hover states caused 38% of button contrast failures, disabled states caused 29%, and focus rings caused 22%. The default primary state — what most teams test — caused only 11%. Direction is the tell: Ant Design lightens on hover and its white label falls to 2.99:1, while Bootstrap darkens and the same label rises to 5.84:1.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
