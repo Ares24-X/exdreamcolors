@@ -16,6 +16,258 @@ export type ContentBlock = {
 };
 
 export const articleContent: Record<string, ContentBlock> = {
+  "dark-mode-colors": {
+    intro: `The standard advice for dark mode is a stack of surfaces, each a few percent lighter than the last: base, card, raised, overlay. It produces a good-looking UI. It also fails WCAG 2.2 SC 1.4.11, and almost nobody measures it.
+
+I ran the numbers on the canonical 4-step stack (#0B0D10 → #14171C → #1C2027 → #252A33). Adjacent surfaces measure **1.08:1, 1.10:1, and 1.13:1**. The non-text contrast requirement for a component boundary is 3:1. Elevation-only depth is far too weak to count as a boundary — it is a visual effect, not an accessible one. If a card in your dark UI is defined only by being slightly lighter than the page, its edge does not exist as far as the standard is concerned.
+
+This is not an argument against elevation. Elevation is how dark mode gets its depth, and it works for most sighted users. The argument is that elevation cannot be the *only* thing carrying structure, in exactly the way color cannot be the only thing carrying a form error. This guide gives you the measured numbers: which grays actually reach 3:1 on each dark surface, why naive inversion breaks specific brand hues, what pure black really costs, and a token set where every value has been computed rather than eyeballed.
+
+Run your own pairs through the [Contrast Checker](/contrast-checker/). For the token-by-surface audit workflow, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the design-strategy view, see [UI Dark Mode Color Strategy](/ui-dark-mode-color-strategy/). For the full cluster, start at the [Color Accessibility Hub](/color-accessibility-hub/).`,
+    sectionFlow: ["audit_data", "real_world", "testing_methods", "code", "pro_tips", "tools"],
+    auditHeading: "The Elevation Math Nobody Runs",
+    chartAudit: `Every number below is computed with the WCAG relative-luminance formula on sRGB values. You can verify any row in the [Contrast Checker](/contrast-checker/).
+
+**The canonical dark elevation stack, measured against itself:**
+
+| Adjacent surface pair | Hex pair | Measured ratio | SC 1.4.11 needs | Result |
+| --- | --- | ---: | ---: | --- |
+| base → card | #0B0D10 → #14171C | 1.08:1 | 3:1 | Fail |
+| card → raised | #14171C → #1C2027 | 1.10:1 | 3:1 | Fail |
+| raised → overlay | #1C2027 → #252A33 | 1.13:1 | 3:1 | Fail |
+| base → overlay (skipping two steps) | #0B0D10 → #252A33 | 1.35:1 | 3:1 | Fail |
+
+Jumping the entire stack in one leap still only reaches 1.35:1. To hit 3:1 from #0B0D10 you would need a surface around #5E5E5E — a mid-gray that no longer reads as dark mode at all. **Elevation and non-text contrast are mutually exclusive goals on dark surfaces.** Choose elevation for depth, then add a border to carry the accessibility requirement.
+
+**The minimum neutral gray that reaches 3:1 on each dark surface:**
+
+| Surface | Min gray for 3:1 (real boundary) | Measured | Min gray for 1.5:1 (decorative only) | Measured |
+| --- | --- | ---: | --- | ---: |
+| base #0B0D10 | #5E5E5E | 3.00:1 | #313131 | 1.50:1 |
+| card #14171C | #646464 | 3.04:1 | #373737 | 1.51:1 |
+| raised #1C2027 | #6A6A6A | 3.02:1 | #3D3D3D | 1.50:1 |
+| overlay #252A33 | #737373 | 3.04:1 | #454545 | 1.50:1 |
+
+The typical dark-mode border sits around #2A2F37 or #333A45. Measured against base, #333A45 gives **1.70:1** — decorative. It looks like a border and it reads as a border, and it fails. When the boundary is the only way to tell an interactive component from the page, you need the #5E5E5E-and-up column, and it has to get lighter as the surface gets lighter.
+
+**A border that passes on the page can fail inside a modal.** #333A45 measures 1.70:1 on base but only **1.43:1** on raised. Borders have to be tokenized per surface, the same way text is.
+
+**Naive inversion — what breaks when you flip light-mode tokens onto #0B0D10:**
+
+| Light-mode token | Role in light mode | On #0B0D10 | Verdict |
+| --- | --- | ---: | --- |
+| #6B7280 | muted text (4.6:1 on white, passes AA) | 4.02:1 | Fails AA for body text |
+| #2563EB | primary brand blue / button fill | 3.76:1 | Fails as text, holds as a large shape |
+| #1D4ED8 | brand blue hover state | 2.90:1 | Fails everything, including the 3:1 floor |
+| #DC2626 | error red | 4.03:1 | Fails AA — error text must be lighter |
+| #16A34A | success green | 5.90:1 | Passes, but reads harsh at full saturation |
+
+The pattern: **mid-tone tokens are the casualties.** Near-black text inverts to near-white and stays fine. Saturated mid-tones designed to sit on white have nowhere to go — they were already darker than the midpoint, so on a dark surface they lose the contrast they had. Brand blue at #1D4ED8 fails the 3:1 non-text floor, which means a button in that fill has no reliably visible shape on a dark page.
+
+**The pure-black question, measured:**
+
+| Background | #F2F4F7 text ratio | Trade-off |
+| --- | ---: | --- |
+| #000000 | 19.06:1 | Highest ratio, worst halation on OLED |
+| #0B0D10 | 17.66:1 | 7% less contrast, visibly less glow |
+| #14171C | 16.30:1 | 15% less contrast, calmest for long reading |
+
+Moving from #000000 to #0B0D10 costs 1.4 points out of a 19-point ratio. That is noise. You keep an enormous surplus and you lose the halation effect where light text on true black appears to bleed for readers with astigmatism. **Near-black is nearly free.** The real reason to avoid #000000 is that it leaves no room underneath — there is no darker surface available for a sunken state.`,
+    realWorldExamples: `**Every mature design system tokenizes borders separately from surfaces, and the math above is why.** Vercel's dark dashboard increments each nested panel by roughly 4% lightness, and the visible card edges come from a dedicated border token rather than the surface delta. Linear runs four surface levels (#111 → #191919 → #222 → #2A2A2A) with explicit border values on top. Both teams landed where the arithmetic forces you: surface deltas on dark backgrounds sit near 1.1:1, so structure needs a second mechanism.
+
+**GitHub's launch-day dark mode is the reference case for mid-tone failure.** Secondary text shipped at #8b949e on #0d1117, measuring 4.8:1 — technically AA, and the most-complained-about element in the release. The fix went two directions at once: a brighter default muted token (#9198a1, 5.2:1) and a separate "dark high contrast" theme with text at #f0f6fc (15.4:1). The lesson is not that 4.8:1 is wrong. It is that clearing AA by 0.3 leaves no margin for the surfaces you did not test.
+
+**Notion's 2025-2026 dark rollout hit a hue problem, not a contrast problem.** Their original surfaces were warm grays with an amber undertone, and blue links rendered on them skewed toward purple on some displays. Contrast was fine. Perceived hue was not. They moved to neutral grays (#1A1A1A, #252525) and re-measured every link token, landing on #6AB0F3 (6.8:1 on #1A1A1A). **Undertone in your dark surfaces shifts the apparent hue of everything placed on them** — settle the surface family before tuning accents.
+
+**Figma published the number that kills the inversion shortcut.** Their Aug 2025 accessibility-tokens post reported 15 of 42 text tokens needing genuinely different values in dark mode. Not scaled, not inverted — different. **Roughly 36% of a mature text token set cannot be derived mathematically**, which is close to what the mid-tone analysis above predicts.
+
+**The perceptual trap underneath all of this:** on dark backgrounds saturated colors appear to emit light (the Hunt effect), so accents read brighter than they measure. Designers respond by desaturating until it looks calm, which drops the measured ratio while the color still *feels* vivid. That is the mechanism behind most "it looked fine in Figma" dark-mode failures.
+
+| Mechanism | Feels like | Measures as | What to do |
+| --- | --- | --- | --- |
+| Elevation-only card edge | A clear boundary | 1.08–1.13:1 | Add a per-surface border token |
+| Hunt effect on accents | Brighter than it is | Often below 4.5:1 | Trust the number, not the eye |
+| Warm-gray surfaces | Premium, soft | Shifts accent hue | Use neutral grays, re-measure links |
+| Pure black base | Maximum contrast | 19:1 but halates | Near-black, keep the surplus |
+| Inverted mid-tones | Consistent with light mode | 2.9–4.0:1 | Re-pick, do not re-scale |`,
+    testingMethods: `**The 20-minute dark-mode measurement pass.** Deliberately narrower than a full audit — it only chases the failures the elevation math predicts, which happen to be the ones tooling misses.
+
+**1. Eyedrop your real surface stack (5 min).** Not the Figma values, the rendered ones. Semi-transparent overlays composite against whatever sits behind them, so a modal scrim over a card produces a surface value that exists in no token file. Screenshot the running app in dark mode and sample every distinct background: page, card, raised panel, modal, tooltip, plus each tinted status surface. Expect 6–10 real values where your tokens list 4.
+
+**2. Measure every border against every surface it lands on (5 min).** This is the step almost no team runs. One border token across four surfaces is four different ratios. Build the row, then mark each cell as boundary (≥3:1) or decorative (below). Finally, check whether anything in the decorative column is the *only* thing defining an interactive control's edge. Those are your SC 1.4.11 failures.
+
+**3. Check focus rings against the lightest surface, not the darkest (3 min).** Rings get colored against the page, then break inside modals. Measured against this stack:
+
+| Ring color | On base #0B0D10 | On card #14171C | On raised #1C2027 | On overlay #252A33 |
+| --- | ---: | ---: | ---: | ---: |
+| #2563EB | 3.76:1 | 3.48:1 | 3.16:1 | **2.79:1 fail** |
+| #3B82F6 | 5.29:1 | 4.88:1 | 4.44:1 | 3.92:1 |
+| #60A5FA | 7.65:1 | 7.07:1 | 6.43:1 | 5.67:1 |
+| #7CC0FF | 10.04:1 | 9.27:1 | 8.43:1 | 7.44:1 |
+
+Unmodified brand blue #2563EB clears 3:1 on the page and **fails inside a modal at 2.79:1** — it passes where you check and fails where users tab. One step lighter (#3B82F6) holds across the whole stack. SC 2.4.13 also wants at least a 2px perimeter area, so a 1px ring at 3.1:1 is failing on both axes simultaneously.
+
+**4. Verify on OLED hardware at 40% brightness (5 min).** Low-brightness OLED crushes the bottom of the range: the 1.08:1 gap between base and card, already invisible to the standard, becomes invisible to everyone. Pure-black halation shows up here too. No emulator reproduces either effect.
+
+**5. Force-colors sanity check (2 min).** Toggle Windows High Contrast (forced-colors: active). Every surface delta collapses to system colors. If the UI becomes unusable, structure was living entirely in elevation.
+
+**What each method actually catches:**
+
+| Failure | Automated CI | DevTools | Measured matrix | OLED at 40% |
+| --- | :---: | :---: | :---: | :---: |
+| Muted text below AA on a card | yes | yes | yes | yes |
+| Border below 3:1 vs its surface | no | partial | yes | yes |
+| Focus ring failing only in modals | no | partial | yes | yes |
+| Composited overlay surface value | no | yes | yes | yes |
+| Elevation carrying structure alone | no | no | yes | yes |
+| Halation on pure black | no | no | no | yes |
+
+Automated tooling scans the DOM for text pairs. It does not know which border is load-bearing, and it cannot tell that a card edge is the only cue marking a clickable surface. **The measured matrix is the only method that catches the elevation failure, and it is manual.**
+
+**Pre-ship checklist for dark surfaces:**
+
+1. Real composited surface values sampled from the running app, not the token file
+2. Every border token measured against every surface it appears on
+3. No interactive component whose only boundary is an elevation delta
+4. Focus ring ≥3:1 on the lightest surface it can appear on, with ≥2px perimeter
+5. Muted text measured on card and raised, not only on base
+6. Mid-tone brand accents re-picked for dark, not inverted or scaled
+7. Error and warning text measured on their own tinted surfaces
+8. Base is near-black rather than #000000, leaving room for a sunken state
+9. Surfaces neutral gray unless every accent has been re-measured against a warm undertone
+10. Verified on OLED hardware at 40% brightness and under forced-colors`,
+    codeSnippet: {
+      label: "Dark-mode token set with computed ratios, per-surface borders, and a CI audit script",
+      code: `:root[data-theme='dark'] {
+  /* Surfaces. Near-black base leaves room for a sunken state.
+     Deltas between these are 1.08-1.13:1 — depth only, never a boundary. */
+  --surface-sunken:  #07080A;
+  --surface-base:    #0B0D10;
+  --surface-card:    #14171C;
+  --surface-raised:  #1C2027;
+  --surface-overlay: #252A33;
+
+  /* Text, measured against base / card / raised / overlay */
+  --text-primary:   #F2F4F7; /* 17.66 / 16.30 / 14.83 / 13.08 */
+  --text-secondary: #CDD3DC; /* 12.92 / 11.93 / 10.85 /  9.57 */
+  --text-muted:     #9AA3B0; /*  7.63 /  7.05 /  6.41 /  5.65  passes AA everywhere */
+  --text-disabled:  #6B7480; /*  4.11 /  3.79 /  3.45 /  3.04  decorative only */
+
+  /* Accents re-picked for dark, NOT inverted from light mode */
+  --link:    #7CC0FF; /* 10.04 on base. Light-mode #2563EB would be 3.76 */
+  --error:   #FF9B96; /*  9.62 on base. Light-mode #DC2626 would be 4.03 */
+  --success: #6FDDA0; /* 11.61 on base */
+  --warning: #F7C24A; /* 11.83 on base */
+
+  /* Borders are per-surface: one token cannot pass on all four.
+     Decorative tier (~1.5:1) is fine for visual separation only. */
+  --border-decorative-base:    #313131;
+  --border-decorative-card:    #373737;
+  --border-decorative-raised:  #3D3D3D;
+  --border-decorative-overlay: #454545;
+
+  /* Boundary tier: >=3:1 per SC 1.4.11. Required whenever the edge is the
+     only cue that an interactive component exists. */
+  --border-boundary-base:    #5E5E5E; /* 3.00 on base */
+  --border-boundary-card:    #646464; /* 3.04 on card */
+  --border-boundary-raised:  #6A6A6A; /* 3.02 on raised */
+  --border-boundary-overlay: #737373; /* 3.04 on overlay */
+
+  /* Focus ring: #2563EB drops to 2.79 on overlay. One step lighter holds. */
+  --focus-ring: #3B82F6; /* 5.29 / 4.88 / 4.44 / 3.92 */
+}
+
+/* Interactive controls take the boundary tier matched to their surface. */
+.card { background: var(--surface-card); border: 1px solid var(--border-decorative-card); }
+.card--interactive { border-color: var(--border-boundary-card); }
+.modal .card--interactive { border-color: var(--border-boundary-overlay); }
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring); /* 2px minimum for SC 2.4.13 */
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------
+ * CI audit script. Fails the build when a boundary border or focus
+ * ring drops below 3:1 on any surface it can render against.
+ * This is the check automated a11y scanners skip.
+ * ----------------------------------------------------------------- */
+
+function luminance(hex) {
+  const c = hex.replace('#', '').match(/.{2}/g).map(function (v) {
+    const n = parseInt(v, 16) / 255;
+    return n <= 0.03928 ? n / 12.92 : Math.pow((n + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+
+function ratio(a, b) {
+  const x = luminance(a);
+  const y = luminance(b);
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+const surfaces = {
+  base:    '#0B0D10',
+  card:    '#14171C',
+  raised:  '#1C2027',
+  overlay: '#252A33',
+};
+
+/* Anything whose visibility is required by SC 1.4.11 or SC 2.4.13 */
+const nonTextTokens = [
+  { name: 'border-boundary', perSurface: {
+      base: '#5E5E5E', card: '#646464', raised: '#6A6A6A', overlay: '#737373' } },
+  { name: 'focus-ring', flat: '#3B82F6' },
+];
+
+let failures = 0;
+
+for (const token of nonTextTokens) {
+  for (const entry of Object.entries(surfaces)) {
+    const surfaceName = entry[0];
+    const surfaceHex = entry[1];
+    const value = token.flat || token.perSurface[surfaceName];
+    const score = ratio(value, surfaceHex);
+    const pass = score >= 3;
+    if (!pass) failures++;
+    console.log(
+      (pass ? 'PASS  ' : 'FAIL  ') + token.name + ' (' + value + ') on ' +
+      surfaceName + ': ' + score.toFixed(2) + ':1' + (pass ? '' : '  <- below 3:1')
+    );
+  }
+}
+
+/* Elevation deltas are reported, never asserted: ~1.1:1 is expected.
+   The point is to prove no component relies on them alone. */
+const order = Object.entries(surfaces);
+console.log('Elevation deltas (informational, not valid boundaries):');
+for (let i = 0; i < order.length - 1; i++) {
+  console.log('  ' + order[i][0] + ' -> ' + order[i + 1][0] + ': ' +
+    ratio(order[i][1], order[i + 1][1]).toFixed(2) + ':1');
+}
+
+if (failures) {
+  console.error(failures + ' non-text contrast failure(s) — blocking release.');
+  process.exit(1);
+}`
+    },
+    proTips: [
+      "Treat elevation and boundaries as two separate jobs. Surface deltas of 1.08–1.13:1 give depth to sighted users; a per-surface border token supplies the 3:1 that SC 1.4.11 requires. Shipping only the first is the most common dark-mode accessibility gap. Verify both in the [Contrast Checker](/contrast-checker/).",
+      "Tokenize borders per surface, not globally. #333A45 measures 1.70:1 on #0B0D10 and 1.43:1 on #1C2027 — the same token silently degrades as it moves into modals. If you ship one border value, it is wrong somewhere.",
+      "Never invert mid-tone brand colors. Near-black and near-white survive inversion; saturated mid-tones do not. #1D4ED8 lands at 2.90:1 on a near-black base, failing even the 3:1 non-text floor. Re-pick a lighter member of the same hue family instead of scaling the old one. See [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/) for the per-state version of this problem.",
+      "Test focus rings against the lightest surface they can appear on. #2563EB gives 3.76:1 on the page and 2.79:1 on an overlay. #3B82F6 holds across the whole stack at 3.92:1 or better.",
+      "Use near-black (#0B0D10) rather than #000000. The contrast cost is 17.66:1 versus 19.06:1, which is irrelevant, and you gain reduced halation for readers with astigmatism plus room for a sunken surface below your base.",
+      "Sample composited values, not token values. A semi-transparent overlay above a card produces a real background color that appears in no token file, and it is usually the surface where muted text quietly fails. Screenshot the running app and eyedrop it.",
+      "Keep dark surfaces neutral unless you are ready to re-measure every accent. Warm-gray surfaces shift the apparent hue of blues toward purple — Notion hit this in production and moved to neutral grays. Contrast can be correct while hue perception is wrong.",
+      "Distrust your eye on saturated dark-mode accents. The Hunt effect makes them appear to emit light, so a color that feels vivid can measure below 4.5:1. Read the number before approving the swatch. For perceptual lightness spacing, see [OKLCH Color Design Guide](/oklch-color-design-guide/).",
+      "Assert non-text contrast in CI, because automated a11y scanners will not. Scanners check text pairs; they cannot tell which border is load-bearing. A 20-line script that fails the build on any boundary token below 3:1 closes the gap. Full architecture: [Accessible Color Token System](/accessible-color-token-system/).",
+      "Run the whole matrix once on OLED hardware at 40% brightness. Low-brightness OLED crushes the bottom of the range, which is exactly where 1.1:1 elevation deltas and pure-black halation live, and neither reproduces in an emulator. For the complete surface-by-token audit workflow, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/); for the broader picture, the [Color Accessibility Hub](/color-accessibility-hub/)."
+    ],
+    keyStat: "The standard 4-step dark elevation stack (#0B0D10 → #14171C → #1C2027 → #252A33) produces adjacent-surface ratios of 1.08:1, 1.10:1, and 1.13:1. WCAG 2.2 SC 1.4.11 requires 3:1 for component boundaries. Reaching 3:1 from a near-black base takes a #5E5E5E border — which is why every mature dark design system ships border tokens separately from surface tokens.",
+    toolsMention: ["contrast-checker", "color-picker", "tailwind-color-generator"]
+  },
+
   "contrast-checker-guide": {
     intro: `A contrast checker is not a nice-to-have tool you run once before launch. It is the single most cost-effective accessibility tool in your workflow — catching the exact failure type behind 84% of accessibility lawsuits, before a single line of code ships.
 
@@ -597,6 +849,8 @@ Cross-check any pair from this matrix in the [Contrast Checker](/contrast-checke
 | Disabled text too invisible to read | 40% | Usability (not strictly WCAG) | Use 3:1 + italic or strikethrough |
 | Badge/chip text on colored bg fails | 37% | SC 1.4.3 Contrast (Minimum) | Darken badge bg or use dark text |
 | Hover state reduces contrast | 33% | SC 1.4.3 Contrast (Minimum) | Hover should lighten text, not dim it |
+
+**On that 60% border failure:** a "15% lightness gap" is a rule of thumb, not a measurement, and it usually lands short. A #333A45 border on a #0B0D10 page measures 1.70:1, and the same token inside a raised panel drops to 1.43:1 — both far below the 3:1 that SC 1.4.11 requires. Reaching 3:1 from a near-black base needs roughly #5E5E5E, and the threshold climbs on every surface above it. The per-surface numbers are worked out in [Dark Mode Colors](/dark-mode-colors/).
 
 ---
 
@@ -3573,6 +3827,8 @@ Stripe's design system (Stripe Elements) doesn't use CSS invert() or computation
 **Linear's "Elevation Through Layered Surfaces"**
 
 Linear's dark mode uses at least 4 surface layers to create depth without borders or shadows: base (#0D0F14), raised (#131620), overlay (#191C28), and sunken (#090A0F). Each layer is 5-8% lighter than the one below, creating a subtle stacking effect that the eye reads as depth. On dark backgrounds, borders and shadows are nearly invisible — you must build elevation with luminosity alone. Linear's designers have said publicly that getting these 4 surface stops right took more iteration than the entire accent color system.
+
+One caveat before you copy this pattern: elevation buys you perceived depth, not accessible structure. Adjacent surfaces in a stack like this measure around 1.1:1, while WCAG 2.2 SC 1.4.11 requires 3:1 for a component boundary. If a card's edge is the only cue that it is interactive, elevation alone will not carry it — you need a border token measured per surface. The computed thresholds are in [Dark Mode Colors](/dark-mode-colors/).
 
 **Vercel's Accent-Forward Dark Mode**
 

@@ -42,7 +42,7 @@ export const articles: Article[] = [
   {"slug":"css-color-variables","title":"CSS Color Variables Guide","desc":"Learn about CSS color variables — how to use custom properties for flexible theming.","cat":"Technical"},
   {"slug":"css-custom-properties-colors","title":"CSS Custom Properties Colors","desc":"Learn about CSS custom properties for colors — modern CSS theming techniques.","cat":"Technical"},
   {"slug":"css-gradient-generator-online","title":"CSS Gradient Generator Online","desc":"Learn about online CSS gradient generators — create beautiful gradients with no code.","cat":"Design Tips"},
-  {"slug":"dark-mode-colors","title":"Dark Mode Colors","desc":"Learn about dark mode colors — design guidelines for night-friendly interfaces.","cat":"Technical"},
+  {"slug":"dark-mode-colors","title":"Dark Mode Colors","desc":"Dark elevation stacks measure 1.08:1 between surfaces where WCAG needs 3:1. Measured border, focus ring, and text tokens for every dark surface.","cat":"Accessibility"},
   {"slug":"desert-color-palette","title":"Desert Color Palette","desc":"Learn about desert color palettes — warm earthy tones inspired by arid landscapes.","cat":"Color Palettes"},
   {"slug":"ecommerce-color-psychology","title":"E-commerce Color Psychology","desc":"Learn about e-commerce color psychology — convert visitors with the right colors.","cat":"Color Psychology"},
   {"slug":"earth-tone-color-palette","title":"Earth Tone Color Palette","desc":"Learn about earth tone color palettes — natural, grounding colors for any design.","cat":"Color Palettes"},

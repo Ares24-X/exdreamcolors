@@ -363,7 +363,7 @@ export default function ColorAccessibilityHubPage() {
             </ul>
           </div>
         </div>
-        <p className="text-sm text-slate-500">For the full token architecture, see <Link href="/accessible-color-token-system/" className="text-blue-600 hover:underline">Accessible Color Token System</Link>. For dark mode specifics, see <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-600 hover:underline">WCAG Contrast Checker for Dark Mode</Link>.</p>
+        <p className="text-sm text-slate-500">For the full token architecture, see <Link href="/accessible-color-token-system/" className="text-blue-600 hover:underline">Accessible Color Token System</Link>. For dark mode specifics, see <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-600 hover:underline">WCAG Contrast Checker for Dark Mode</Link> and <Link href="/dark-mode-colors/" className="text-blue-600 hover:underline">Dark Mode Colors</Link> for measured surface and border ratios.</p>
       </section>
 
       {/* WCAG Level Comparison Table */}
@@ -747,7 +747,7 @@ export default function ColorAccessibilityHubPage() {
   }
 }`}</pre>
             </div>
-            <p className="text-sm text-slate-600 mt-3"><strong>Lesson:</strong> Dark mode is not light mode flipped. Build separate tokens and test each independently. See <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 hover:underline">WCAG Contrast Checker for Dark Mode</Link>.</p>
+            <p className="text-sm text-slate-600 mt-3"><strong>Lesson:</strong> Dark mode is not light mode flipped. Build separate tokens and test each independently. See <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 hover:underline">WCAG Contrast Checker for Dark Mode</Link>. Surface elevation is a separate trap: adjacent dark surfaces typically measure 1.08:1 where SC 1.4.11 requires 3:1, so borders must carry the boundary. Measured tokens in <Link href="/dark-mode-colors/" className="text-blue-700 hover:underline">Dark Mode Colors</Link>.</p>
           </div>
 
           <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-6">
@@ -1100,6 +1100,10 @@ module.exports = {
           <Link href="/wcag-contrast-checker-for-dark-mode/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
             <h3 className="font-semibold text-slate-900">Dark Mode Contrast</h3>
             <p className="text-sm text-slate-600 mt-1">Separate token sets and testing for dark UIs.</p>
+          </Link>
+          <Link href="/dark-mode-colors/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
+            <h3 className="font-semibold text-slate-900">Dark Mode Colors</h3>
+            <p className="text-sm text-slate-600 mt-1">Why elevation measures 1.08:1 when SC 1.4.11 needs 3:1, plus computed border tokens.</p>
           </Link>
           <Link href="/form-validation-color-accessibility/" className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300 transition-all">
             <h3 className="font-semibold text-slate-900">Form Validation Colors</h3>
