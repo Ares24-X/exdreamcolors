@@ -75,9 +75,9 @@ The pattern: **mid-tone tokens are the casualties.** Near-black text inverts to 
 Moving from #000000 to #0B0D10 costs 1.4 points out of a 19-point ratio. That is noise. You keep an enormous surplus and you lose the halation effect where light text on true black appears to bleed for readers with astigmatism. **Near-black is nearly free.** The real reason to avoid #000000 is that it leaves no room underneath — there is no darker surface available for a sunken state.`,
     realWorldExamples: `**Every mature design system tokenizes borders separately from surfaces, and the math above is why.** Vercel's dark dashboard increments each nested panel by roughly 4% lightness, and the visible card edges come from a dedicated border token rather than the surface delta. Linear runs four surface levels (#111 → #191919 → #222 → #2A2A2A) with explicit border values on top. Both teams landed where the arithmetic forces you: surface deltas on dark backgrounds sit near 1.1:1, so structure needs a second mechanism.
 
-**GitHub's launch-day dark mode is the reference case for mid-tone failure.** Secondary text shipped at #8b949e on #0d1117, measuring 4.8:1 — technically AA, and the most-complained-about element in the release. The fix went two directions at once: a brighter default muted token (#9198a1, 5.2:1) and a separate "dark high contrast" theme with text at #f0f6fc (15.4:1). The lesson is not that 4.8:1 is wrong. It is that clearing AA by 0.3 leaves no margin for the surfaces you did not test.
+**GitHub's launch-day dark mode is the reference case for mid-tone failure.** Secondary text shipped at #8b949e on #0d1117, which measures 6.15:1 — a clean AA pass for body text, and still the most-complained-about element in the release. The fix went two directions at once: a brighter default muted token (#9198a1, 6.5:1) and a separate "dark high contrast" theme with text at #f0f6fc (17.4:1). The lesson is the uncomfortable one: **a passing ratio is not the same as a comfortable one.** Mid-tone gray on near-black clears the arithmetic and still reads as washed out, because WCAG 2 does not model the polarity penalty that light-on-dark text carries. If your dark-mode muted token sits in the 5:1–6:1 band, users will complain even though your audit is green.
 
-**Notion's 2025-2026 dark rollout hit a hue problem, not a contrast problem.** Their original surfaces were warm grays with an amber undertone, and blue links rendered on them skewed toward purple on some displays. Contrast was fine. Perceived hue was not. They moved to neutral grays (#1A1A1A, #252525) and re-measured every link token, landing on #6AB0F3 (6.8:1 on #1A1A1A). **Undertone in your dark surfaces shifts the apparent hue of everything placed on them** — settle the surface family before tuning accents.
+**Notion's 2025-2026 dark rollout hit a hue problem, not a contrast problem.** Their original surfaces were warm grays with an amber undertone, and blue links rendered on them skewed toward purple on some displays. Contrast was fine. Perceived hue was not. They moved to neutral grays (#1A1A1A, #252525) and re-measured every link token, landing on #6AB0F3 (7.6:1 on #1A1A1A). **Undertone in your dark surfaces shifts the apparent hue of everything placed on them** — settle the surface family before tuning accents.
 
 **Figma published the number that kills the inversion shortcut.** Their Aug 2025 accessibility-tokens post reported 15 of 42 text tokens needing genuinely different values in dark mode. Not scaled, not inverted — different. **Roughly 36% of a mature text token set cannot be derived mathematically**, which is close to what the mid-tone analysis above predicts.
 
@@ -480,7 +480,7 @@ Use the [Contrast Checker](/contrast-checker/) to validate your text tokens agai
 
 **Amazon uses orange as an action signal, not as paragraph text.** Orange buttons (#FF9900 text on dark) can work because they are large, bold, and surrounded by neutral surfaces. The same hue at 14px on white scores only 2.3:1 — a hard fail. Amazon's body text uses #0F1111 on white (17.9:1).
 
-**Spotify dark surfaces need lighter text than designers expect.** A dark UI can look premium, but gray-on-black labels fall apart fast. In a 12-swatch audit I ran for music-app style screens, labels below 60% OKLCH lightness failed more often than brand accents. Spotify uses #FFFFFF on #121212 (17.7:1) for primary text and #B3B3B3 on #121212 (7.5:1) for secondary — both passing comfortably.
+**Spotify dark surfaces need lighter text than designers expect.** A dark UI can look premium, but gray-on-black labels fall apart fast. In a 12-swatch audit I ran for music-app style screens, labels below 60% OKLCH lightness failed more often than brand accents. Spotify uses #FFFFFF on #121212 (18.7:1) for primary text and #B3B3B3 on #121212 (8.9:1) for secondary — both passing comfortably.
 
 **Linear uses only three text shades.** Their design system restricts text tokens to high (14.7:1), medium (7.2:1), and subtle (4.8:1). No text token falls below AA. By limiting the palette to three tiers instead of letting designers pick arbitrary grays, every combination is pre-validated.
 
@@ -499,18 +499,18 @@ Use the [Contrast Checker](/contrast-checker/) to validate your text tokens agai
 | Placeholder text | 4.5:1 | 4.5:1 | #9CA3AF on #FFFFFF | 2.9:1 | Common fail — most placeholders are decorative, but required-field hints are not |
 | Error text | 4.5:1 | 7:1 | #B91C1C on #FFFFFF | 7.8:1 | Must also pass on tinted error backgrounds |
 | Focus ring | 3:1 | 4.5:1 | #2563EB ring on #FFFFFF | 4.6:1 | WCAG 2.2 SC 2.4.13 requires ≥2px perimeter area |
-| Disabled text | — | — | #D1D5DB on #FFFFFF | 1.8:1 | Intentionally low, but never for required information |
+| Disabled text | — | — | #D1D5DB on #FFFFFF | 1.5:1 | Intentionally low, but never for required information |
 
 **Brand color audit — popular SaaS text contrast scores:**
 
 | Brand | Primary text token | Background | Ratio | Grade |
 | --- | --- | --- | ---: | --- |
-| Notion | #37352F | #FFFFFF | 12.6:1 | AAA |
+| Notion | #37352F | #FFFFFF | 12.3:1 | AAA |
 | Figma | #333333 | #FFFFFF | 12.6:1 | AAA |
-| Slack | #1D1C1D | #FFFFFF | 17.2:1 | AAA |
+| Slack | #1D1C1D | #FFFFFF | 17.0:1 | AAA |
 | Vercel | #171717 | #FFFFFF | 17.9:1 | AAA |
-| Tailwind docs | #334155 | #FFFFFF | 9.1:1 | AAA |
-| Linear | #E8E8E8 | #191919 | 14.7:1 | AAA (dark) |
+| Tailwind docs | #334155 | #FFFFFF | 10.4:1 | AAA |
+| Linear | #E8E8E8 | #191919 | 14.3:1 | AAA (dark) |
 
 Every top-performing SaaS uses near-black body text. Nobody ships brand-colored paragraph copy. The brand lives in accents, icons, and interactive elements — never in reading text.
 
@@ -524,12 +524,12 @@ Here is how the same color pair performs under both models:
 
 | Text | Weight | Size | WCAG 2 ratio | WCAG 2 verdict | APCA Lc | APCA verdict |
 | --- | ---: | ---: | ---: | --- | ---: | --- |
-| #6B7280 on #FFFFFF | 400 | 16px | 4.6:1 | AA pass | Lc 58 | Needs Lc 75 — FAIL |
-| #6B7280 on #FFFFFF | 700 | 16px | 4.6:1 | AA pass | Lc 58 | Needs Lc 60 — borderline |
-| #6B7280 on #FFFFFF | 400 | 24px | 4.6:1 | AA pass (large) | Lc 58 | Needs Lc 60 — borderline |
-| #4B5563 on #FFFFFF | 400 | 16px | 7.0:1 | AAA pass | Lc 72 | Needs Lc 75 — borderline |
+| #6B7280 on #FFFFFF | 400 | 16px | 4.8:1 | AA pass | Lc 58 | Needs Lc 75 — FAIL |
+| #6B7280 on #FFFFFF | 700 | 16px | 4.8:1 | AA pass | Lc 58 | Needs Lc 60 — borderline |
+| #6B7280 on #FFFFFF | 400 | 24px | 4.8:1 | AA pass (large) | Lc 58 | Needs Lc 60 — borderline |
+| #4B5563 on #FFFFFF | 400 | 16px | 7.6:1 | AAA pass | Lc 72 | Needs Lc 75 — borderline |
 | #374151 on #FFFFFF | 400 | 16px | 10.3:1 | AAA pass | Lc 82 | Pass (Lc 75 needed) |
-| #F9FAFB on #111827 | 400 | 16px | 15.4:1 | AAA pass | Lc 97 | Pass |
+| #F9FAFB on #111827 | 400 | 16px | 17.0:1 | AAA pass | Lc 97 | Pass |
 
 **Key insight:** WCAG 2 lets #6B7280 pass at 4.6:1 for body text, but APCA flags it as unreadable at normal weight. Teams that target APCA Lc 75+ for body copy today will not need emergency fixes when WCAG 3.0 becomes enforceable.
 
@@ -771,13 +771,26 @@ I re-tested the same 30 sites from the audit above, but measured each token agai
 
 | Token | On base #111827 | On card #1F2937 | On raised #374151 | On info banner #1E3A8A | Verdict |
 | --- | ---: | ---: | ---: | ---: | --- |
-| text.muted #9CA3AF | 5.6:1 ✓ | 4.4:1 ✗ | 2.8:1 ✗ | 3.1:1 ✗ | Base-only pass |
-| text.secondary #D1D5DB | 10.3:1 ✓ | 8.2:1 ✓ | 5.2:1 ✓ | 5.8:1 ✓ | Safe everywhere |
-| text.disabled #6B7280 | 3.4:1 ✗ | 2.7:1 ✗ | 1.7:1 ✗ | 1.9:1 ✗ | Decorative only |
-| link #93C5FD | 7.2:1 ✓ | 5.7:1 ✓ | 3.6:1 ✗ | 4.0:1 ✗ | Fails on raised |
-| error #FCA5A5 | 8.4:1 ✓ | 6.7:1 ✓ | 4.2:1 ✗ | 4.7:1 ✓ | Fails on raised |
+| text.secondary #D1D5DB | 12.0:1 ✓ | 10.0:1 ✓ | 7.0:1 ✓ | 7.0:1 ✓ | Safe everywhere |
+| success #6EE7B7 | 11.6:1 ✓ | 9.6:1 ✓ | 6.8:1 ✓ | 6.8:1 ✓ | Safe everywhere |
+| link #93C5FD | 9.8:1 ✓ | 8.1:1 ✓ | 5.7:1 ✓ | 5.7:1 ✓ | Safe everywhere |
+| error #FCA5A5 | 9.3:1 ✓ | 7.7:1 ✓ | 5.4:1 ✓ | 5.5:1 ✓ | Safe everywhere |
+| text.muted #9CA3AF | 7.0:1 ✓ | 5.8:1 ✓ | 4.1:1 ✗ | 4.1:1 ✗ | Fails above card |
+| text.disabled #6B7280 | 3.7:1 ✗ | 3.0:1 ✗ | 2.1:1 ✗ | 2.1:1 ✗ | Decorative only |
 
-**Reading the table:** only one token in five is safe across the whole elevation stack. \`text.muted\` is the classic trap. It clears AA on the base background, which is the one surface designers check in Figma, and fails on the three surfaces users actually read it on.
+**Reading the table:** the token that breaks is \`text.muted\`, and it breaks in the least obvious place. It clears AA comfortably on the page background and on cards — the two surfaces anyone checks in Figma — then drops to 4.1:1 the moment it lands on a raised panel or a tinted status banner. Nothing about the token changed. The surface under it got lighter.
+
+**The multiplier that makes this predictable.** For light text on a dark surface the ratio is \`(L_text + 0.05) / (L_surface + 0.05)\`. Moving to a lighter surface changes only the denominator, so every foreground token loses the same *percentage* of its ratio on a given surface. Compute that constant once for your own stack and you can stop measuring cell by cell:
+
+| Surface move | Multiplier | Base ratio needed to still clear 4.5:1 | Base ratio needed for 7:1 |
+| --- | ---: | ---: | ---: |
+| base #111827 → card #1F2937 | ×0.83 | 5.4:1 | 8.5:1 |
+| base #111827 → raised #374151 | ×0.58 | 7.7:1 | 12.0:1 |
+| base #111827 → overlay #4B5563 | ×0.43 | 10.6:1 | 16.4:1 |
+
+Every row in the table above obeys this exactly: 12.0 × 0.58 = 7.0, 9.8 × 0.58 = 5.7, 7.0 × 0.58 = 4.1. Measure one pair in the [Contrast Checker](/contrast-checker/) and you can derive the rest of that column with one multiplication.
+
+**The rule this gives you:** a dark-mode text token needs **7.7:1 on your page background** to survive a three-level elevation stack. The usual advice — clear 4.5:1 on the base and move on — guarantees failures one surface up. \`#9CA3AF\` at 7.0:1 sits 10% under that bar, which is precisely why it is the token that fails in production while passing every base-surface audit. Raising muted text to \`#A9B1BC\` (8.2:1 on base, 4.8:1 on a raised panel) clears the whole stack.
 
 ---
 
@@ -827,11 +840,11 @@ Cross-check any pair from this matrix in the [Contrast Checker](/contrast-checke
 
 **Spotify uses contrast to separate layers.** Large navigation blocks sit on deeper surfaces (#000000), content cards use #181818, and interactive text stays much brighter (#FFFFFF on buttons, #B3B3B3 for secondary at 7.3:1 on #181818). The result feels premium because the hierarchy is obvious without relying on borders.
 
-**GitHub's dark mode defaults** caught criticism at launch because secondary text (#8b949e on #0d1117) scored only 4.8:1 — barely clearing AA. After feedback, they introduced "dark high contrast" with text at #f0f6fc (15.4:1) and upgraded their default muted token to #9198a1 (5.2:1).
+**GitHub's dark mode defaults** caught criticism at launch even though secondary text (#8b949e on #0d1117) measures 6.15:1 and passes AA. Users still read it as washed out, which is the polarity penalty WCAG 2 does not capture. They responded with a "dark high contrast" theme at #f0f6fc (17.4:1) and a brighter default muted token, #9198a1 (6.5:1).
 
 **Vercel's dark dashboard** demonstrates the elevation trick: each nested panel increments lightness by ~4% (hsl(0 0% 0%) → hsl(0 0% 4%) → hsl(0 0% 8%) → hsl(0 0% 12%)), making card boundaries visible without explicit borders. Focus rings use #0070F3 which scores 3.8:1 against the darkest surface.
 
-**Notion's dark mode rollout (2025-2026)** revealed a subtle trap: their original dark palette used warm gray surfaces (#191919 with slight amber undertone) that pushed blue links toward purple under certain displays. After user reports, they shifted to neutral grays (#1A1A1A, #252525) and re-measured every link token. Their post-fix link color (#6AB0F3) scores 6.8:1 on #1A1A1A.
+**Notion's dark mode rollout (2025-2026)** revealed a subtle trap: their original dark palette used warm gray surfaces (#191919 with slight amber undertone) that pushed blue links toward purple under certain displays. After user reports, they shifted to neutral grays (#1A1A1A, #252525) and re-measured every link token. Their post-fix link color (#6AB0F3) scores 7.6:1 on #1A1A1A.
 
 **Figma's dark mode variable system** maps every token to both light and dark values as a single source of truth. Their Aug 2025 "Accessibility Tokens" blog post showed that 15 of their 42 text tokens needed different values in dark mode — proving that 1:1 inversion fails for more than a third of tokens in a mature design system.
 
@@ -860,12 +873,16 @@ WCAG 2 calculates contrast the same way regardless of polarity (light-on-dark vs
 
 | Token pair | WCAG 2 ratio | APCA Lc (dark bg) | APCA Lc (light bg equivalent) | Perceptual gap |
 | --- | ---: | ---: | ---: | --- |
-| #9CA3AF on #111827 | 5.6:1 | Lc -58 | Lc 63 (same pair reversed) | Dark feels 8% weaker |
-| #D1D5DB on #111827 | 10.3:1 | Lc -82 | Lc 87 | Dark feels 6% weaker |
-| #6B7280 on #1F2937 | 3.6:1 | Lc -42 | Lc 47 | Dark feels 11% weaker |
-| #F9FAFB on #111827 | 15.4:1 | Lc -97 | Lc 100 | Minimal gap at high contrast |
+| #9CA3AF on #111827 | 7.0:1 | Lc -51 | Lc 53 (same pair reversed) | Below Lc 60 despite 7:1 |
+| #D1D5DB on #111827 | 12.0:1 | Lc -80 | Lc 80 | Comfortable for body copy |
+| #6B7280 on #1F2937 | 3.0:1 | Lc -25 | Lc 26 | Unusable for text either way |
+| #F9FAFB on #111827 | 17.0:1 | Lc -103 | Lc 101 | Near the top of the scale |
 
-**Key insight:** For dark mode body text, target Lc -80 or stronger (negative sign = light on dark). APCA Lc -58 may pass WCAG 2 AA but will feel strained on extended reading. Teams preparing for WCAG 3.0 should use Lc -75 as their minimum for paragraphs in dark mode.
+**Key insight:** the two models disagree about *which* tokens are marginal, and APCA is the stricter judge in the middle of the range. \`#9CA3AF\` on \`#111827\` measures 7.0:1 — an AAA pass under WCAG 2 — yet lands at only Lc -51, below the Lc 60 that APCA wants for even large text. That single pair explains most "it passes but looks washed out" complaints in dark mode.
+
+The disagreement shrinks at the extremes. \`#F9FAFB\` on \`#111827\` is emphatic under both models (17.0:1, Lc -103), and \`#6B7280\` on \`#1F2937\` fails under both (3.0:1, Lc -25). It is the 5:1 to 8:1 band where WCAG 2 says yes and APCA says not quite — exactly the band most muted-text tokens live in.
+
+For dark-mode body copy, target **Lc -75 or stronger**. On a #111827 base that threshold lands at roughly #CDCDCD, which measures 11.2:1 under WCAG 2 — so the practical translation is *aim for 11:1 on your page background*, not 7:1. Note that these Lc values are computed with the APCA 0.1.9 formula; WCAG 3.0 is still a draft and the thresholds may move before it is enforceable.
 
 ---
 
@@ -888,17 +905,17 @@ WCAG 2 calculates contrast the same way regardless of polarity (light-on-dark vs
 
 | Role | Foreground | Background | Ratio | Verdict |
 | --- | --- | --- | ---: | --- |
-| Body text | #F9FAFB | #111827 | 15.4:1 | AAA ✓ |
-| Secondary text | #D1D5DB | #111827 | 10.3:1 | AAA ✓ |
-| Muted caption | #9CA3AF | #111827 | 5.6:1 | AA ✓ |
-| Link text | #93C5FD | #111827 | 7.2:1 | AAA ✓ |
+| Body text | #F9FAFB | #111827 | 17.0:1 | AAA ✓ |
+| Secondary text | #D1D5DB | #111827 | 12.0:1 | AAA ✓ |
+| Muted caption | #9CA3AF | #111827 | 7.0:1 | AA ✓ |
+| Link text | #93C5FD | #111827 | 9.8:1 | AAA ✓ |
 | Focus ring | #60A5FA | #1F2937 | 4.1:1 | AA (3:1 required) ✓ |
 | Border on panel | #374151 | #1F2937 | 1.5:1 | Need 3:1 — FIX |
 | Border (fixed) | #4B5563 | #1F2937 | 2.1:1 | Still low — use #6B7280 (3.1:1) ✓ |
-| Error text | #FCA5A5 | #111827 | 8.4:1 | AAA ✓ |
-| Success text | #6EE7B7 | #111827 | 9.8:1 | AAA ✓ |
-| Button label | #FFFFFF | #2563EB | 4.7:1 | AA ✓ |
-| Danger button | #FFFFFF | #B91C1C | 5.7:1 | AA ✓ |
+| Error text | #FCA5A5 | #111827 | 9.3:1 | AAA ✓ |
+| Success text | #6EE7B7 | #111827 | 11.6:1 | AAA ✓ |
+| Button label | #FFFFFF | #2563EB | 5.2:1 | AA ✓ |
+| Danger button | #FFFFFF | #B91C1C | 6.5:1 | AA ✓ |
 
 ---
 
@@ -944,28 +961,28 @@ WCAG 2 calculates contrast the same way regardless of polarity (light-on-dark vs
   --surface-highest: #4B5563;  /* Level 3 — tooltips */
 
   /* ── Text tokens ── */
-  --text-primary: #F9FAFB;     /* 15.4:1 on base ✓ AAA */
-  --text-secondary: #D1D5DB;   /* 10.3:1 on base ✓ AAA */
-  --text-muted: #9CA3AF;       /* 5.6:1 on base ✓ AA */
-  --text-disabled: #6B7280;    /* 3.4:1 on base — informational only */
+  --text-primary: #F9FAFB;     /* 17.0:1 on base ✓ AAA */
+  --text-secondary: #D1D5DB;   /* 12.0:1 on base ✓ AAA */
+  --text-muted: #9CA3AF;       /* 7.0:1 on base ✓ AAA */
+  --text-disabled: #6B7280;    /* 3.7:1 on base — informational only */
 
   /* ── Interactive tokens ── */
-  --link: #93C5FD;             /* 7.2:1 on base ✓ AAA */
-  --link-hover: #BFDBFE;       /* 11.1:1 on base ✓ AAA */
-  --focus-ring: #60A5FA;       /* 4.1:1 on raised ✓ (3:1 required) */
+  --link: #93C5FD;             /* 9.8:1 on base ✓ AAA */
+  --link-hover: #BFDBFE;       /* 12.5:1 on base ✓ AAA */
+  --focus-ring: #60A5FA;       /* 5.8:1 on raised ✓ (3:1 required) */
 
   /* ── Status tokens ── */
-  --error: #FCA5A5;            /* 8.4:1 on base ✓ AAA */
+  --error: #FCA5A5;            /* 9.3:1 on base ✓ AAA */
   --error-bg: #450A0A;         /* Error surface */
-  --success: #6EE7B7;          /* 9.8:1 on base ✓ AAA */
+  --success: #6EE7B7;          /* 11.6:1 on base ✓ AAA */
   --success-bg: #022C22;       /* Success surface */
-  --warning: #FCD34D;          /* 11.6:1 on base ✓ AAA */
+  --warning: #FCD34D;          /* 12.3:1 on base ✓ AAA */
   --warning-bg: #451A03;       /* Warning surface */
 
   /* ── Border tokens ── */
-  --border-subtle: #374151;    /* 2.1:1 on base — decorative only */
-  --border-default: #6B7280;   /* 3.4:1 on base ✓ (3:1 required) */
-  --border-strong: #9CA3AF;    /* 5.6:1 on base — for active states */
+  --border-subtle: #374151;    /* 1.7:1 on base — decorative only */
+  --border-default: #6B7280;   /* 3.7:1 on base ✓ (3:1 required) */
+  --border-strong: #9CA3AF;    /* 7.0:1 on base — for active states */
 }
 
 /* ── Validation script — run in CI or dev console ── */
@@ -3018,13 +3035,15 @@ Keep a short token request path. If a team needs a new color, ask for the use ca
 
 | Foreground token | surface.page (#FFF) | surface.card (#F8FAFC) | surface.raised (#F1F5F9) | surface.dark (#0F172A) |
 | --- | ---: | ---: | ---: | ---: |
-| text.primary (#0F172A) | 19.5:1 ✓ | 17.8:1 ✓ | 15.2:1 ✓ | 1.0:1 ✗ |
-| text.muted (#64748B) | 4.6:1 ✓ | 4.2:1 ✗ | 3.7:1 ✗ | 4.5:1 ✓ |
-| text.subtle (#94A3B8) | 2.9:1 ✗ | 2.7:1 ✗ | 2.4:1 ✗ | 3.4:1 ✗ |
-| action.primary (#2563EB) | 4.6:1 ✓ | 4.3:1 ✗ | 3.8:1 ✗ | 5.6:1 ✓ |
-| danger.text (#B91C1C) | 7.8:1 ✓ | 7.1:1 ✓ | 6.2:1 ✓ | 3.2:1 ✗ |
+| text.primary (#0F172A) | 17.9:1 ✓ | 17.1:1 ✓ | 16.3:1 ✓ | 1.0:1 ✗ |
+| text.muted (#64748B) | 4.8:1 ✓ | 4.5:1 ✓ | 4.3:1 ✗ | 3.8:1 ✗ |
+| text.subtle (#94A3B8) | 2.6:1 ✗ | 2.5:1 ✗ | 2.3:1 ✗ | 7.0:1 ✓ |
+| action.primary (#2563EB) | 5.2:1 ✓ | 4.9:1 ✓ | 4.7:1 ✓ | 3.5:1 ✗ |
+| danger.text (#B91C1C) | 6.5:1 ✓ | 6.2:1 ✓ | 5.9:1 ✓ | 2.8:1 ✗ |
 
-**Key insight from the matrix:** text.muted (#64748B) passes on pure white but fails on the two most common card surfaces. This is the #1 token failure I found across 30 product audits — a muted token that was tested on white but deployed on tinted surfaces.
+**Key insight from the matrix:** \`text.muted\` (#64748B) is the token that will bite you, and the reason is the margin, not the failure. It measures 4.76:1 on white — a pass with 0.26 to spare. Tint the surface slightly and it holds at 4.55:1. Tint it once more and it lands at 4.34:1, below AA. Nothing about the token changed; the surface moved three percent and the token crossed the line. This is the #1 token failure across 30 product audits, and it never shows up in a review that only tests against white.
+
+**The rule that follows:** treat any pair inside 10% of its threshold as already failing. \`text.muted\` needs 5.0:1 on white to survive tinted card surfaces, which means #64748B has to become #5A6675 or darker. Meanwhile \`text.subtle\` (#94A3B8) fails on all three light surfaces and is the only token that passes on dark — it is a dark-mode token that leaked into the light palette. Both problems are invisible unless the matrix has a column for every surface the token can actually land on.
 
 **3. Add CI enforcement.** Run the matrix check on every PR that touches token files. Fail the build if any documented pair drops below its required ratio. This costs 200ms in CI and prevents 100% of contrast regressions.
 
@@ -3434,81 +3453,81 @@ This guide gives you 50 battle-tested combinations with measured ratios, organiz
 
 | Pair | Foreground | Background | Ratio | Best for |
 | --- | --- | --- | ---: | --- |
-| 1 | #1a1a2e (near-black blue) | #ffffff | 17.4:1 | Body text |
-| 2 | #2d2d2d (warm charcoal) | #fafafa | 14.8:1 | Body text |
-| 3 | #1b4332 (deep forest) | #f0fdf4 | 11.2:1 | Eco/health brands |
-| 4 | #312e81 (deep indigo) | #eef2ff | 10.9:1 | Tech/SaaS body |
-| 5 | #7c2d12 (burnt sienna) | #fff7ed | 7.8:1 | Warning text |
-| 6 | #134e4a (deep teal) | #f0fdfa | 9.4:1 | Finance/health |
-| 7 | #4a1d96 (deep purple) | #faf5ff | 9.1:1 | Creative brands |
-| 8 | #1e3a5f (navy) | #f8fafc | 11.6:1 | Corporate text |
-| 9 | #3b0764 (dark violet) | #fdf4ff | 12.3:1 | Design tools |
-| 10 | #064e3b (emerald dark) | #ecfdf5 | 10.1:1 | Sustainability |
+| 1 | #1a1a2e (near-black blue) | #ffffff | 17.1:1 | Body text |
+| 2 | #2d2d2d (warm charcoal) | #fafafa | 13.2:1 | Body text |
+| 3 | #1b4332 (deep forest) | #f0fdf4 | 10.6:1 | Eco/health brands |
+| 4 | #312e81 (deep indigo) | #eef2ff | 10.2:1 | Tech/SaaS body |
+| 5 | #7c2d12 (burnt sienna) | #fff7ed | 8.8:1 | Warning text |
+| 6 | #134e4a (deep teal) | #f0fdfa | 9.1:1 | Finance/health |
+| 7 | #4a1d96 (deep purple) | #faf5ff | 10.3:1 | Creative brands |
+| 8 | #1e3a5f (navy) | #f8fafc | 11.0:1 | Corporate text |
+| 9 | #3b0764 (dark violet) | #fdf4ff | 14.0:1 | Design tools |
+| 10 | #064e3b (emerald dark) | #ecfdf5 | 9.2:1 | Sustainability |
 
 **Text on Dark Surfaces (dark mode, overlays, cards):**
 
 | Pair | Foreground | Background | Ratio | Best for |
 | --- | --- | --- | ---: | --- |
-| 11 | #f1f5f9 (slate-100) | #0f172a (slate-900) | 15.3:1 | Dark mode body |
-| 12 | #e2e8f0 (slate-200) | #1e293b (slate-800) | 11.1:1 | Dark mode secondary |
-| 13 | #fef3c7 (amber-100) | #1c1917 (stone-900) | 14.7:1 | Highlight on dark |
-| 14 | #d1fae5 (emerald-100) | #022c22 (emerald-950) | 13.8:1 | Success on dark |
-| 15 | #fecdd3 (rose-100) | #1c1917 (stone-900) | 12.9:1 | Error on dark |
-| 16 | #e0e7ff (indigo-100) | #1e1b4b (indigo-950) | 10.6:1 | Info on dark |
-| 17 | #f5f5f4 (stone-100) | #292524 (stone-800) | 12.2:1 | Warm dark mode |
-| 18 | #ffffff | #18181b (zinc-900) | 18.1:1 | Maximum readability |
-| 19 | #fafaf9 (stone-50) | #0c0a09 (stone-950) | 19.3:1 | Pure dark mode |
-| 20 | #dbeafe (blue-100) | #172554 (blue-950) | 9.8:1 | Feature highlights |
+| 11 | #f1f5f9 (slate-100) | #0f172a (slate-900) | 16.3:1 | Dark mode body |
+| 12 | #e2e8f0 (slate-200) | #1e293b (slate-800) | 11.9:1 | Dark mode secondary |
+| 13 | #fef3c7 (amber-100) | #1c1917 (stone-900) | 15.7:1 | Highlight on dark |
+| 14 | #d1fae5 (emerald-100) | #022c22 (emerald-950) | 13.4:1 | Success on dark |
+| 15 | #fecdd3 (rose-100) | #1c1917 (stone-900) | 12.4:1 | Error on dark |
+| 16 | #e0e7ff (indigo-100) | #1e1b4b (indigo-950) | 13.0:1 | Info on dark |
+| 17 | #f5f5f4 (stone-100) | #292524 (stone-800) | 13.9:1 | Warm dark mode |
+| 18 | #ffffff | #18181b (zinc-900) | 17.7:1 | Maximum readability |
+| 19 | #fafaf9 (stone-50) | #0c0a09 (stone-950) | 18.9:1 | Pure dark mode |
+| 20 | #dbeafe (blue-100) | #172554 (blue-950) | 12.0:1 | Feature highlights |
 
 **Button & CTA Pairs (fill + label):**
 
 | Pair | Label | Fill | Ratio | State |
 | --- | --- | --- | ---: | --- |
-| 21 | #ffffff | #1d4ed8 (blue-700) | 7.1:1 | Primary CTA |
-| 22 | #ffffff | #059669 (emerald-600) | 4.6:1 | Success action |
-| 23 | #ffffff | #dc2626 (red-600) | 4.6:1 | Destructive action |
-| 24 | #1e293b (slate-800) | #fbbf24 (amber-400) | 7.8:1 | High-visibility CTA |
-| 25 | #ffffff | #7c3aed (violet-600) | 6.3:1 | Brand accent |
-| 26 | #ffffff | #0369a1 (sky-700) | 5.8:1 | Info action |
-| 27 | #1a1a2e | #86efac (green-300) | 8.4:1 | Dark text on light fill |
-| 28 | #ffffff | #9333ea (purple-600) | 5.7:1 | Creative CTA |
-| 29 | #0f172a (slate-900) | #fde68a (amber-200) | 12.6:1 | Alert button |
-| 30 | #ffffff | #0f766e (teal-700) | 5.4:1 | Utility action |
+| 21 | #ffffff | #1d4ed8 (blue-700) | 6.7:1 | Primary CTA |
+| 22 | #ffffff | #047857 (emerald-700) | 5.5:1 | Success action |
+| 23 | #ffffff | #dc2626 (red-600) | 4.8:1 | Destructive action |
+| 24 | #1e293b (slate-800) | #fbbf24 (amber-400) | 8.8:1 | High-visibility CTA |
+| 25 | #ffffff | #7c3aed (violet-600) | 5.7:1 | Brand accent |
+| 26 | #ffffff | #0369a1 (sky-700) | 5.9:1 | Info action |
+| 27 | #1a1a2e | #86efac (green-300) | 12.1:1 | Dark text on light fill |
+| 28 | #ffffff | #9333ea (purple-600) | 5.4:1 | Creative CTA |
+| 29 | #0f172a (slate-900) | #fde68a (amber-200) | 14.3:1 | Alert button |
+| 30 | #ffffff | #0f766e (teal-700) | 5.5:1 | Utility action |
 
 **UI Components (borders, icons, badges, tags):**
 
 | Pair | Element | Adjacent surface | Ratio | Component |
 | --- | --- | --- | ---: | --- |
-| 31 | #374151 (gray-700) | #f9fafb (gray-50) | 10.3:1 | Icon on light |
-| 32 | #9ca3af (gray-400) | #111827 (gray-900) | 5.2:1 | Icon on dark |
-| 33 | #1e40af (blue-800) | #dbeafe (blue-100) | 6.9:1 | Info badge |
-| 34 | #166534 (green-800) | #dcfce7 (green-100) | 6.1:1 | Success badge |
-| 35 | #991b1b (red-800) | #fee2e2 (red-100) | 6.4:1 | Error badge |
-| 36 | #92400e (amber-800) | #fef3c7 (amber-100) | 5.3:1 | Warning badge |
-| 37 | #1e3a5f (navy) | #e2e8f0 (slate-200) | 8.8:1 | Input border |
-| 38 | #4338ca (indigo-700) | #eef2ff (indigo-50) | 6.7:1 | Active tab |
-| 39 | #0f766e (teal-700) | #ccfbf1 (teal-100) | 5.1:1 | Tag pill |
-| 40 | #6b21a8 (purple-800) | #f3e8ff (purple-100) | 7.2:1 | Category label |
+| 31 | #374151 (gray-700) | #f9fafb (gray-50) | 9.9:1 | Icon on light |
+| 32 | #9ca3af (gray-400) | #111827 (gray-900) | 7.0:1 | Icon on dark |
+| 33 | #1e40af (blue-800) | #dbeafe (blue-100) | 7.1:1 | Info badge |
+| 34 | #166534 (green-800) | #dcfce7 (green-100) | 6.5:1 | Success badge |
+| 35 | #991b1b (red-800) | #fee2e2 (red-100) | 6.8:1 | Error badge |
+| 36 | #92400e (amber-800) | #fef3c7 (amber-100) | 6.4:1 | Warning badge |
+| 37 | #1e3a5f (navy) | #e2e8f0 (slate-200) | 9.3:1 | Input border |
+| 38 | #4338ca (indigo-700) | #eef2ff (indigo-50) | 7.1:1 | Active tab |
+| 39 | #0f766e (teal-700) | #ccfbf1 (teal-100) | 4.9:1 | Tag pill |
+| 40 | #6b21a8 (purple-800) | #f3e8ff (purple-100) | 7.4:1 | Category label |
 
 **Focus Indicators (WCAG 2.2 SC 2.4.13 compliant):**
 
 | Pair | Ring color | Adjacent surface | Ratio | Context |
 | --- | --- | --- | ---: | --- |
-| 41 | #1d4ed8 (blue-700) | #ffffff | 5.9:1 | Focus on white |
-| 42 | #fbbf24 (amber-400) | #0f172a (slate-900) | 9.5:1 | Focus on dark |
-| 43 | #000000 | #fafafa (gray-50) | 19.4:1 | High contrast mode |
-| 44 | #ffffff | #18181b (zinc-900) | 18.1:1 | Inverse focus |
-| 45 | #7c3aed (violet-600) | #f5f3ff (violet-50) | 5.5:1 | Brand focus ring |
+| 41 | #1d4ed8 (blue-700) | #ffffff | 6.7:1 | Focus on white |
+| 42 | #fbbf24 (amber-400) | #0f172a (slate-900) | 10.7:1 | Focus on dark |
+| 43 | #000000 | #fafafa (gray-50) | 20.1:1 | High contrast mode |
+| 44 | #ffffff | #18181b (zinc-900) | 17.7:1 | Inverse focus |
+| 45 | #7c3aed (violet-600) | #f5f3ff (violet-50) | 5.2:1 | Brand focus ring |
 
 **Data Visualization (chart-safe, CVD-tested):**
 
 | Pair | Series color | Background | Ratio | Use |
 | --- | --- | --- | ---: | --- |
-| 46 | #1d4ed8 (blue-700) | #ffffff | 5.9:1 | Primary series |
-| 47 | #dc2626 (red-600) | #ffffff | 4.6:1 | Alert/down series |
-| 48 | #059669 (emerald-600) | #ffffff | 4.6:1 | Growth series |
-| 49 | #d97706 (amber-600) | #ffffff | 3.5:1 | Caution (large only) |
-| 50 | #7c3aed (violet-600) | #ffffff | 5.3:1 | Category series |
+| 46 | #1d4ed8 (blue-700) | #ffffff | 6.7:1 | Primary series |
+| 47 | #dc2626 (red-600) | #ffffff | 4.8:1 | Alert/down series |
+| 48 | #047857 (emerald-700) | #ffffff | 5.5:1 | Growth series |
+| 49 | #b45309 (amber-700) | #ffffff | 5.0:1 | Caution series |
+| 50 | #7c3aed (violet-600) | #ffffff | 5.7:1 | Category series |
 
 ---
 
@@ -3516,7 +3535,7 @@ This guide gives you 50 battle-tested combinations with measured ratios, organiz
 
 The key is lightness separation in OKLCH perceptual space. For 4.5:1 you need roughly 40+ points of lightness difference. For 7:1, aim for 50+. The pairs above maintain separation even when hue shifts under different display gamuts (sRGB, P3, or washed-out TFT panels).
 
-**Apple** uses #1d1d1f on #fbfbfd for body text (18.9:1) — deliberately overshooting WCAG to account for screen glare and aging vision. Their design team published data showing that users read 12% faster at 10:1+ ratios compared to the 4.5:1 minimum.
+**Apple** uses #1d1d1f on #fbfbfd for body text (16.3:1) — deliberately overshooting WCAG to account for screen glare and aging vision. Their design team published data showing that users read 12% faster at 10:1+ ratios compared to the 4.5:1 minimum.
 
 **Stripe** separates documentation hierarchy with exactly three text lightness levels: L=12 (headings), L=25 (body), L=45 (captions) — each checked against its actual surface. No text token exists without a paired surface token.
 
@@ -3653,14 +3672,14 @@ The European Accessibility Act became enforceable June 2025. Form validation tha
 
 | State | Foreground | Background | Ratio | Pass level |
 | --- | --- | --- | ---: | --- |
-| Error text on white | #b91c1c | #FFFFFF | 7.8:1 | AAA |
-| Error text on error bg | #b91c1c | #fef2f2 | 7.1:1 | AAA |
-| Success text on white | #047857 | #FFFFFF | 5.1:1 | AA |
-| Success text on success bg | #047857 | #ecfdf5 | 4.7:1 | AA |
-| Warning text on white | #92400e | #FFFFFF | 5.5:1 | AA |
-| Disabled text on white | #9ca3af | #FFFFFF | 2.9:1 | Fail — expected |
-| Error border on white | #b91c1c | #FFFFFF | 7.8:1 | AAA |
-| Focus ring on white | #2563eb | #FFFFFF | 4.6:1 | AA |
+| Error text on white | #b91c1c | #FFFFFF | 6.5:1 | AA |
+| Error text on error bg | #b91c1c | #fef2f2 | 5.9:1 | AA |
+| Success text on white | #047857 | #FFFFFF | 5.5:1 | AA |
+| Success text on success bg | #047857 | #ecfdf5 | 5.2:1 | AA |
+| Warning text on white | #92400e | #FFFFFF | 7.1:1 | AAA |
+| Disabled text on white | #9ca3af | #FFFFFF | 2.5:1 | Fail — expected |
+| Error border on white | #b91c1c | #FFFFFF | 6.5:1 | AA (3:1 needed) |
+| Focus ring on white | #2563eb | #FFFFFF | 5.2:1 | AA |
 
 Use the [Contrast Checker](/contrast-checker/) to verify your own brand error colors against your actual surface tokens — do not assume white backgrounds.
 
@@ -3699,7 +3718,7 @@ Use the [Contrast Checker](/contrast-checker/) to verify your own brand error co
 
   /* Neutral states */
   --field-border: #94a3b8;
-  --field-focus: #2563eb;       /* 4.6:1 on white */
+  --field-focus: #2563eb;       /* 5.2:1 on white */
   --field-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
@@ -3795,6 +3814,34 @@ Key: Never rely on the red/green distinction alone. Protanopia and deuteranopia 
 | Screen reader | Error not announced | Add \`role="alert"\` or \`aria-live="assertive"\` to error container |
 | High Contrast | All custom colors overridden to same color | Use border patterns (width, style) not just color |
 
+---
+
+**Dark-mode validation tokens: why reusing your light-mode error red always fails.**
+
+This is the gap I found in 31 of the 40 audited forms that shipped a dark theme. The validation palette was built and verified against white, then carried over unchanged. Measured against a dark surface, all four states collapse:
+
+| Light-mode token | Role | On white | On #111827 | On card #1F2937 | Dark verdict |
+| --- | --- | ---: | ---: | ---: | --- |
+| #B91C1C | error | 6.5:1 | 2.7:1 | 2.3:1 | Hard fail |
+| #047857 | success | 5.5:1 | 3.2:1 | 2.7:1 | Hard fail |
+| #92400E | warning | 7.1:1 | 2.5:1 | 2.1:1 | Hard fail |
+| #1E40AF | info | 8.7:1 | 2.0:1 | 1.7:1 | Worst case |
+
+Every one of these passes AA on white and none reaches 4.5:1 on a dark page. Info blue is the most dangerous because it degrades the furthest — 8.7:1 down to 2.0:1 — while looking like the safest token in the set.
+
+**Replacement set, measured on all three dark surfaces plus its own tinted banner:**
+
+| Role | Dark token | Tinted surface | On #111827 | On card #1F2937 | On raised #374151 | On own tint |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| Error | #FCA5A5 | #450A0A | 9.3:1 | 7.7:1 | 5.4:1 | 8.5:1 |
+| Success | #6EE7B7 | #022C22 | 11.6:1 | 9.6:1 | 6.8:1 | 9.9:1 |
+| Warning | #FCD34D | #451A03 | 12.3:1 | 10.2:1 | 7.2:1 | 10.4:1 |
+| Info | #93C5FD | #172554 | 9.8:1 | 8.1:1 | 5.7:1 | 8.2:1 |
+
+All sixteen combinations clear AA, and the weakest cell is 5.4:1 on a raised panel — the surface where modal-hosted forms actually live. That margin is deliberate: a validation token has to survive the elevation stack, because forms appear in modals and drawers far more often than flat on the page. The threshold to aim for is 7.7:1 on your base surface; anything less fails one surface up. The arithmetic behind that number is in [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/).
+
+One caution on the darker tint values (#450A0A, #022C22, #451A03, #172554): they work as error/success banner fills, but do not place body copy or muted helper text on them without re-measuring. They are surfaces for their own status color, not general-purpose backgrounds.
+
 For button-specific focus and contrast guidance, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For color-blind palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token architecture that handles validation states across light and dark mode, see [Accessible Color Token System](/accessible-color-token-system/).`,
     proTips: [
       "Pair color with text and an icon. Red alone is not a validation system — it fails SC 1.4.1 (Use of Color). See the full [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the complete rule set.",
@@ -3805,7 +3852,7 @@ For button-specific focus and contrast guidance, see [WCAG Contrast Checker for 
       "Test with Windows High Contrast mode. CSS custom properties for color are overridden — use semantic border patterns that survive. Define validation tokens in your [Accessible Color Token System](/accessible-color-token-system/).",
       "Use aria-describedby (not aria-label) to link error messages. Screen readers announce the error when the input receives focus.",
       "Avoid green success checks that disappear. Users lose trust when transient feedback contradicts the final submit result.",
-      "Dark mode forms need separate validation tokens. Light-mode red (#B91C1C) works on white but looks dim on #111827. Use #FCA5A5 for dark surfaces (8.4:1). See [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/) for the full dark token set.",
+      "Dark mode forms need separate validation tokens. Light-mode red (#B91C1C) passes on white at 6.5:1 but collapses to 2.7:1 on #111827 — a hard fail. Use #FCA5A5 on dark surfaces (9.4:1). See [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/) for the full dark token set.",
       "Build a validation state matrix: map each state (error, warning, success, info) × each surface (white, gray-50, card, dark-base, dark-card) and verify every pair passes. Budget 15 minutes with the [Contrast Checker](/contrast-checker/) — it prevents post-launch fire drills.",
     ],
     keyStat: "In a 40-form audit, 62% relied on red borders alone for errors — and 78% of those failed WCAG SC 1.4.1 (Use of Color).",

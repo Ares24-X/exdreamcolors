@@ -5,9 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verify-contrast.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify:contrast": "node scripts/verify-contrast.mjs"
   },
   "dependencies": {
     "next": "^14.0.0",

@@ -347,10 +347,10 @@ export default function ColorAccessibilityHubPage() {
           <div className="rounded-xl border border-slate-200 p-4">
             <h3 className="font-bold text-slate-900 mb-2">Tailwind equivalents</h3>
             <div className="text-sm text-slate-700 space-y-1.5">
-              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">text-gray-600</code> → muted text (5.7:1 ✓)</p>
-              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">placeholder:text-gray-500</code> → placeholder (4.6:1 ✓)</p>
-              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">ring-2 ring-blue-600 ring-offset-2</code> → focus ring (4.6:1 ✓)</p>
-              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">border-gray-500</code> → input border on gray bg (4.2:1 ✓)</p>
+              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">text-gray-600</code> → muted text (7.6:1 ✓)</p>
+              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">placeholder:text-gray-500</code> → placeholder (4.8:1 ✓)</p>
+              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">ring-2 ring-blue-600 ring-offset-2</code> → focus ring (5.2:1 ✓)</p>
+              <p><code className="bg-slate-100 px-1 rounded font-mono text-xs">border-gray-500</code> → input border on gray bg (4.6:1 ✓)</p>
             </div>
           </div>
           <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
@@ -367,6 +367,49 @@ export default function ColorAccessibilityHubPage() {
       </section>
 
       {/* WCAG Level Comparison Table */}
+      <section className="mb-12" id="elevation-multiplier">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">The one number that predicts every dark-mode contrast failure</h2>
+        <p className="text-slate-700 mb-4">Check #8 in the checklist above fails on 73% of sites, and it is almost always the same mistake: a text token is measured against the page background, passes, and ships. In a real interface that token also lands on cards, raised panels, modals, and tinted status banners. Every one of those surfaces is lighter, so every ratio drops.</p>
+        <p className="text-slate-700 mb-6">There is a shortcut. For light text on a dark surface, contrast is <code className="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">(L_text + 0.05) / (L_surface + 0.05)</code>. Changing the surface only changes the denominator, so <strong>every foreground token loses the same percentage of its ratio on a given surface</strong>. Compute that multiplier once and you can derive a whole column instead of measuring cell by cell.</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 mb-4">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-slate-900">Surface move</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-right">Multiplier</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-right">Base ratio needed for 4.5:1</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-right">Base ratio needed for 7:1</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr>
+                <td className="px-4 py-3 font-mono text-xs">#111827 → #1F2937 (card)</td>
+                <td className="px-4 py-3 text-right font-medium">×0.83</td>
+                <td className="px-4 py-3 text-right">5.4:1</td>
+                <td className="px-4 py-3 text-right">8.5:1</td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 font-mono text-xs">#111827 → #374151 (raised)</td>
+                <td className="px-4 py-3 text-right font-medium">×0.58</td>
+                <td className="px-4 py-3 text-right">7.7:1</td>
+                <td className="px-4 py-3 text-right">12.0:1</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 font-mono text-xs">#111827 → #4B5563 (overlay)</td>
+                <td className="px-4 py-3 text-right font-medium">×0.43</td>
+                <td className="px-4 py-3 text-right">10.6:1</td>
+                <td className="px-4 py-3 text-right">16.4:1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="rounded-xl bg-blue-50 border border-blue-100 p-5">
+          <p className="text-sm text-blue-900 mb-2"><strong>The practical rule:</strong> a dark-mode text token needs <strong>7.7:1 on your page background</strong> to stay AA-compliant anywhere in a three-level elevation stack. Clearing 4.5:1 on the base guarantees failures one surface up.</p>
+          <p className="text-sm text-blue-900">This is why <code className="bg-white px-1 rounded font-mono text-xs">#9CA3AF</code> is the single most common dark-mode failure. It measures 7.0:1 on <code className="bg-white px-1 rounded font-mono text-xs">#111827</code> — an AAA pass that looks completely safe — then drops to 4.1:1 on a raised panel. It sits 10% under the bar. Raising it to <code className="bg-white px-1 rounded font-mono text-xs">#A9B1BC</code> (8.2:1 on base, 4.8:1 on raised) clears the whole stack. Verify any single pair in the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>, then multiply.</p>
+        </div>
+        <p className="text-sm text-slate-500 mt-3">Full per-surface matrix and the APCA comparison: <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-600 hover:underline">WCAG Contrast Checker for Dark Mode</Link>. Measured border and elevation ratios: <Link href="/dark-mode-colors/" className="text-blue-600 hover:underline">Dark Mode Colors</Link>.</p>
+      </section>
+
       <section className="mb-12">
         <h2 className="text-3xl font-bold text-slate-900 mb-6">WCAG contrast requirements by level</h2>
         <p className="text-slate-700 mb-4">Most lawsuits target AA compliance. AAA is the gold standard for readability-heavy products (healthcare, education, government). Here are the minimum ratios you need to pass each level:</p>

@@ -32,12 +32,12 @@ const auditResults = [
 ];
 
 const tokenPairs = [
-  { state: "Error (light)", text: "#B42318", bg: "#FEF3F2", ratio: "7.3:1", level: "AAA", cues: "Text + icon + border + aria-invalid" },
-  { state: "Error (dark)", text: "#FDA29B", bg: "#1C1917", ratio: "5.1:1", level: "AA", cues: "Text + icon + border + aria-invalid" },
-  { state: "Warning (light)", text: "#B54708", bg: "#FFFAEB", ratio: "5.8:1", level: "AA", cues: "Text + alert icon + aria-describedby" },
-  { state: "Warning (dark)", text: "#FEC84B", bg: "#1C1917", ratio: "9.9:1", level: "AAA", cues: "Text + alert icon + aria-describedby" },
-  { state: "Success (light)", text: "#027A48", bg: "#ECFDF3", ratio: "5.4:1", level: "AA", cues: "Text + check icon (never green alone)" },
-  { state: "Success (dark)", text: "#6CE9A6", bg: "#1C1917", ratio: "7.2:1", level: "AAA", cues: "Text + check icon (never green alone)" },
+  { state: "Error (light)", text: "#B42318", bg: "#FEF3F2", ratio: "6.1:1", level: "AA", cues: "Text + icon + border + aria-invalid" },
+  { state: "Error (dark)", text: "#FDA29B", bg: "#1C1917", ratio: "9.0:1", level: "AAA", cues: "Text + icon + border + aria-invalid" },
+  { state: "Warning (light)", text: "#B54708", bg: "#FFFAEB", ratio: "5.2:1", level: "AA", cues: "Text + alert icon + aria-describedby" },
+  { state: "Warning (dark)", text: "#FEC84B", bg: "#1C1917", ratio: "11.3:1", level: "AAA", cues: "Text + alert icon + aria-describedby" },
+  { state: "Success (light)", text: "#027A48", bg: "#ECFDF3", ratio: "5.1:1", level: "AA", cues: "Text + check icon (never green alone)" },
+  { state: "Success (dark)", text: "#6CE9A6", bg: "#1C1917", ratio: "11.5:1", level: "AAA", cues: "Text + check icon (never green alone)" },
 ];
 
 const checklistItems = [
@@ -273,38 +273,38 @@ export default function FormValidationColorAccessibilityPage() {
         <div className="rounded-xl bg-slate-900 p-5 overflow-x-auto mb-6">
           <pre className="text-sm text-green-300 font-mono whitespace-pre">{`:root {
   /* Error state — light mode */
-  --error-text: #B42318;        /* 7.3:1 on --error-bg */
+  --error-text: #B42318;        /* 6.1:1 on --error-bg */
   --error-bg: #FEF3F2;
-  --error-border: #FDA29B;      /* 3.1:1 on white surface */
+  --error-border: #D92D20;      /* 4.8:1 on white — clears SC 1.4.11 */
   --error-icon: #B42318;
 
   /* Warning state — light mode */
-  --warning-text: #B54708;      /* 5.8:1 on --warning-bg */
+  --warning-text: #B54708;      /* 5.2:1 on --warning-bg */
   --warning-bg: #FFFAEB;
-  --warning-border: #FEC84B;
+  --warning-border: #DC6803;    /* 3.5:1 on white — clears SC 1.4.11 */
   --warning-icon: #B54708;
 
   /* Success state — light mode */
-  --success-text: #027A48;      /* 5.4:1 on --success-bg */
+  --success-text: #027A48;      /* 5.1:1 on --success-bg */
   --success-bg: #ECFDF3;
-  --success-border: #6CE9A6;
+  --success-border: #027A48;    /* 5.4:1 on white — clears SC 1.4.11 */
   --success-icon: #027A48;
 }
 
 /* Dark mode overrides — tested on #1C1917 surface */
 @media (prefers-color-scheme: dark) {
   :root {
-    --error-text: #FDA29B;      /* 5.1:1 on #1C1917 */
+    --error-text: #FDA29B;      /* 9.0:1 on #1C1917 */
     --error-bg: #1C1917;
     --error-border: #FDA29B;
     --error-icon: #FDA29B;
 
-    --warning-text: #FEC84B;    /* 9.9:1 on #1C1917 */
+    --warning-text: #FEC84B;    /* 11.3:1 on #1C1917 */
     --warning-bg: #1C1917;
     --warning-border: #FEC84B;
     --warning-icon: #FEC84B;
 
-    --success-text: #6CE9A6;    /* 7.2:1 on #1C1917 */
+    --success-text: #6CE9A6;    /* 11.5:1 on #1C1917 */
     --success-bg: #1C1917;
     --success-border: #6CE9A6;
     --success-icon: #6CE9A6;
@@ -536,7 +536,7 @@ export default function FormValidationColorAccessibilityPage() {
             <p className="text-orange-800 text-sm mb-3"><strong>Why it fails:</strong> Light red (#EF4444) on white is only 3.2:1. Users with low vision cannot read the message.</p>
             <div className="rounded bg-white border border-orange-300 p-3">
               <p className="text-xs text-orange-700 font-semibold mb-2">Fix:</p>
-              <p className="text-sm text-slate-700">Use <code className="bg-slate-100 px-1 rounded text-xs">#B42318</code> on <code className="bg-slate-100 px-1 rounded text-xs">#FEF3F2</code> background (7.3:1, AAA). Test with <Link href="/contrast-checker/" className="text-orange-900 font-semibold hover:underline">Contrast Checker</Link>.</p>
+              <p className="text-sm text-slate-700">Use <code className="bg-slate-100 px-1 rounded text-xs">#B42318</code> on <code className="bg-slate-100 px-1 rounded text-xs">#FEF3F2</code> background (6.1:1, AA). Test with <Link href="/contrast-checker/" className="text-orange-900 font-semibold hover:underline">Contrast Checker</Link>.</p>
             </div>
           </div>
 
@@ -566,7 +566,7 @@ export default function FormValidationColorAccessibilityPage() {
             <p className="text-purple-800 text-sm mb-3"><strong>Why it fails:</strong> Light green (#4ADE80) on light green surface (#ECFDF3) drops to 2.8:1.</p>
             <div className="rounded bg-white border border-purple-300 p-3">
               <p className="text-xs text-purple-700 font-semibold mb-2">Fix:</p>
-              <p className="text-sm text-slate-700">Use darker green text: <code className="bg-slate-100 px-1 rounded text-xs">#027A48</code> on <code className="bg-slate-100 px-1 rounded text-xs">#ECFDF3</code> (5.4:1, AA). Add check icon. Never rely on green alone for success indication.</p>
+              <p className="text-sm text-slate-700">Use darker green text: <code className="bg-slate-100 px-1 rounded text-xs">#027A48</code> on <code className="bg-slate-100 px-1 rounded text-xs">#ECFDF3</code> (5.1:1, AA). Add check icon. Never rely on green alone for success indication.</p>
             </div>
           </div>
         </div>
