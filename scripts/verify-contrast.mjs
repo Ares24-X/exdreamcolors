@@ -163,6 +163,61 @@ function auditTokenComments(source) {
   return findings;
 }
 
+/**
+ * Audit rows that pair threshold columns with one measured column, e.g.
+ * `| Body text | 4.5:1 | 7:1 | #374151 on #FFFFFF | 10.3:1 | ... |`
+ *
+ * auditSource() skips these because the row carries several ratio cells and it
+ * cannot tell a requirement from a measurement. Here the two hex values live in
+ * a single cell, so the measured ratio is unambiguous: it is the ratio cell that
+ * comes immediately after the cell holding both hexes.
+ */
+function auditPairCellRows(source) {
+  const lines = source.split("\n");
+  const findings = [];
+
+  lines.forEach((line, index) => {
+    if ((line.match(/\|/g) || []).length < 3) return;
+
+    const cells = line.split("|");
+    const pairCol = cells.findIndex(
+      (cell) =>
+        // A transition cell ("base #111827 → card #1F2937") also holds two hexes,
+        // but the numbers beside it are thresholds for a surface move, not a
+        // measurement of that pair. Skip anything with an arrow.
+        !/→|->|⇒/.test(cell) &&
+        new Set((cell.match(HEX) || []).map((h) => h.toLowerCase())).size === 2,
+    );
+    if (pairCol === -1) return;
+
+    const hexes = [
+      ...new Set((cells[pairCol].match(HEX) || []).map((h) => h.toLowerCase())),
+    ];
+
+    // First ratio cell to the right of the hex pair is the measured value.
+    for (let col = pairCol + 1; col < cells.length; col += 1) {
+      const printedRaw = (cells[col].match(/(\d+(?:\.\d+)?):1/) || [])[1];
+      if (!printedRaw) continue;
+
+      const printed = parseFloat(printedRaw);
+      const actual = contrastRatio(hexes[0], hexes[1]);
+      if (Math.abs(printed - actual) > TOLERANCE) {
+        findings.push({
+          line: index + 1,
+          column: col,
+          pair: `${hexes[0]} on ${hexes[1]}`,
+          printed: `${printedRaw}:1`,
+          corrected: printOneDecimal(actual),
+          raw: line,
+        });
+      }
+      break;
+    }
+  });
+
+  return findings;
+}
+
 function auditSource(source) {
   const lines = source.split("\n");
   const findings = [];
@@ -227,6 +282,7 @@ for (const file of targetFiles()) {
     ...auditSource(source),
     ...auditTokenComments(source),
     ...auditMatrixRows(source),
+    ...auditPairCellRows(source),
   ].sort((a, b) => a.line - b.line);
 
   if (findings.length === 0) continue;

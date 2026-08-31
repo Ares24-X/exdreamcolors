@@ -88,6 +88,21 @@ export default function ColorAccessibilityHubPage() {
         <p className="text-sm text-slate-500 mt-3">Most visited: <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> helps 50,000+ designers and developers validate WCAG compliance monthly. <Link href="#checklist" className="text-blue-600 hover:underline">Jump to the 10-point audit checklist ↓</Link></p>
       </section>
 
+      <section className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-3">Two results that change how you set muted text and links</h2>
+        <p className="text-slate-700 mb-4">Both are derived from the WCAG relative-luminance formula, and both stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time.</p>
+        <ul className="space-y-3 text-slate-700">
+          <li className="flex gap-3">
+            <span className="text-amber-700 font-bold flex-shrink-0">1.</span>
+            <span><strong>Muted text needs 5.6:1 on white, not 4.5:1.</strong> Moving dark text onto a tinted surface divides its ratio by that surface&apos;s own contrast against white, which is a fixed constant per surface. Tailwind&apos;s <code className="text-sm bg-white px-1 py-0.5 rounded">gray-500</code> measures 4.8:1 on white and 3.9:1 on <code className="text-sm bg-white px-1 py-0.5 rounded">gray-200</code> &mdash; one tinted card is enough to break it. <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">See the divisor table →</Link></span>
+          </li>
+          <li className="flex gap-3">
+            <span className="text-amber-700 font-bold flex-shrink-0">2.</span>
+            <span><strong>Underlining in-paragraph links is not a style preference.</strong> Unless body text measures at least 13.5:1 against white, no link color satisfies SC 1.4.3 and SC 1.4.1 at the same time. With a <code className="text-sm bg-white px-1 py-0.5 rounded">gray-700</code> body color the best any link can reach is 3.44:1, so color alone cannot carry the distinction. <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">See the derivation →</Link></span>
+          </li>
+        </ul>
+      </section>
+
       <section className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
         <div className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Text and buttons</h2>
@@ -625,7 +640,7 @@ export default function ColorAccessibilityHubPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               <tr><td className="px-4 py-3">Body text contrast</td><td className="px-4 py-3">All paragraph text ≥4.5:1</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">34% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text guide</Link></td></tr>
-              <tr><td className="px-4 py-3">Muted / secondary text</td><td className="px-4 py-3">Helper text, captions ≥4.5:1</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">62% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Muted / secondary text</td><td className="px-4 py-3">Helper text, captions ≥4.5:1 <strong>on every surface</strong>, not just white</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">62% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text guide</Link></td></tr>
               <tr><td className="px-4 py-3">Button states (all 5)</td><td className="px-4 py-3">Default, hover, focus, active, disabled</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">72% fail ≥1 state</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button guide</Link></td></tr>
               <tr><td className="px-4 py-3">Form error signals</td><td className="px-4 py-3">Color + text + icon (not color alone)</td><td className="px-4 py-3 text-center font-bold">2</td><td className="px-4 py-3 text-red-700">62% fail</td><td className="px-4 py-3"><Link href="/accessibility-form-error-colors/" className="text-blue-700 hover:underline">Form colors guide</Link></td></tr>
               <tr><td className="px-4 py-3">Dark mode tokens</td><td className="px-4 py-3">Separate set, not just inverted</td><td className="px-4 py-3 text-center font-bold">1</td><td className="px-4 py-3 text-red-700">73% fail</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 hover:underline">Dark mode guide</Link></td></tr>
