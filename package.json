@@ -5,11 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/verify-contrast.mjs",
+    "prebuild": "node scripts/verify-contrast.mjs && node scripts/verify-cvd-palette.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify:contrast": "node scripts/verify-contrast.mjs"
+    "verify:contrast": "node scripts/verify-contrast.mjs",
+    "verify:cvd": "node scripts/verify-cvd-palette.mjs",
+    "verify:cvd:report": "node scripts/verify-cvd-palette.mjs --report"
   },
   "dependencies": {
     "next": "^14.0.0",

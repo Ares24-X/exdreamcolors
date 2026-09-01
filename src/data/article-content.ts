@@ -4576,6 +4576,8 @@ The fix is not to remove color. Color still helps the majority. The fix is to ne
 
 I tested 60 production dashboards across fintech, healthcare, and SaaS analytics in H1 2026. 68% used red/green as the only differentiator for positive/negative values — an improvement from 72% in my 2025 audit, but still unacceptable. After applying the techniques below, every one passed WCAG 2.2 SC 1.4.1 (Use of Color) and SC 1.4.11 (Non-text Contrast). With the European Accessibility Act now issuing fines and US ADA lawsuits exceeding 5,800 cases annually, chart accessibility has moved from "nice to have" to audit-critical.
 
+One correction up front, because this page got it wrong for months. The 6-colour palette this article used to recommend — the deep blue / orange / green / purple / yellow / red set repeated across dashboard tutorials as colour-blind safe — does not survive measurement. Its closest pair collapses to CIEDE2000 7.5 under deuteranopia, and in greyscale its orange and green sit 0.3 lightness points apart. Both replacement palettes below hold above 20. The derivation, and the proof that you need two palettes rather than one, is in the audit section.
+
 Verify your chart palette separations with the [Contrast Checker](/contrast-checker/). For related guides on forms, buttons, and dark mode, see the [Color Accessibility Hub](/color-accessibility-hub/). For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token-based approaches, see [Accessible Color Token System](/accessible-color-token-system/).`,
     sectionFlow: ["real_world", "code", "testing_methods", "chart_audit", "pro_tips", "tools"],
     realWorldExamples: `**Google Maps stopped relying on red/green pins for traffic.** They shifted to a red-yellow-green gradient with distinct lightness steps, and added line thickness changes on routes. A deuteranopic user can still distinguish heavy traffic from light traffic by brightness alone. Google reported a 23% improvement in correct route selection among colorblind beta testers after the redesign.
@@ -4594,16 +4596,42 @@ Verify your chart palette separations with the [Contrast Checker](/contrast-chec
 | Shape markers | Line charts, scatter plots | Markers overlap at high density |
 | Redundant encoding (size + color) | Bubble charts, maps | Size differences are too subtle |`,
     codeSnippet: {
-      label: "Accessible chart palette with lightness-separated colors + pattern fallback (SVG/D3)",
-      code: `/* Accessible chart palette — each color has distinct lightness */
-const accessiblePalette = [
-  { hex: '#1B4F72', label: 'Deep Blue',   L: 35 },
-  { hex: '#E67E22', label: 'Orange',      L: 62 },
-  { hex: '#27AE60', label: 'Green',       L: 55 },
-  { hex: '#8E44AD', label: 'Purple',      L: 40 },
-  { hex: '#F1C40F', label: 'Yellow',      L: 80 },
-  { hex: '#E74C3C', label: 'Red',         L: 48 },
+      label: "Two CVD-verified chart palettes (light and dark surface) + pattern fallback (SVG/D3)",
+      code: `/* Chart palettes verified by scripts/verify-cvd-palette.mjs.
+   Every pair stays >=20 CIEDE2000 apart under protanopia, deuteranopia and
+   tritanopia (Machado 2009, severity 1.0 - the model Chrome DevTools uses),
+   and every series clears 3:1 against its own surface for SC 1.4.11.
+   You need BOTH sets: no single 6-colour palette clears 3:1 on white AND
+   on a dark base. See the audit section below for the proof. */
+
+/* Use on white / near-white surfaces. Min ratio vs #FFFFFF = 3.74:1 */
+const chartPaletteLight = [
+  { hex: '#002024', label: 'Ink Teal',    oklch: 'oklch(22% 0.045 204)' },
+  { hex: '#3D2A00', label: 'Bronze',      oklch: 'oklch(30% 0.065 84)'  },
+  { hex: '#2800C1', label: 'Ultramarine', oklch: 'oklch(38% 0.245 272)' },
+  { hex: '#00675A', label: 'Pine',        oklch: 'oklch(46% 0.085 180)' },
+  { hex: '#866C02', label: 'Olive',       oklch: 'oklch(54% 0.110 92)'  },
+  { hex: '#028AD6', label: 'Azure',       oklch: 'oklch(61% 0.150 244)' },
 ];
+
+/* Use on dark surfaces (#111827 base). Min ratio vs #111827 = 3.32:1 */
+const chartPaletteDark = [
+  { hex: '#0B758A', label: 'Deep Cyan',   oklch: 'oklch(52% 0.090 216)' },
+  { hex: '#8D8307', label: 'Brass',       oklch: 'oklch(60% 0.125 104)' },
+  { hex: '#A57AFE', label: 'Periwinkle',  oklch: 'oklch(68% 0.190 296)' },
+  { hex: '#FE8798', label: 'Rose',        oklch: 'oklch(76% 0.145 12)'  },
+  { hex: '#D7D209', label: 'Citron',      oklch: 'oklch(84% 0.180 108)' },
+  { hex: '#DEE3FD', label: 'Pale Lilac',  oklch: 'oklch(92% 0.035 276)' },
+];
+
+/* Pick the palette from the rendered surface, never hardcode one set. */
+const chartPalette = (isDarkSurface: boolean) =>
+  isDarkSurface ? chartPaletteDark : chartPaletteLight;
+
+/* Truncate from the END when you need fewer series. Both palettes are ordered
+   by ascending lightness, so any leading slice keeps its lightness spacing. */
+const seriesColors = (n: number, dark: boolean) =>
+  chartPalette(dark).slice(0, n).map((c) => c.hex);
 
 /* SVG pattern definitions for print/grayscale fallback */
 function createPatterns(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
@@ -4698,15 +4726,104 @@ test('chart accessibility audit', async ({ page }) => {
       "Simulate your charts through protanopia, deuteranopia, and tritanopia filters before shipping. Chrome DevTools has a built-in CVD simulator under Rendering > Emulate vision deficiencies. For palette construction guidance, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/).",
       "Use direct labels on lines and bars whenever density allows. A legend forces the user to decode color in working memory — direct labels remove that cognitive load for everyone, not just colorblind users.",
       "Keep your chart series to 6 or fewer distinct colors. Beyond that, even normal-vision users struggle to map legend entries to data. If you need more series, use small multiples instead. Build series palettes with the [Palette Generator](/palette-generator/).",
-      "Test in grayscale by printing or using a CSS filter. If two series merge into the same gray, their lightness values are too close — adjust one by at least 20 OKLCH lightness points. See [OKLCH Color Design Guide](/oklch-color-design-guide/) for perceptual lightness spacing.",
+      "Test in grayscale before trusting any palette, including one you inherited. Convert to greyscale and compare perceptual lightness: the widely published orange \`#E67E22\` and green \`#27AE60\` land at L* 63.2 and L* 63.0 — a 0.3 gap, one indistinguishable series. Aim for at least 6 points of greyscale L* separation between adjacent series. See [OKLCH Color Design Guide](/oklch-color-design-guide/) for perceptual lightness spacing.",
       "For traffic-light status indicators (red/yellow/green), always add a secondary signal: icon shape, text label, or position. Never let a standalone colored dot carry critical meaning. See [Form Validation Color Accessibility](/form-validation-color-accessibility/) for the same principle applied to form states.",
-      "OKLCH lightness-spaced 6-color chart palette (tested safe for all three CVD types): oklch(35% 0.15 260) Deep Blue, oklch(55% 0.18 145) Green, oklch(62% 0.16 50) Orange, oklch(40% 0.14 310) Purple, oklch(80% 0.14 90) Yellow, oklch(48% 0.19 25) Red. Minimum lightness gap between any two: 7 points. Verify each against your dashboard surface with the [Contrast Checker](/contrast-checker/).",
+      "Split chart series tokens by surface, because no single 6-colour palette clears SC 1.4.11's 3:1 on both white and a dark base. Light surfaces cap series lightness near OKLCH 61%; dark surfaces floor it near 52%; six series need ~39 points of range. Verified light set: oklch(22% 0.045 204), oklch(30% 0.065 84), oklch(38% 0.245 272), oklch(46% 0.085 180), oklch(54% 0.110 92), oklch(61% 0.150 244). Verified dark set: oklch(52% 0.090 216), oklch(60% 0.125 104), oklch(68% 0.190 296), oklch(76% 0.145 12), oklch(84% 0.180 108), oklch(92% 0.035 276). Worst-case CIEDE2000 under all three dichromacies: 20.2 and 20.7. Check any pair against your real surface with the [Contrast Checker](/contrast-checker/).",
       "Pre-ship chart accessibility checklist: (1) Every series distinguishable in grayscale screenshot (2) Direct labels present when ≤6 series (3) Pattern fills available for print/monochrome (4) Legend uses shape markers matching the chart (5) Axis labels have ≥4.5:1 contrast (6) Interactive tooltips accessible via keyboard (7) aria-label or aria-describedby on SVG/canvas (8) Tested in Chrome CVD simulator for all three types (9) Status colors have icon or text redundancy (10) Dark mode tested separately with adjusted lightness values. Full contrast reference: [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/).",
       "For React/D3 projects, export your accessible palette as design tokens: store hex, OKLCH, and pattern-id together so engineers can't accidentally use color without its pattern pair. See [Accessible Color Token System](/accessible-color-token-system/) for the full token architecture.",
       "Dashboard-specific guidance: chart colors must also work alongside form validation colors, alerts, and status badges. See [Dashboard Color Palette Guide](/dashboard-color-palette-guide/) for the full system approach. For the broader accessibility picture, start at the [Color Accessibility Hub](/color-accessibility-hub/).",
       "In 2026, the EU began fining companies for inaccessible data visualizations under the European Accessibility Act. Three fintech dashboards in my audit received formal compliance notices citing WCAG SC 1.4.1 failures in charts. Retrofitting accessible patterns cost \u20ac15K\u201340K per dashboard. Building them correctly from the start would have cost \u20ac2K\u20135K incremental. Factor chart accessibility into sprint planning, not post-launch audits."
     ],
-    chartAudit: `**60-dashboard accessibility audit — chart failure breakdown (H1 2026):**
+    auditHeading: "Why the Standard \"CVD-Safe\" Chart Palette Fails, and What Replaces It",
+    chartAudit: `The 6-colour palette in the previous section is not the one this article shipped for most of its life. The old set — \`#1B4F72\` deep blue, \`#E67E22\` orange, \`#27AE60\` green, \`#8E44AD\` purple, \`#F1C40F\` yellow, \`#E74C3C\` red — is the palette you find repeated across dashboard tutorials and design-system docs, always labelled colour-blind safe. I finally measured it instead of trusting the label. It fails, and it fails in the two places charts are most often read.
+
+Every number in this section is computed by \`scripts/verify-cvd-palette.mjs\`, which runs on each build. The pipeline is sRGB → linear RGB → Machado 2009 dichromacy matrix at severity 1.0 → CIELAB → CIEDE2000. Machado 2009 is the same model behind Chrome DevTools' *Emulate vision deficiencies*, so you can reproduce any figure here in your own browser.
+
+**Finding 1: the legacy palette collapses to CIEDE2000 7.5 under deuteranopia**
+
+CIEDE2000 measures perceptual colour distance. Above roughly 20, two colours are comfortably separable at chart line widths. Below 10, they are effectively the same colour. Here is the legacy palette's closest pair under each vision model:
+
+| Vision model | Closest pair | CIEDE2000 | Verdict |
+| --- | --- | ---: | --- |
+| Normal | Orange / Red | 20.0 | Marginal even here |
+| Protanopia | Orange / Green | 9.6 | Fails |
+| Deuteranopia | Orange / Red | 7.5 | Fails |
+| Tritanopia | Orange / Red | 9.4 | Fails |
+
+Deuteranopia is the most common form of CVD, and it is where this palette is worst. Orange \`#E67E22\` simulates to \`#B6A221\` and red \`#E74C3C\` simulates to \`#9F8F36\`. Those are two olive-browns 7.5 apart. On a line chart at 2px, they are one series.
+
+**Finding 2: the published lightness claim was wrong by a factor of two**
+
+The old version of this page claimed a "minimum lightness gap between any two: 7 points" and presented the palette as lightness-separated. Sorted by real OKLCH lightness, the gaps are 11.5, 10.5, **3.2**, 3.3, 14.0. The true minimum is 3.2, not 7.
+
+Greyscale is worse. Converting each colour to the perceptual lightness the eye actually reads after desaturation, orange lands at L* 63.2 and green at L* 63.0 — a gap of **0.3**. In a greyscale print or a monochrome display, orange and green are indistinguishable. The grayscale test this article recommends elsewhere would have caught it in thirty seconds, which is the lesson: I published the test and did not run it on my own palette.
+
+**Finding 3: no single 6-colour palette can serve light and dark surfaces**
+
+This is the result that changes how you should structure chart tokens. SC 1.4.11 requires graphical objects to clear 3:1 against their background. That requirement pulls in opposite directions depending on the surface:
+
+- On white, a series must be **dark enough** to reach 3:1. That caps lightness at roughly OKLCH 61%.
+- On a #111827 base, a series must be **light enough** to reach 3:1. That floors lightness at roughly OKLCH 52%.
+
+Six series each needing a ~7 point lightness gap require about 39 points of range. The light-surface ceiling and the dark-surface floor leave only a 9 point overlap band. The two constraints are mutually exclusive, so one palette physically cannot do both jobs:
+
+| Palette | Worst CVD CIEDE2000 | Min ratio vs #FFFFFF | Min ratio vs #111827 | Serves both? |
+| --- | ---: | ---: | ---: | --- |
+| Light-surface set | 20.2 | 3.74:1 | 1.04:1 | No |
+| Dark-surface set | 20.7 | 1.27:1 | 3.32:1 | No |
+| Legacy set | 7.5 | 1.66:1 | 2.03:1 | No |
+
+The legacy palette fails both surfaces, which is the quiet reason it appears to work in demos: nobody measured it against either one. Note the light set's darkest series is 1.04:1 on a dark base, essentially invisible, and the dark set's lightest is 1.27:1 on white. Ship the wrong set for the surface and series disappear entirely.
+
+**The replacement palettes, with the numbers that back them**
+
+Light surface (min 3.74:1 on white, worst-case CVD CIEDE2000 **20.2**):
+
+| # | Label | Hex | OKLCH | Greyscale L* | vs #FFFFFF |
+| ---: | --- | --- | --- | ---: | ---: |
+| 1 | Ink Teal | \`#002024\` | oklch(22% 0.045 204) | 10.3 | 17.04:1 |
+| 2 | Bronze | \`#3D2A00\` | oklch(30% 0.065 84) | 18.6 | 13.73:1 |
+| 3 | Ultramarine | \`#2800C1\` | oklch(38% 0.245 272) | 24.6 | 11.29:1 |
+| 4 | Pine | \`#00675A\` | oklch(46% 0.085 180) | 38.6 | 6.80:1 |
+| 5 | Olive | \`#866C02\` | oklch(54% 0.110 92) | 46.7 | 5.05:1 |
+| 6 | Azure | \`#028AD6\` | oklch(61% 0.150 244) | 55.1 | 3.74:1 |
+
+Dark surface (min 3.32:1 on #111827, worst-case CVD CIEDE2000 **20.7**):
+
+| # | Label | Hex | OKLCH | Greyscale L* | vs #111827 |
+| ---: | --- | --- | --- | ---: | ---: |
+| 1 | Deep Cyan | \`#0B758A\` | oklch(52% 0.090 216) | 45.1 | 3.32:1 |
+| 2 | Brass | \`#8D8307\` | oklch(60% 0.125 104) | 53.9 | 4.55:1 |
+| 3 | Periwinkle | \`#A57AFE\` | oklch(68% 0.190 296) | 60.8 | 5.76:1 |
+| 4 | Rose | \`#FE8798\` | oklch(76% 0.145 12) | 69.9 | 7.72:1 |
+| 5 | Citron | \`#D7D209\` | oklch(84% 0.180 108) | 82.1 | 11.08:1 |
+| 6 | Pale Lilac | \`#DEE3FD\` | oklch(92% 0.035 276) | 90.6 | 13.95:1 |
+
+Both sets hold a minimum greyscale L* gap above 6 (6.1 light, 6.9 dark), so they survive desaturation — the exact test the legacy palette failed at 0.3. Both are ordered by ascending lightness, so if you need four series instead of six, take the first four and the spacing still holds.
+
+**The improvement, side by side:**
+
+| Metric | Legacy palette | Light set | Dark set |
+| --- | ---: | ---: | ---: |
+| Worst-case CVD CIEDE2000 | 7.5 | 20.2 | 20.7 |
+| Min OKLCH lightness gap | 3.2 | 6.9 | 7.8 |
+| Min greyscale L* gap | 0.3 | 6.1 | 6.9 |
+| Clears 3:1 on its target surface | No | Yes | Yes |
+
+The worst-case separation improves 2.7x. That is the difference between a chart where deuteranopic readers guess and one where they do not.
+
+**What to do with this**
+
+1. Search your codebase for \`#E67E22\`, \`#27AE60\`, and \`#E74C3C\` together. That trio is the fingerprint of this palette, and it is in a lot of dashboards.
+2. Split your chart tokens by surface. One \`chart.series.*\` set for light, one for dark. Selecting by surface at render time is a smaller change than most teams expect.
+3. Run the greyscale test on whatever palette you use, including palettes you inherited from a design system. A 0.3 L* gap survived in this article for months because the palette carried a trustworthy label.
+4. Keep the redundant encoding regardless. A verified 20.2 floor means colour alone is defensible for six series, but direct labels and pattern fills still cut task time for everyone — see the comprehension numbers below.
+
+Verify any pair from these tables in the [Contrast Checker](/contrast-checker/). For the palette-construction reasoning behind the hue choices, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For the perceptual lightness model these tables use, see [OKLCH Color Design Guide](/oklch-color-design-guide/). To wire the two sets into surface-aware tokens, see [Accessible Color Token System](/accessible-color-token-system/). For the dark surfaces the second palette targets, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). Full resource set: [Color Accessibility Hub](/color-accessibility-hub/).
+
+---
+
+**60-dashboard accessibility audit — chart failure breakdown (H1 2026):**
 
 I tested 60 production dashboards across fintech (22), healthcare (16), and SaaS analytics (22). Each dashboard was evaluated against WCAG 2.2 SC 1.4.1 (Use of Color), SC 1.4.11 (Non-text Contrast), and SC 4.1.2 (Name, Role, Value for interactive elements). Compared to my Q2 2025 audit (50 sites), adoption of accessible patterns improved slightly but the majority still fail.
 
@@ -4748,7 +4865,7 @@ I tested 60 production dashboards across fintech (22), healthcare (16), and SaaS
 | SaaS analytics | 8+ series with no direct labels | Dashboard users scan quickly — legend-hunting wastes 4-6 seconds per glance |
 
 For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). Test your chart colors with the [Contrast Checker](/contrast-checker/). For the full accessibility strategy, start at the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    keyStat: "Microsoft's Power BI accessibility testing showed chart comprehension rose from 64% to 91% among deuteranopic users after adding pattern fills alongside color (Microsoft Inclusive Design Report, 2024). In my own 60-dashboard audit (H1 2026), adding direct labels improved task-completion speed by 36% for all users — not just colorblind ones. The EU EAA's first enforcement fines in Q1 2026 specifically cited chart accessibility failures, making this a compliance priority.",
+    keyStat: "The 6-colour chart palette most widely published as colour-blind safe is not. Measured through the Machado 2009 model Chrome DevTools uses, its closest pair collapses to CIEDE2000 7.5 under deuteranopia and to 0.3 greyscale lightness points between orange and green — one series, not two. The two replacement palettes on this page hold worst-case separations of 20.2 and 20.7, a 2.7x improvement, and every figure is recomputed by `npm run verify:cvd` on each build. There must be two palettes because SC 1.4.11's 3:1 floor caps series lightness near OKLCH 61% on white and floors it near 52% on a dark base, leaving too little range for six series to fit both.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker", "image-extractor"]
   },
 
