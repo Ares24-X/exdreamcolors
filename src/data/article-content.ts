@@ -2364,8 +2364,11 @@ I ran a 35-site audit across SaaS dashboards, fintech apps, and e-commerce check
 
 The fix is not removing color. The fix is building palettes where hue is never the only channel. You need lightness separation, shape redundancy, and safe hue pairs that survive all three CVD types. This guide gives you tested palettes with measured OKLCH separations, a CVD simulation function you can drop into CI, and a pre-ship checklist.
 
+One correction before any of that, because this page was part of the problem. The 6-colour palette it recommended for months — the deep blue / orange / purple / yellow / teal / dark red set you find repeated across dashboard tutorials — does not survive measurement. Its floor is CIEDE2000 10.9 under protanopia, not the 20 this page claimed, and two of its six series sit 0.7 greyscale lightness points apart. The old screening table also overstated its lightness gaps by roughly 2x and marked one pair as failing a CVD type it actually passes comfortably. Everything below is now recomputed by \`npm run verify:cvd\` on each build, with all 15 pairs published instead of a hand-picked six, and a known-bad palette kept in the test fixture as a negative control.
+
 Validate your palette choices with the [Contrast Checker](/contrast-checker/) and browse all color accessibility resources in the [Color Accessibility Hub](/color-accessibility-hub/). For form-specific patterns, see the [Form Validation Color Accessibility Guide](/form-validation-color-accessibility/). For chart palettes, see [Accessible Data Visualization](/accessible-data-visualization/).`,
     sectionFlow: ["real_world", "audit_data", "code", "testing_methods", "pro_tips"],
+    auditHeading: "Remeasuring the Palette This Page Recommended",
     chartAudit: `**Charts are where CVD-safe palettes break first.** A palette that works fine for buttons and status badges can still fail in a chart, because a chart asks the user to tell six colors apart at 4px line width, often with the legend sitting far from the data.
 
 Of the 35 sites in the audit above, 22 shipped at least one chart. 14 of those 22 (64%) had a chart where two series became indistinguishable under at least one CVD simulation.
@@ -2385,18 +2388,31 @@ Of the 35 sites in the audit above, 22 shipped at least one chart. 14 of those 2
 
 ---
 
-**Perceptual distance between series in the 6-color palette above, measured under simulation.** These are CIEDE2000 distances after applying Brettel CVD transforms. Values above 20 are safely distinguishable; below 20 the pair needs a pattern or label backup.
+**Perceptual distance between series in the 6-colour palette this page used to recommend.** These are CIEDE2000 distances under the Machado 2009 dichromacy model, recomputed by \`npm run verify:cvd\` on each build. Values of 20 and above are safely distinguishable at chart line widths; below 10 the pair is effectively one colour. This table used to show six hand-picked pairs and claim a floor of 20. Here are all 15, sorted worst first.
 
-| Series pair | Normal | Deuteranopia | Protanopia | Tritanopia | Minimum |
+| Series pair | Normal | Protanopia | Deuteranopia | Tritanopia | Minimum |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 5 Teal vs 6 Dark red | 41 | 24 | 20 | 38 | 20 |
-| 2 Orange vs 4 Yellow | 28 | 23 | 21 | 30 | 21 |
-| 1 Deep blue vs 5 Teal | 30 | 33 | 32 | 21 | 21 |
-| 1 Deep blue vs 3 Purple | 24 | 26 | 25 | 22 | 22 |
-| 3 Purple vs 6 Dark red | 26 | 29 | 28 | 24 | 24 |
-| 2 Orange vs 6 Dark red | 33 | 27 | 25 | 34 | 25 |
+| 1 Deep blue vs 3 Purple | 26.3 | **10.9** | 12.6 | 42.4 | **10.9** |
+| 2 Orange vs 4 Yellow | 25.5 | 16.8 | **12.3** | 16.6 | **12.3** |
+| 3 Purple vs 6 Dark red | 34.0 | 43.4 | 46.5 | 20.1 | 20.1 |
+| 2 Orange vs 5 Teal | 48.5 | 20.3 | 29.1 | 59.2 | 20.3 |
+| 1 Deep blue vs 5 Teal | 32.7 | 31.5 | 25.7 | 20.5 | 20.5 |
+| 2 Orange vs 6 Dark red | 27.4 | 25.2 | 21.0 | 20.8 | 20.8 |
+| 5 Teal vs 6 Dark red | 57.2 | 21.3 | 20.8 | 61.6 | 20.8 |
+| 3 Purple vs 5 Teal | 44.1 | 35.8 | 23.2 | 48.9 | 23.2 |
+| 2 Orange vs 3 Purple | 53.0 | 58.0 | 57.5 | 26.6 | 26.6 |
+| 4 Yellow vs 5 Teal | 43.0 | 29.8 | 37.6 | 50.3 | 29.8 |
+| 4 Yellow vs 6 Dark red | 50.6 | 43.0 | 32.7 | 35.1 | 32.7 |
+| 1 Deep blue vs 6 Dark red | 42.6 | 33.6 | 43.1 | 51.0 | 33.6 |
+| 3 Purple vs 4 Yellow | 74.1 | 67.4 | 64.8 | 34.3 | 34.3 |
+| 1 Deep blue vs 2 Orange | 53.4 | 50.0 | 59.6 | 57.2 | 50.0 |
+| 1 Deep blue vs 4 Yellow | 69.0 | 62.8 | 69.6 | 58.8 | 58.8 |
 
-**How to read this:** the palette never drops below 20, so all six series stay separable, but the weakest link changes per CVD type. Teal and dark red are closest under protanopia, while deep blue and teal are closest under tritanopia. If you cut the palette down to four series, drop 5 and 6 first — that raises the worst-case distance from 20 to 24.
+**The floor is 10.9, not 20.** Deep blue vs Purple under protanopia, a pair the old six-row version of this table did not include. Orange vs Yellow is second at 12.3 under deuteranopia; the old table listed that pair at a minimum of 21. Two of fifteen pairs sit below 15, which means a six-series chart drawn in this palette has two series a protanope cannot separate and two more a deuteranope cannot.
+
+**Reading the shape of the failure:** the pairs that break are the ones close in hue angle after the red-green axis collapses. Deep blue (240°) and Purple (310°) are 70° apart in normal vision and simulate to near-identical blues under protanopia. Orange (55°) and Yellow (95°) do the same under deuteranopia. Tritanopia is the mildest case for this palette at a 20.1 floor, which is why a designer spot-checking one simulator can come away satisfied.
+
+The replacement palettes, with all 15 pairs above 20 under every model, are in the palette section below.
 
 ---
 
@@ -2499,37 +2515,83 @@ Verify your final palette with the [Contrast Checker](/contrast-checker/) and se
 
 ---
 
-**Safe color pairs that work for all CVD types (verified with Sim Daltonism + Coblis):**
+**Two-colour screening table, remeasured.** Every figure below is computed by \`npm run verify:cvd\` on each build: greyscale L* difference from relative luminance, and the worst CIEDE2000 across protanopia, deuteranopia and tritanopia under the Machado 2009 model. A pair is called safe only when it holds 20 or above under all three.
 
-| Pair | HEX values | OKLCH ΔL | Deuteranopia | Protanopia | Tritanopia |
-| --- | --- | ---: | :---: | :---: | :---: |
-| Blue + Orange | #2563eb + #ea580c | 22% | ✓ | ✓ | ✓ |
-| Blue + Yellow | #1d4ed8 + #ca8a04 | 30% | ✓ | ✓ | ✓ |
-| Purple + Yellow | #7c3aed + #eab308 | 35% | ✓ | ✓ | ✓ |
-| Dark navy + Light gray | #1e3a5f + #d1d5db | 45% | ✓ | ✓ | ✓ |
-| Teal + Coral | #0d9488 + #f97316 | 18% | ✓ | ✓ | ✓ |
-| Dark purple + Amber | #581c87 + #d97706 | 32% | ✓ | ✓ | ✓ |
-| Red + Blue | #dc2626 + #2563eb | 8% | ✓ | ✓ | ✗ |
-| Green + Red | #16a34a + #dc2626 | 3% | ✗ | ✗ | ✓ |
+| Pair | HEX values | Greyscale ΔL* | Worst CVD ΔE | Prot | Deut | Trit | Verdict |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | :---: |
+| Blue + Orange | #2563eb + #ea580c | 10.5 | 60.0 | 60.0 | 67.1 | 65.8 | ✓ |
+| Blue + Yellow | #1d4ed8 + #ca8a04 | 23.3 | 53.3 | 64.1 | 70.7 | 53.3 | ✓ |
+| Purple + Yellow | #7c3aed + #eab308 | 32.5 | 41.2 | 71.2 | 73.7 | 41.2 | ✓ |
+| Dark navy + Light gray | #1e3a5f + #d1d5db | 61.0 | 57.3 | 57.3 | 61.3 | 58.6 | ✓ |
+| Teal + Coral | #0d9488 + #f97316 | 8.6 | 24.6 | 24.6 | 36.1 | 61.2 | ✓ |
+| Dark purple + Amber | #581c87 + #d97706 | 34.1 | 38.4 | 62.2 | 66.5 | 38.4 | ✓ |
+| Red + Blue | #dc2626 + #2563eb | 1.9 | 53.8 | 53.8 | 62.6 | 65.5 | ✓ |
+| Green + Red | #16a34a + #dc2626 | 10.9 | 7.9 | 23.9 | 7.9 | 65.5 | ✗ |
 
-**Key insight:** pairs with OKLCH lightness difference (ΔL) above 20% survive all CVD types. Below 15%, at least one type fails. The green/red pair has only 3% ΔL — they collapse to the same muddy brown under deuteranopia.
+**Three corrections to what this page used to publish here.**
+
+This table previously printed an "OKLCH ΔL" column with values roughly double the real separation — Blue + Orange as 22% when the greyscale gap is 10.5, Teal + Coral as 18% when it is 8.6, Red + Blue as 8% when it is 1.9. Those numbers made lightness separation look like the thing carrying these pairs. It is not. Blue + Orange survives on hue distance, 60.0 at worst, while sitting only 10.5 L* apart.
+
+Second, Red + Blue was marked as failing tritanopia. It does not. It measures 65.5, the second-widest separation in the table. The real problem with Red + Blue is the one the old ΔL column obscured: 1.9 greyscale L* apart, a contrast ratio of 1.07:1 against each other. Print that pair in black and white, or hand it to a monochromat, and it is one colour. It is safe for the three common CVD types and unsafe the moment colour is removed.
+
+Third, Green + Red is the only genuine CVD failure here, at 7.9 under deuteranopia. Note that it passes tritanopia at 65.5. "Colour-blind safe" is never a single verdict; it is three, and the failing one is what matters.
+
+**The rule that actually holds:** a pair needs either hue distance that survives simulation, or greyscale separation, and you should know which one you are relying on. Pairs carried by hue alone (Blue + Orange, Red + Blue) break in greyscale and in print. Pairs carried by lightness (Dark navy + Light gray at 61.0 L*) survive everything. Only Dark navy + Light gray, Blue + Yellow, Purple + Yellow and Dark purple + Amber clear both axes at once, which is why they are the ones worth putting in a design system.
 
 ---
 
-**6-color CVD-safe palette for dashboards and charts:**
+**6-colour palettes for dashboards and charts, verified by build.** The palette this section used to recommend is below in the failure table; these two replace it. Every pair holds CIEDE2000 20 or above under all three CVD types, and each set clears the SC 1.4.11 3:1 floor against the surface it is sold for. There are two sets because no single 6-colour palette clears 3:1 on both white and a dark base.
 
-| Series | HEX | OKLCH (L, C, H) | Role | Pattern fallback |
-| --- | --- | --- | --- | --- |
-| 1 | #1B4F72 | 38%, 0.08, 240° | Deep blue | Solid |
-| 2 | #E67E22 | 67%, 0.16, 55° | Orange | Diagonal lines |
-| 3 | #8E44AD | 42%, 0.14, 310° | Purple | Dots |
-| 4 | #F1C40F | 83%, 0.18, 95° | Yellow | Crosshatch |
-| 5 | #148F77 | 55%, 0.10, 175° | Teal | Horizontal lines |
-| 6 | #B03A2E | 45%, 0.14, 25° | Dark red | Vertical lines |
+Light surfaces (worst-case CVD ΔE **20.2**, minimum 3.74:1 on #FFFFFF):
 
-Every adjacent pair has ≥15% lightness separation. Under deuteranopia simulation, all 6 remain distinguishable. Under protanopia, series 5 and 6 get closer but the pattern fallback resolves them. Under tritanopia, series 1 and 5 shift but the 17% ΔL keeps them readable.
+| Series | HEX | OKLCH | Greyscale L* | vs #FFFFFF | Pattern fallback |
+| ---: | --- | --- | ---: | ---: | --- |
+| 1 | #002024 | oklch(22% 0.045 204) | 10.3 | 17.04:1 | Solid |
+| 2 | #3D2A00 | oklch(30% 0.065 84) | 18.6 | 13.73:1 | Diagonal lines |
+| 3 | #2800C1 | oklch(38% 0.245 272) | 24.6 | 11.29:1 | Dots |
+| 4 | #00675A | oklch(46% 0.085 180) | 38.6 | 6.80:1 | Horizontal lines |
+| 5 | #866C02 | oklch(54% 0.110 92) | 46.7 | 5.05:1 | Crosshatch |
+| 6 | #028AD6 | oklch(61% 0.150 244) | 55.1 | 3.74:1 | Vertical lines |
 
-Use the [Palette Generator](/palette-generator/) to build your own CVD-safe palette and verify spacing. For dark-mode adaptations of these colors, see the [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/) guide.`,
+Dark surfaces (worst-case CVD ΔE **20.7**, minimum 3.32:1 on #111827):
+
+| Series | HEX | OKLCH | Greyscale L* | vs #111827 | Pattern fallback |
+| ---: | --- | --- | ---: | ---: | --- |
+| 1 | #0B758A | oklch(52% 0.090 216) | 45.1 | 3.32:1 | Solid |
+| 2 | #8D8307 | oklch(60% 0.125 104) | 53.9 | 4.55:1 | Diagonal lines |
+| 3 | #A57AFE | oklch(68% 0.190 296) | 60.8 | 5.76:1 | Dots |
+| 4 | #FE8798 | oklch(76% 0.145 12) | 69.9 | 7.72:1 | Horizontal lines |
+| 5 | #D7D209 | oklch(84% 0.180 108) | 82.1 | 11.08:1 | Crosshatch |
+| 6 | #DEE3FD | oklch(92% 0.035 276) | 90.6 | 13.95:1 | Vertical lines |
+
+Both sets are ordered by ascending lightness with a minimum adjacent greyscale gap of 6.1 (light) and 6.9 (dark), so they survive desaturation and you can take the first four for a four-series chart without losing spacing.
+
+**What the old table got wrong.** It recommended #1B4F72 / #E67E22 / #8E44AD / #F1C40F / #148F77 / #B03A2E and claimed all six stay distinguishable, with the caveat that "series 5 and 6 get closer under protanopia." Measured, the weakest pair is not 5 and 6:
+
+| Claim made | Measured | Gap |
+| --- | ---: | --- |
+| Palette floor 20 | **10.9** | Deep blue vs Purple, protanopia |
+| Weakest pair is Teal vs Dark red | Teal vs Dark red is 20.8 | Not the weakest, 8th of 15 |
+| Orange vs Yellow min 21 | **12.3** | Deuteranopia |
+| Deep blue vs Purple min 22 | **10.9** | Protanopia |
+| Every adjacent pair ≥15% lightness separation | Purple 42.6 vs Dark red 41.9 | **0.7** greyscale L* |
+| #8E44AD is oklch 42% | 52.6% | 10.6 points off |
+| #B03A2E is oklch 45% | 51.8% | 6.8 points off |
+
+The greyscale line is the one to sit with. Purple and Dark red were listed as two series with different pattern fills, and they are 0.7 L* apart. Desaturate that chart and they are the same grey, distinguished only by the pattern that was supposed to be the backup. The published CIEDE2000 table also listed just 6 of the 15 pairs, and the two genuinely weakest pairs were not among them.
+
+How the replacement compares:
+
+| Metric | Old palette | Light set | Dark set |
+| --- | ---: | ---: | ---: |
+| Worst-case CVD ΔE | 10.9 | 20.2 | 20.7 |
+| Min greyscale L* gap | 0.7 | 6.1 | 6.9 |
+| Clears 3:1 on target surface | No | Yes | Yes |
+| Pairs published vs measured | 6 of 15 | 15 of 15 | 15 of 15 |
+
+**If you inherited the old palette,** search for \`#E67E22\` and \`#F1C40F\` together — that pairing is its fingerprint and it is widely copied. Swap to the set matching your surface, keep the pattern fills, and run the greyscale test before you trust the result. A 0.7 L* gap survived on this page for months because the palette carried a credible label and nobody remeasured it.
+
+Use the [Palette Generator](/palette-generator/) to build your own and verify spacing, and check any pair above in the [Contrast Checker](/contrast-checker/). For the chart-specific implementation of these two sets, including the D3 pattern code, see [Accessible Data Visualization](/accessible-data-visualization/). For dark-mode adaptations, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). To wire both sets into surface-aware tokens, see [Accessible Color Token System](/accessible-color-token-system/). For the perceptual lightness model these tables use, see [OKLCH Color Design Guide](/oklch-color-design-guide/). Full resource set: [Color Accessibility Hub](/color-accessibility-hub/).`,
     codeSnippet: {
       label: "CVD-safe palette validator + simulation matrix (TypeScript)",
       code: `/* ═══════════════════════════════════════════════════════
@@ -2627,8 +2689,12 @@ function validatePalette(colors: { name: string; hex: string }[]): PaletteResult
   return results;
 }
 
-// ── Example: validate the 6-color dashboard palette ──
-const dashboardPalette = [
+// ── Example: run the validator against both palettes ──
+// The legacy palette is included deliberately. It is the one published
+// across dashboard tutorials as CVD-safe, and it fails: Deep Blue vs
+// Purple collapses to ~11 under protanopia. Keep it in your test fixture
+// as a negative control so you know the validator actually catches things.
+const legacyPalette = [
   { name: 'Deep Blue',  hex: '#1B4F72' },
   { name: 'Orange',     hex: '#E67E22' },
   { name: 'Purple',     hex: '#8E44AD' },
@@ -2637,29 +2703,68 @@ const dashboardPalette = [
   { name: 'Dark Red',   hex: '#B03A2E' },
 ];
 
-const results = validatePalette(dashboardPalette);
-console.table(results);
+// Verified for light surfaces: every pair >= 20 under all three models,
+// and every colour clears 3:1 on #FFFFFF for SC 1.4.11.
+const lightSurfacePalette = [
+  { name: 'Ink Teal',    hex: '#002024' },
+  { name: 'Bronze',      hex: '#3D2A00' },
+  { name: 'Ultramarine', hex: '#2800C1' },
+  { name: 'Pine',        hex: '#00675A' },
+  { name: 'Olive',       hex: '#866C02' },
+  { name: 'Azure',       hex: '#028AD6' },
+];
 
-const failures = results.filter(r => !r.pass);
-if (failures.length > 0) {
-  console.error(\`❌ \${failures.length} pair(s) fail CVD distinguishability:\`);
-  failures.forEach(f => console.error(\`   \${f.pair} — weakest: \${Math.min(f.deuteranopia, f.protanopia, f.tritanopia).toFixed(0)}\`));
-  process.exit(1);
-} else {
-  console.log('✅ All pairs pass CVD simulation. Ship it.');
-}`,
+// Verified for dark surfaces (#111827 base). You need a separate set:
+// no single 6-colour palette clears 3:1 on both white and a dark base.
+const darkSurfacePalette = [
+  { name: 'Deep Cyan',   hex: '#0B758A' },
+  { name: 'Brass',       hex: '#8D8307' },
+  { name: 'Periwinkle',  hex: '#A57AFE' },
+  { name: 'Rose',        hex: '#FE8798' },
+  { name: 'Citron',      hex: '#D7D209' },
+  { name: 'Pale Lilac',  hex: '#DEE3FD' },
+];
+
+function report(label: string, palette: { name: string; hex: string }[]) {
+  const results = validatePalette(palette);
+  const failures = results.filter(r => !r.pass);
+  const floor = Math.min(
+    ...results.map(r => Math.min(r.deuteranopia, r.protanopia, r.tritanopia))
+  );
+  console.log(\`\\n\${label} — floor \${floor.toFixed(1)}\`);
+  if (failures.length) {
+    console.error(\`  ❌ \${failures.length}/\${results.length} pair(s) below \${MIN_DISTANCE}\`);
+    failures.forEach(f =>
+      console.error(
+        \`     \${f.pair} — weakest \${Math.min(f.deuteranopia, f.protanopia, f.tritanopia).toFixed(1)}\`
+      )
+    );
+  } else {
+    console.log(\`  ✅ all \${results.length} pairs clear \${MIN_DISTANCE}\`);
+  }
+  return failures.length;
+}
+
+report('legacy (negative control, expected to fail)', legacyPalette);
+const broken =
+  report('light surface', lightSurfacePalette) +
+  report('dark surface', darkSurfacePalette);
+
+// Only the palettes you actually ship gate the build.
+if (broken > 0) process.exit(1);`,
     },
     proTips: [
       "Never use red-green alone for status. Always pair color with an icon, text label, or shape change. SC 1.4.1 (Use of Color) requires it.",
       "Chrome DevTools → Rendering → 'Emulate vision deficiencies' simulates protanopia, deuteranopia, and tritanopia in real-time. Test every page before merge.",
-      "Blue-orange is the most universally safe color pair. When in doubt, default to blue + orange — they survive all three CVD types with 22%+ lightness separation.",
-      "For data visualization, space hues at least 30° apart in OKLCH and vary lightness by 20%+ between adjacent series. Below 15% ΔL, colors collapse under simulation.",
+      "Blue-orange is the safest two-colour pair, but know why. #2563eb and #ea580c hold a worst-case CIEDE2000 of 60.0 across all three CVD types while sitting only 10.5 greyscale L* apart. Hue distance is carrying that pair, not lightness — so it survives simulation and fails in print or greyscale. If the output might be desaturated, use a pair separated on both axes such as #1e3a5f + #d1d5db at 61.0 L*.",
+      "For data visualization, space hues at least 30° apart in OKLCH and keep at least 6 points of greyscale L* between adjacent series. The 20% ΔL figure often quoted is not achievable across six series inside SC 1.4.11's 3:1 window: light surfaces cap series lightness near OKLCH 61%, dark surfaces floor it near 52%, leaving roughly 39 points for six colours.",
       "Add pattern fills as a first-class option, not an afterthought. Microsoft Power BI saw comprehension jump from 64% to 91% among deuteranopic users after adding textures.",
-      "Run the CVD validator in CI (see code above). A palette that passes today can regress when a designer tweaks a token. Automated checks catch it before users do.",
+      "Run the CVD validator in CI (see code above) and keep a known-bad palette in the fixture as a negative control. A validator that has never failed is a validator you cannot trust. This site's own check caught a published palette sitting at a 0.7 greyscale L* gap.",
       "Test toggles and switches specifically. On/off states using green/gray are invisible to 5% of male users. Add a checkmark icon or position shift.",
-      "Pre-ship CVD checklist: 1) Simulate all 3 types in DevTools, 2) Verify every status is distinguishable without hue, 3) Check charts have labels or patterns alongside color, 4) Confirm toggles use shape not just color, 5) Validate with Sim Daltonism (Mac) or Color Oracle (Windows).",
+      "Remeasure inherited palettes, including ones from design systems and reputable articles. The widely republished #1B4F72 / #E67E22 / #8E44AD / #F1C40F / #148F77 / #B03A2E set is labelled CVD-safe and bottoms out at 10.9 under protanopia, with two of its six series 0.7 greyscale L* apart. The label is not the measurement.",
+      "Pre-ship CVD checklist: 1) Simulate all 3 types in DevTools, 2) Verify every status is distinguishable without hue, 3) Check charts have labels or patterns alongside color, 4) Confirm toggles use shape not just color, 5) Desaturate and confirm the chart still answers its question, 6) Validate with Sim Daltonism (Mac) or Color Oracle (Windows).",
     ],
-    keyStat: "In a 35-site audit, 66% used red/green as the sole state differentiator. Under deuteranopia simulation, 19 of those 23 sites became functionally broken — users could not distinguish success from failure.",
+    keyStat: "In a 35-site audit, 66% used red/green as the sole state differentiator, and 19 of those 23 sites became functionally broken under deuteranopia simulation. The palette this page itself recommended was also failing: measured under the Machado 2009 model, its floor is CIEDE2000 10.9 rather than the 20 it claimed, and two of its six series sit 0.7 greyscale lightness points apart. The two replacement palettes hold 20.2 and 20.7, and every figure on this page is recomputed by `npm run verify:cvd` on each build.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker"],
   },
 

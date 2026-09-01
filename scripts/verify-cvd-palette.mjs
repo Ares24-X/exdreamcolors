@@ -70,6 +70,34 @@ const LEGACY_PALETTE = [
   { hex: "#E74C3C", label: "Red" },
 ];
 
+/* The teal / dark-red variant of the same palette, which color-blind-friendly-palettes
+ * published for months alongside a CIEDE2000 table claiming a floor of 20. Its real
+ * floor is 10.9 (Deep blue vs Purple under protanopia) and its greyscale L* gap is
+ * 0.7 (Purple 42.6 vs Dark red 41.9). Kept so that regression stays measurable. */
+const LEGACY_VARIANT_PALETTE = [
+  { hex: "#1B4F72", label: "Deep blue" },
+  { hex: "#E67E22", label: "Orange" },
+  { hex: "#8E44AD", label: "Purple" },
+  { hex: "#F1C40F", label: "Yellow" },
+  { hex: "#148F77", label: "Teal" },
+  { hex: "#B03A2E", label: "Dark red" },
+];
+
+/* Two-colour hue pairs published by color-blind-friendly-palettes as a screening
+ * table. Each entry records the verdict the article now prints, so a future edit
+ * cannot silently reintroduce the old wrong verdicts. deltaL is greyscale L*
+ * difference; minDe is the worst CIEDE2000 across the three CVD types. */
+const HUE_PAIRS = [
+  { label: "Blue + Orange", a: "#2563eb", b: "#ea580c", safe: true },
+  { label: "Blue + Yellow", a: "#1d4ed8", b: "#ca8a04", safe: true },
+  { label: "Purple + Yellow", a: "#7c3aed", b: "#eab308", safe: true },
+  { label: "Dark navy + Light gray", a: "#1e3a5f", b: "#d1d5db", safe: true },
+  { label: "Teal + Coral", a: "#0d9488", b: "#f97316", safe: true },
+  { label: "Dark purple + Amber", a: "#581c87", b: "#d97706", safe: true },
+  { label: "Red + Blue", a: "#dc2626", b: "#2563eb", safe: true },
+  { label: "Green + Red", a: "#16a34a", b: "#dc2626", safe: false },
+];
+
 /* ── sRGB <-> linear ─────────────────────────────────────────────────────── */
 function srgbToLinear(c8) {
   const c = c8 / 255;
@@ -406,12 +434,20 @@ function verify() {
   }
 
   // 3. Published worst-case CIEDE2000 floors must actually hold.
+  //    Only claims about a *palette* floor are checked here. Two-colour pair
+  //    figures legitimately run much higher than any 6-colour palette floor,
+  //    so the pattern requires palette/set/sets wording nearby.
   const lightWorst = worstCvd(LIGHT_PALETTE);
   const darkWorst = worstCvd(DARK_PALETTE);
   const legacyWorst = worstCvd(LEGACY_PALETTE);
 
   const floorClaims = [
-    ...src.matchAll(/worst-case (?:CIEDE2000|ΔE)[^.\n]*?(\d+(?:\.\d+)?)/gi),
+    ...src.matchAll(
+      /(?:palettes?|sets?|surfaces?)[^.\n]{0,80}?worst-case (?:CVD )?(?:CIEDE2000|ΔE)[^.\n]{0,40}?(\d+(?:\.\d+)?)/gi
+    ),
+    ...src.matchAll(
+      /worst-case (?:CVD )?(?:CIEDE2000|ΔE)[^.\n]{0,60}?(?:palettes?|sets?)[^.\n]{0,40}?(\d+(?:\.\d+)?)/gi
+    ),
   ].map((m) => parseFloat(m[1]));
   const trueFloor = Math.min(lightWorst.de, darkWorst.de);
   for (const printed of floorClaims) {
@@ -460,6 +496,60 @@ function verify() {
     problems.push(
       `legacy palette now scores ${legacyWorst.de.toFixed(1)}; the article presents it as a failure below 10`
     );
+  }
+
+  // 7. The teal/dark-red variant must also still fail, on both the CIEDE2000 axis
+  //    and the greyscale axis, because color-blind-friendly-palettes now documents
+  //    both failures with specific numbers.
+  const variantWorst = worstCvd(LEGACY_VARIANT_PALETTE);
+  if (variantWorst.de >= 20) {
+    problems.push(
+      `legacy variant palette now scores ${variantWorst.de.toFixed(1)}; the article documents it failing below the 20 threshold`
+    );
+  }
+  const variantGray = minGrayGap(LEGACY_VARIANT_PALETTE);
+  if (variantGray > 2) {
+    problems.push(
+      `legacy variant greyscale L* gap is now ${variantGray.toFixed(1)}; the article documents it at under 1`
+    );
+  }
+
+  // 8. Hue-pair screening table: every printed verdict must match measurement.
+  //    A pair is called safe only if it holds CIEDE2000 >= 20 under all three CVD
+  //    types. The article also prints greyscale L* per pair, so those must match.
+  for (const p of HUE_PAIRS) {
+    let minDe = Infinity;
+    for (const t of CVD_TYPES) {
+      if (t === "normal") continue;
+      const de = ciede2000(
+        hexToLab(simulateCvd(p.a, t)),
+        hexToLab(simulateCvd(p.b, t))
+      );
+      if (de < minDe) minDe = de;
+    }
+    const measuredSafe = minDe >= 20;
+    if (measuredSafe !== p.safe) {
+      problems.push(
+        `hue pair "${p.label}" is recorded as ${p.safe ? "safe" : "unsafe"} but measures ${minDe.toFixed(1)} (${measuredSafe ? "safe" : "unsafe"})`
+      );
+    }
+    // The article prints "label | ... | N.N |" with the greyscale delta. Check it.
+    const deltaL = Math.abs(
+      luminanceToLstar(relativeLuminance(p.a)) -
+        luminanceToLstar(relativeLuminance(p.b))
+    );
+    const re = new RegExp(
+      `\\|\\s*${p.label.replace(/\+/g, "\\+")}\\s*\\|[^\\n]*?\\|\\s*(\\d+(?:\\.\\d+)?)\\s*\\|`
+    );
+    const m = src.match(re);
+    if (m) {
+      const printed = parseFloat(m[1]);
+      if (Math.abs(printed - deltaL) > 1.0) {
+        problems.push(
+          `hue pair "${p.label}" prints greyscale L* delta ${printed} but measures ${deltaL.toFixed(1)}`
+        );
+      }
+    }
   }
 
   if (problems.length) {
