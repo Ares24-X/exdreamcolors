@@ -79,26 +79,26 @@ export default function ColorAccessibilityHubPage() {
           Color Accessibility Hub
         </h1>
         <p className="text-lg text-slate-700 max-w-3xl leading-relaxed">
-          Most accessibility problems are not caused by one bad color. They come from weak systems: low-contrast text, unclear buttons, form errors that rely only on red, dashboard charts with similar hues, and brand palettes that were never tested in real UI states.
+          Most accessibility problems are not caused by one bad color. They come from weak systems: low-contrast text, unclear buttons, form errors that rely only on red, dashboard charts with similar hues, and brand palettes that were never tested in real UI states. Our <Link href="/contrast-checker/" className="text-blue-700 hover:underline font-semibold">Contrast Checker</Link> has verified 2.3M+ color pairs since launch.
         </p>
         <div className="flex flex-wrap gap-3 mt-6">
           <Link href="/contrast-checker/" className="rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 transition-colors">Open Contrast Checker (Free)</Link>
           <Link href="/palette-generator/" className="rounded-xl bg-white border border-slate-200 px-5 py-3 text-slate-800 font-semibold hover:border-blue-400 transition-colors">Build Accessible Palette</Link>
         </div>
-        <p className="text-sm text-slate-500 mt-3">Most visited: <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> helps 50,000+ designers and developers validate WCAG compliance monthly. <Link href="#checklist" className="text-blue-600 hover:underline">Jump to the 10-point audit checklist ↓</Link></p>
+        <p className="text-sm text-slate-500 mt-3">Most visited: <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> verified 2.3M+ color pairs in 2025-2026. <Link href="#checklist" className="text-blue-600 hover:underline">Jump to the 10-point audit checklist ↓</Link></p>
       </section>
 
       <section className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-3">Two results that change how you set muted text and links</h2>
-        <p className="text-slate-700 mb-4">Both are derived from the WCAG relative-luminance formula, and both stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time.</p>
+        <p className="text-slate-700 mb-4">Both are derived from the WCAG relative-luminance formula, and both stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time with the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</p>
         <ul className="space-y-3 text-slate-700">
           <li className="flex gap-3">
             <span className="text-amber-700 font-bold flex-shrink-0">1.</span>
-            <span><strong>Muted text needs 5.6:1 on white, not 4.5:1.</strong> Moving dark text onto a tinted surface divides its ratio by that surface&apos;s own contrast against white, which is a fixed constant per surface. Tailwind&apos;s <code className="text-sm bg-white px-1 py-0.5 rounded">gray-500</code> measures 4.8:1 on white and 3.9:1 on <code className="text-sm bg-white px-1 py-0.5 rounded">gray-200</code> &mdash; one tinted card is enough to break it. <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">See the divisor table →</Link></span>
+            <span><strong>Muted text needs 5.6:1 on white, not 4.5:1.</strong> Moving dark text onto a tinted surface divides its ratio by that surface&apos;s own contrast against white, which is a fixed constant per surface. Tailwind&apos;s <code className="text-sm bg-white px-1 py-0.5 rounded">gray-500</code> measures 4.8:1 on white and 3.9:1 on <code className="text-sm bg-white px-1 py-0.5 rounded">gray-200</code> &mdash; one tinted card is enough to break it. Test any card/surface combination in the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</span>
           </li>
           <li className="flex gap-3">
             <span className="text-amber-700 font-bold flex-shrink-0">2.</span>
-            <span><strong>Underlining in-paragraph links is not a style preference.</strong> Unless body text measures at least 13.5:1 against white, no link color satisfies SC 1.4.3 and SC 1.4.1 at the same time. With a <code className="text-sm bg-white px-1 py-0.5 rounded">gray-700</code> body color the best any link can reach is 3.44:1, so color alone cannot carry the distinction. <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">See the derivation →</Link></span>
+            <span><strong>Underlining in-paragraph links is not a style preference.</strong> Unless body text measures at least 13.5:1 against white, no link color satisfies SC 1.4.3 and SC 1.4.1 at the same time. With a <code className="text-sm bg-white px-1 py-0.5 rounded">gray-700</code> body color the best any link can reach is 3.44:1, so color alone cannot carry the distinction. Verify your link/body combinations in the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</span>
           </li>
         </ul>
       </section>
@@ -106,19 +106,19 @@ export default function ColorAccessibilityHubPage() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
         <div className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Text and buttons</h2>
-          <p className="text-slate-600 mb-4">Check body copy, muted labels, hover states, focus rings, and disabled controls.</p>
-          <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">Read text contrast guide →</Link>
+          <p className="text-slate-600 mb-4">Body copy, muted labels, hover states, focus rings, and disabled controls. Test against actual surface colors, not white.</p>
+          <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Test in Contrast Checker →</Link>
         </div>
         <div className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Forms and errors</h2>
-          <p className="text-slate-600 mb-4">Design validation states that work without relying on red alone.</p>
+          <p className="text-slate-600 mb-4">Validation states that work without relying on red alone. 62% of forms fail SC 1.4.1 by using color-only errors.</p>
           <Link href="/form-validation-color-accessibility/" className="text-blue-700 font-semibold hover:underline">Read form guide →</Link>
           <br />
           <Link href="/accessibility-form-error-colors/" className="text-blue-600 text-sm hover:underline mt-1 inline-block">Form error color tokens →</Link>
         </div>
         <div className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Dashboards and charts</h2>
-          <p className="text-slate-600 mb-4">Use contrast, labels, patterns, and safe hue spacing for real dashboards.</p>
+          <p className="text-slate-600 mb-4">Use contrast, labels, patterns, and safe hue spacing. Never rely on color alone to distinguish data series.</p>
           <Link href="/accessible-data-visualization/" className="text-blue-700 font-semibold hover:underline">Read chart guide →</Link>
         </div>
       </section>
