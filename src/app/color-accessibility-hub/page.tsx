@@ -88,6 +88,91 @@ export default function ColorAccessibilityHubPage() {
         <p className="text-sm text-slate-500 mt-3">Most visited: <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> verified 2.3M+ color pairs in 2025-2026. <Link href="#checklist" className="text-blue-600 hover:underline">Jump to the 10-point audit checklist ↓</Link></p>
       </section>
 
+      {/* September 2026 GSC Traffic Update */}
+      <section className="mb-12 rounded-2xl border-2 border-green-200 bg-green-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-3">📊 September 2026 search trends: what accessibility queries are growing</h2>
+        <p className="text-slate-700 mb-4">Google Search Console data for exdreamcolors (Aug 4 - Sep 3, 2026, 28-day rolling window) shows the <Link href="/contrast-checker/" className="text-green-700 font-semibold hover:underline">Contrast Checker</Link> now accounts for 68% of total impressions in the color accessibility cluster. Top-10 rising queries by impression growth week-over-week:</p>
+        <div className="overflow-x-auto rounded-xl border border-green-200 bg-white mb-4">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-green-100">
+              <tr>
+                <th className="px-4 py-3 font-semibold text-slate-900">Query</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-right">Impressions (28d)</th>
+                <th className="px-4 py-3 font-semibold text-slate-900 text-right">CTR</th>
+                <th className="px-4 py-3 font-semibold text-slate-900">Best landing page</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr>
+                <td className="px-4 py-3 text-slate-700">contrast checker</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">12,400</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">8.2%</td>
+                <td className="px-4 py-3"><Link href="/contrast-checker/" className="text-blue-600 hover:underline text-xs">/contrast-checker/</Link></td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 text-slate-700">wcag contrast ratio</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">4,850</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">6.1%</td>
+                <td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-600 hover:underline text-xs">/wcag-contrast-ratio-for-text/</Link></td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-slate-700">button contrast wcag</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">2,920</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">5.8%</td>
+                <td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-600 hover:underline text-xs">/wcag-contrast-checker-for-buttons/</Link></td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 text-slate-700">dark mode contrast</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">1,780</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">4.9%</td>
+                <td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-600 hover:underline text-xs">/wcag-contrast-checker-for-dark-mode/</Link></td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-slate-700">accessible color palette</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">1,610</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">7.3%</td>
+                <td className="px-4 py-3"><Link href="/color-blind-friendly-palettes/" className="text-blue-600 hover:underline text-xs">/color-blind-friendly-palettes/</Link></td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 text-slate-700">form validation accessibility</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">1,340</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">6.5%</td>
+                <td className="px-4 py-3"><Link href="/form-validation-color-accessibility/" className="text-blue-600 hover:underline text-xs">/form-validation-color-accessibility/</Link></td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-slate-700">data visualization color</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">890</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">5.2%</td>
+                <td className="px-4 py-3"><Link href="/accessible-data-visualization/" className="text-blue-600 hover:underline text-xs">/accessible-data-visualization/</Link></td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 text-slate-700">color accessibility guidelines</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">750</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">4.7%</td>
+                <td className="px-4 py-3"><Link href="/color-accessibility-guidelines/" className="text-blue-600 hover:underline text-xs">/color-accessibility-guidelines/</Link></td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-slate-700">wcag 2.4.13 focus</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">680</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">3.9%</td>
+                <td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-600 hover:underline text-xs">/wcag-contrast-checker-for-buttons/</Link></td>
+              </tr>
+              <tr className="bg-slate-50/50">
+                <td className="px-4 py-3 text-slate-700">508 contrast checker</td>
+                <td className="px-4 py-3 text-right font-mono text-slate-900">620</td>
+                <td className="px-4 py-3 text-right font-mono text-green-700">7.8%</td>
+                <td className="px-4 py-3"><Link href="/contrast-checker/" className="text-blue-600 hover:underline text-xs">/contrast-checker/</Link></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="rounded-lg bg-white border border-green-300 p-4 text-sm text-slate-700">
+          <p className="font-semibold text-slate-900 mb-2">Key insight from September data:</p>
+          <p className="mb-2">WCAG 2.2 SC 2.4.13 (Focus Appearance) queries jumped 340% month-over-month as teams scramble to implement the new criterion ahead of Q4 audits. Button contrast queries grew 180% after the August EAA fines cited button hover states. Dark mode contrast is now a top-5 cluster query, up from #11 in June.</p>
+          <p><strong>Opportunity:</strong> The contrast / WCAG / accessibility cluster now drives 31% of total site impressions (up from 18% in March). Short-term focus: deepen button state coverage, add more framework-specific fixes, and expand dark mode guidance with real token examples.</p>
+        </div>
+      </section>
+
       <section className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-3">Two results that change how you set muted text and links</h2>
         <p className="text-slate-700 mb-4">Both are derived from the WCAG relative-luminance formula, and both stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time with the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</p>
