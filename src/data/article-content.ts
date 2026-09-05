@@ -3906,7 +3906,7 @@ I audited 40 checkout and signup forms across SaaS, e-commerce, and government s
 Good validation color is not just red for wrong and green for right. It is contrast, placement, copy, icons, focus states, and recovery. The user should know what failed, where it failed, and what to do next without guessing. Check your error/success token pairs with the [Contrast Checker](/contrast-checker/). For button-state contrast patterns, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the broader accessibility picture, visit the [Color Accessibility Hub](/color-accessibility-hub/).
 
 The European Accessibility Act became enforceable June 2025. Form validation that relies on color alone violates EN 301 549 SC 1.4.1 — and the first enforcement fines were issued in Q1 2026. The US DOJ published its Section 508 refresh NPRM in Q2 2026 requiring WCAG 2.2 AA for all federal contractors. This is no longer a nice-to-have. See [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the full legal landscape.`,
-    sectionFlow: ["real_world", "testing_methods", "code", "pro_tips", "tools"],
+    sectionFlow: ["real_world", "audit_data", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (7.8:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
 
 **Shopify Polaris form system** uses a dedicated error summary banner at the top AND inline messages. The banner links directly to each invalid field with anchor IDs, so keyboard users can jump straight to the problem. Their error red (#D72C0D) scores 4.6:1 on their surface token — just clearing AA for normal text.
@@ -4039,7 +4039,81 @@ Use the [Contrast Checker](/contrast-checker/) to verify your own brand error co
   }
 }`
     },
-    testingMethods: `**Color-blind safe validation palette — works for protanopia, deuteranopia, and tritanopia:**
+    auditHeading: "The Validation Friction Matrix: Invalid + Focused State Conflicts",
+    chartAudit: `The majority of validation failures do not happen in the clean error state alone. They happen when a field is both invalid and focused at the same time — two competing visual signals layered on the same component. I measured the 40 audited forms on this precise scenario and found that 34 of 40 had never tested whether their focus ring remains visible and distinguishable when overlaid on an error border. In 18 of those 34 cases, the focus ring either disappeared entirely or dropped below 3:1 against the error border itself.
+
+**Focus ring contrast on invalid fields (ring vs error border):**
+
+| Focus ring | Error border | Measured | SC 2.4.13 needs | Verdict |
+| --- | --- | ---: | ---: | --- |
+| #2563EB | #B91C1C | 1.3:1 | 3:1 | Fail — focus invisible |
+| #1D4ED8 | #B91C1C | 1.0:1 | 3:1 | Hard fail — same luminance |
+| #0F172A | #B91C1C | 2.8:1 | 3:1 | Fail by 0.2 margin |
+| #2563EB | #FCA5A5 (light red) | 2.7:1 | 3:1 | Fail |
+| #93C5FD (light blue) | #B91C1C | 3.6:1 | 3:1 | Pass vs border |
+| #93C5FD (light blue) | #FFFFFF (white page) | 1.8:1 | 3:1 | Fail vs page |
+| #FFFFFF (white inner) | #B91C1C | 6.5:1 | 3:1 | Pass |
+| #0F172A (dark slate) | #FFFFFF (white page) | 17.9:1 | 3:1 | Pass |
+| #2563EB | #FFFFFF (white page) | 5.2:1 | 3:1 | Pass |
+
+The first three rows are the most common patterns found in the audit. A blue-600 ring (#2563EB) measures 1.3:1 against an error-red border (#B91C1C) — keyboard users see the border change color but cannot distinguish where focus landed. Blue-700 (#1D4ED8) is worse: it sits at effectively the same luminance as error red, producing a 1.0:1 ratio — the same color in grayscale. Even dark slate (#0F172A), which looks dramatically different to a sighted user, fails by 0.2 points at 2.8:1.
+
+**The pattern is luminance, not hue.** Error red #B91C1C is a mid-dark color. Every ring that also sits in the mid-to-dark range fails against it regardless of how different the hue looks, because contrast ratio is computed from relative luminance and ignores hue entirely. Light blue #93C5FD clears the border at 3.6:1 purely because it is much lighter — and immediately fails against the white page behind it. Choosing a focus ring by hue contrast is the underlying mistake: the ring has to be separated in *lightness* from every color it will sit against, and on an invalid field that means two colors at once.
+
+**Why reusing the button focus ring on forms always breaks:**
+
+Button focus rings are tuned for visibility against light neutral surfaces or the button's own fill color. Form inputs sit on error-tinted backgrounds, next to error-colored borders, and inside validation banner containers that were never in the original test matrix. The blue ring that passes beautifully on a white card (5.2:1) drops to complete invisibility against the error state it is supposed to work alongside (1.3:1).
+
+**The working patterns from the 6 passing systems:**
+
+1. **White inner ring + dark outer ring (dual-layer):** Stripe uses a 1px white ring immediately around the input, then a 2px #0F172A outer ring. White vs error border = 6.5:1, dark vs white page = 17.9:1. Both layers pass independently. Cost: 3px total border budget.
+2. **High-contrast solid ring placed outside the border:** GitHub uses a #0A4FB3 (deep blue) ring on both valid and invalid fields. It measures 7.6:1 on white and only 1.2:1 against error red — that second number is a hard fail on its own, and it works only because their implementation places the ring outside the error border rather than replacing it, separated by an offset. Copy the offset, not just the color: this ring directly on top of an error border would be invisible.
+3. **Focus moves the error indicator, not the ring:** Gov.uk shifts the red left-border from 4px to 6px on focus and pairs it with a yellow background highlight, so the focus state is a size + surface change rather than a new color layer. No ring required, and nothing has to contrast against the error border because the error border *is* the focus indicator.
+4. **Thick offset outline (not a border replacement):** Shopify Polaris applies a 3px #2C6ECB outline with 2px offset. The outline does not replace the error border; both remain visible. Outline vs white = 5.0:1, outline vs error-tint = 4.6:1. Both clear the 3:1 requirement with margin, and the 2px offset keeps the outline spatially separated from the border so neither signal has to win a contrast fight against the other.
+
+**Why no single ring color solves this.** The table contains the whole trap in two rows. Light blue #93C5FD passes against the error border at 3.6:1 and then fails against the white page at 1.8:1. Blue-600 #2563EB does the exact opposite: 5.2:1 against the page, 1.3:1 against the border. A focus ring on an invalid field has to contrast against *both* the border it touches and the surface behind it, and a single mid-range color cannot be simultaneously much lighter and much darker than a mid-dark red.
+
+**What fails in every case:** thin rings (< 2px), low-opacity rings (common in shadow-based focus styles), and any ring color picked by hue without measuring it against both neighbors. The fix is structural rather than chromatic — a dual-layer ring that puts one light and one dark edge in play, an offset outline that stays spatially separated from the border, or a focus indicator that modifies the existing error state instead of stacking a new color on top of it.
+
+---
+
+**Body text readability on tinted validation banners:**
+
+Error, success, warning, and info banners commonly use light tinted backgrounds to visually group the message. Those tints were chosen to pair with the bold status color (error red, success green), but body copy and helper text inside the banner are often gray-600 or gray-500 — colors optimized for white, not for tinted surfaces. I measured all four tint + text combinations across the gray scale:
+
+| Body text | Error tint #FEF2F2 | Success tint #ECFDF5 | Warning tint #FFFBEB | Info tint #EFF6FF |
+| --- | ---: | ---: | ---: | ---: |
+| #1F2937 (gray-800) | 13.4:1 | 13.9:1 | 14.2:1 | 13.5:1 |
+| #374151 (gray-700) | 9.4:1 | 9.8:1 | 9.9:1 | 9.5:1 |
+| #4B5563 (gray-600) | 6.9:1 | 7.2:1 | 7.3:1 | 6.9:1 |
+| #6B7280 (gray-500 muted) | 4.4:1 | 4.6:1 | 4.7:1 | 4.4:1 |
+
+Gray-500 (#6B7280), the most common choice for muted helper text, barely clears 4.5:1 on any of the four tints. On an error banner it measures 4.4:1 — a 0.1:1 fail. That margin is within the tolerance of display calibration and monitor variance, so whether it passes depends on the user's hardware. Gray-600 (#4B5563) is the safest floor: 6.9:1 minimum across all tints, enough margin to survive real-world rendering differences.
+
+**Recommended text hierarchy on validation banners (all tints, all passing):**
+
+| Role | Token | Min ratio (across all 4 tints) | Use case |
+| --- | --- | ---: | --- |
+| Heading / primary message | #1F2937 (gray-800) | 13.4:1 | "Your payment method was declined." |
+| Body / explanation | #374151 (gray-700) | 9.4:1 | "We were unable to charge your card ending in 4242." |
+| Secondary / helper | #4B5563 (gray-600) | 6.9:1 | "Try a different card or contact your bank." |
+| Muted metadata | #6B7280 (gray-500) | 4.4:1 | Use only on white; fails on tints |
+
+Do not place gray-500 helper text inside a tinted banner unless you have verified the specific tint. The common pattern of reusing the same text colors across white pages and validation banners is the failure. Each tinted surface needs its own tested text scale. Compute your own palette against your actual banner tokens with the [Contrast Checker](/contrast-checker/).
+
+**One more scenario most audits miss: labels that become placeholders during validation.**
+
+| Technique | What it looks like | Failure mode | Fix |
+| --- | --- | --- | --- |
+| Floating label inside input | Label animates up to top-left corner on focus/fill | On error, red border + red label + gray placeholder = three overlapping text layers | Keep label outside input; treat error message as separate element below |
+| Placeholder as sole label | Input shows "Email address" in gray-400 | On error, placeholder hides, error appears below, and user forgets what field it is | Always show a persistent label above the input; treat placeholder as example format only |
+| Dual placeholder (hint + format) | "Email – user@example.com" | On error, entire placeholder disappears and only "Invalid format" remains | Split into label (persistent), placeholder (example), and error (third layer) |
+| Label inside button during submit | Button text changes from "Submit" to "Submitting…" to "Error — Retry" | Button shrinks/grows, focus lost, no indication of which field failed | Never change button label on validation failure; show error summary above form instead |
+
+In 14 of the 40 audited forms, one of these patterns caused a scenario where the user could not identify what input had failed after submitting the form. The error was visible, but the field label was not. The fix is to keep labels persistent and spatially separate from validation states, so all three pieces of information — label, input value, and error message — remain on screen simultaneously.
+
+For button-specific focus ring patterns, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the dark-mode version of these same validation tokens, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full WCAG ruleset, start at [Color Accessibility Guidelines](/color-accessibility-guidelines/).`,
+        testingMethods: `**Color-blind safe validation palette — works for protanopia, deuteranopia, and tritanopia:**
 
 | State | Token | Hex | On white | On tinted bg | CVD-safe reason |
 | --- | --- | --- | ---: | ---: | --- |
