@@ -1478,7 +1478,7 @@ console.table(auditButton(primaryButton));
     intro: `Color theory isn't just for artists. It's the invisible framework behind every website you visit, every app you open, and every ad that catches your eye. Without understanding it, you're guessing. With it, you're engineering attention.
 
 Here's the thing: most developers skip color theory because it feels subjective. "Just pick what looks good." But that's like saying "just write code that works" without learning data structures. Color theory is the data structure of visual design — once you understand it, everything clicks.`,
-    sectionFlow: ["color_wheel", "harmony_rules", "developer_perspective", "practical", "examples", "tools"],
+    sectionFlow: ["color_wheel", "harmony_rules", "code", "developer_perspective", "practical", "examples", "tools"],
     realWorldExamples: `**Spotify's green** isn't just "green." It's #1DB954 — a shade specifically chosen to stand out against dark UIs and create maximum contrast on mobile screens. When Spotify A/B tested different shades, this exact green outperformed alternatives by 18% in button click-throughs.
 
 **Slack's color system** uses HSB (Hue-Saturation-Brightness) rather than HEX internally, allowing them to generate accessible color variants programmatically — the same approach used in Tailwind CSS and Material Design.
@@ -1684,7 +1684,7 @@ console.log(assignLessonColor('action'));`
     intro: `Every designer has a "palette graveyard" — dozens of abandoned color schemes that looked great on Dribbble but fell apart in production. Building a palette that survives the real world means dealing with accessibility scores, dark mode variants, data visualization needs, and that one stakeholder who "just doesn't like purple."
 
 This guide skips the theory and focuses on the stuff that actually breaks palettes in production.`,
-    sectionFlow: ["palette_anatomy", "scale_generation", "dark_mode", "accessibility", "examples"],
+    sectionFlow: ["palette_anatomy", "scale_generation", "dark_mode", "accessibility", "examples", "code"],
     realWorldExamples: `**Stripe's palette** uses a single blue hue with 10 lightness stops, creating a perfectly harmonious system. They don't use multiple hues — just varying saturation and lightness of one color. This is called a "monochromatic-plus" approach and it's the most foolproof palette strategy.
 
 **Airbnb's redesign** moved from a colorful palette to a minimal one: primary coral (#FF5A5F) + grays. Why? Color serves branding, not decoration. Every extra color creates cognitive load.
@@ -1988,7 +1988,7 @@ The real magic of gradients isn't decoration. It's creating depth, directing eye
     intro: `Tailwind's color system is the most copied design infrastructure in modern web development. The 11-stop scale (50 to 950) with logarithmic lightness progression is so well-engineered that Material Design 3 and Radix UI both independently converged on the same approach.
 
 But here's what nobody tells you: generating a Tailwind-compatible color scale from a custom brand color is harder than it looks. The naive approach (evenly-spaced lightness stops) produces ugly colors. This guide teaches you the math.`,
-    sectionFlow: ["how_it_works", "the_math", "custom_colors", "naming", "dark_mode"],
+    sectionFlow: ["how_it_works", "the_math", "custom_colors", "naming", "dark_mode", "code"],
     realWorldExamples: `**Vercel's color system** extends Tailwind with custom accent colors that use the same 50-950 scale. Their brand blue (#0070F3) becomes a full 11-shade scale used across their entire platform — marketing site, dashboard, and docs all share the same tokens.
 
 **Linear's design system** uses a custom Tailwind color scale for their brand purple. They manually tuned each shade so that "purple-500" matches their logo while "purple-100" works as backgrounds and "purple-700" works as text.
@@ -2030,7 +2030,7 @@ Professional color selection follows constraints: accessibility scores, brand id
     intro: `HEX, RGB, HSL, OKLCH, LAB, CMYK, HSV — if you've ever gotten lost in the alphabet soup of color formats, you're not alone. Each format exists for a reason, and using the wrong one for the job creates subtle bugs that are pure hell to debug.
 
 The worst: you set a color in HEX, tweak it in HSL in devtools, copy it back as RGB, and now your design tokens don't match. Here's the definitive guide to color format conversions — when to use each, and why.`,
-    sectionFlow: ["format_comparison", "conversion_math", "when_to_use", "common_errors"],
+    sectionFlow: ["format_comparison", "conversion_math", "when_to_use", "common_errors", "code"],
     realWorldExamples: `**CSS Color Level 4** (widely supported in 2026) added OKLCH, LAB, and display-p3 color spaces to the web platform. You can now use colors that were previously only possible in design tools like Figma.
 
 **The infamous "wrong blue" bug:** A developer copied a blue from Figma as HEX (#4F46E5) but the exported CSS used RGB. The subtle rounding error (0-255 integer rounding in RGB) shifted the hue by 2°, making the deployed version slightly purple. It took 3 days to find.
@@ -2056,7 +2056,7 @@ The worst: you set a color in HEX, tweak it in HSL in devtools, copy it back as 
 A real brand color system has layers. Primary, secondary, accent, neutral, semantic (success/warning/error), and dark mode variants. Every color has a job. No color is decorative. When you look at Stripe's website, Airbnb's app, or Notion's interface, you're not seeing "blue" or "red" — you're seeing a color system engineered to answer one question at every touchpoint: "Who am I talking to?" The answer should be the same whether you're looking at a billboard, an email footer, an app icon, or a 404 page.
 
 This guide breaks down how the best brand color systems are built — not the theory, the architecture.`,
-    sectionFlow: ["foundation", "how_it_works", "real_world", "dark_mode", "pro_tips", "tools"],
+    sectionFlow: ["foundation", "how_it_works", "real_world", "dark_mode", "code", "pro_tips", "tools"],
     realWorldExamples: `**Stripe's Brand Color Architecture (The Gold Standard)**
 
 Stripe doesn't have "a blue." They have a color architecture: the core brand blue (#635BFF) sits at the center, but the system fans out into 12 semantic layers. The website uses a near-black (#0A2540) as the dominant color with the blue as a precision accent — appearing only in the logo, CTAs, and key interaction points. This restraint is intentional: Stripe's design team (led by Benjamin de Cock) has said publicly that their color strategy is "one loud voice, everything else whispers." Each blue appearance signals an action: sign up, learn more, start now. The color IS the information hierarchy.
@@ -2163,7 +2163,7 @@ Spotify uses one color — #1DB954, a specific shade of green — across everyth
 Here's what separates logos that last decades from logos that get redesigned every 3 years: restraint. The most enduring logos in history — Apple, Nike, Coca-Cola, Chanel — use one or two colors. Not because their designers lacked creativity, but because simplicity scales. Your logo needs to work on a billboard, a favicon, a business card, an embroidered polo shirt, and a 16×16 pixel browser tab. Every extra color makes that harder.
 
 This guide covers the strategic decisions behind logo color choices, backed by data from the world's most valuable brands.`,
-    sectionFlow: ["foundation", "real_world", "history", "practical", "comparison", "pro_tips", "tools"],
+    sectionFlow: ["foundation", "real_world", "history", "code", "practical", "comparison", "pro_tips", "tools"],
     realWorldExamples: `**Coca-Cola's Red (#F40009)** has remained virtually unchanged since 1886 — 140 years. The specific shade was originally chosen to stand out against the brown shelving of general stores. Today, Coca-Cola owns that red so thoroughly that competitors physically cannot use it without triggering brand confusion. Interbrand values the Coca-Cola brand at $57.5 billion (2025), and brand experts attribute roughly 40% of instant recognition to the red alone.
 
 **Tiffany's Robin Egg Blue (#0ABAB5)** is a trademarked color (Pantone 1837, named after the company's founding year). The shade was chosen by founder Charles Lewis Tiffany for the 1837 Blue Book catalog cover. Today, 73% of consumers can identify a Tiffany box by color alone without seeing the logo (Siegel+Gale brand recognition study, 2022). The color is so protected that Tiffany has successfully sued companies for using similar shades in jewelry packaging.
@@ -2197,7 +2197,7 @@ This guide covers the strategic decisions behind logo color choices, backed by d
     intro: `Here's the thing about painting a room: you can spend three weekends browsing Pinterest boards and still end up with walls that fight each other. The problem isn't taste. The problem is that interior color works differently from screen color. Pigments mix subtractively, lighting shifts throughout the day, and adjacent surfaces bounce reflections into each other.
 
 The fix is not to memorize a rulebook. The fix is to understand three variables: undertone matching, value distribution across surfaces, and the 60-30-10 proportion. Get those right and almost any color family works together. Get them wrong and even "safe" neutrals look muddy.`,
-    sectionFlow: ["foundation", "color_wheel", "realWorldExamples", "practical", "science", "pro_tips", "tools"],
+    sectionFlow: ["foundation", "color_wheel", "realWorldExamples", "code", "practical", "science", "pro_tips", "tools"],
     realWorldExamples: `**Restoration Hardware uses a single undertone family across every room.** Their catalog rooms look expensive not because the colors are rare, but because every surface — walls, linen, wood stain, metal finish — shares a warm gray undertone. When you strip out undertone conflicts, even a five-color room feels quiet.
 
 **Farrow & Ball publishes curated room groupings, not just paint chips.** Each of their palette cards shows a wall color, trim color, ceiling color, and accent — all tested together under north and south light. Their best-selling combination "Hague Blue" ceiling with "Wimborne White" walls works because the blue reads as shadow rather than color, making ceilings feel higher.
@@ -2296,7 +2296,7 @@ Learn these five patterns once, and you'll never stare at a blank palette again.
     intro: `2026's color landscape has shifted dramatically. The AI-generated design boom, widespread dark mode adoption, and the rise of HDR/P3 displays have changed which colors work — and which ones look instantly dated.
 
 Here's what's actually trending in production websites (not Dribbble fantasy land).`,
-    sectionFlow: ["key_trends", "industry_adoption", "anti_trends", "how_to_apply"],
+    sectionFlow: ["key_trends", "industry_adoption", "anti_trends", "how_to_apply", "code"],
     realWorldExamples: `**Glassmorphism 2.0:** Translucent surfaces with backdrop-filter are back — but cleaner. Apple Vision Pro's spatial design language uses frosted glass with subtle color tints. CSS: backdrop-filter: blur(20px) saturate(180%) on rgba(255,255,255,0.1).
 
 **Dark-mode-first:** New sites are designing for dark mode FIRST, then adapting to light. The reasoning: dark mode users are more engaged and spend 47% more time on pages. Vercel, Linear, and Supabase all launched dark-first in 2025.
@@ -2773,7 +2773,7 @@ if (broken > 0) process.exit(1);`,
     intro: `CSS has more color functions than you think: rgb(), hsl(), oklch(), lab(), lch(), color(), color-mix(), light-dark() — and that's just the ones with decent browser support in 2026. Most developers use rgb() or hex and call it a day, leaving huge capability on the table.
 
 A single CSS color function — color-mix() — can replace an entire Sass color library. light-dark() can handle dark mode without a single media query. Let's look at what you're missing.`,
-    sectionFlow: ["function_reference", "color_mix", "light_dark", "custom_properties", "browser_support"],
+    sectionFlow: ["function_reference", "color_mix", "light_dark", "custom_properties", "browser_support", "code"],
     realWorldExamples: `**color-mix()** landed in all major browsers in 2023. It lets you blend colors natively in CSS: color-mix(in srgb, var(--primary) 50%, white) creates a 50% tint without preprocessor variables. This is a game-changer for design systems.
 
 **light-dark()** is the simplest dark mode implementation ever: color: light-dark(black, white) — no media queries, no classes, no JavaScript. The browser switches automatically based on the user's OS preference.
@@ -2859,7 +2859,7 @@ A single CSS color function — color-mix() — can replace an entire Sass color
 
   "color-filters-css": {
     intro: "CSS filter() is the most underrated color manipulation tool in your arsenal. A single line — filter: hue-rotate(180deg) — can transform an entire UI's color scheme. Combine it with saturate(), brightness(), and contrast() for infinite variations.",
-    sectionFlow: ["filter_properties", "recipes", "performance"],
+    sectionFlow: ["filter_properties", "recipes", "performance", "code"],
     realWorldExamples: "CSS filters are GPU-accelerated and don't trigger repaints — they're the most performant way to apply color effects. Use them for hover effects, dark mode previews, and image overlays.",
     codeSnippet: { label: "CSS filter recipes", code: `/* Turn any image into a duotone */\n.duotone {\n  filter: grayscale(100%) sepia(100%) hue-rotate(200deg) saturate(300%);\n}\n/* Darken hover effect */\n.card:hover {\n  filter: brightness(0.9); /* No layout shift, pure GPU */\n}` },
     proTips: ["Order matters in filter chains. grayscale → sepia → hue-rotate → saturate is the standard duotone pipeline.", "Never animate filter on elements with children. It forces GPU layer promotion of the entire subtree."],
@@ -2868,7 +2868,7 @@ A single CSS color function — color-mix() — can replace an entire Sass color
 
   "color-custom-properties": {
     intro: "CSS custom properties (variables) changed how we do color. Before them, changing a brand color meant find-and-replace across hundreds of files. Now it's one variable. But most teams use them wrong — dumping every color into :root without a naming system.",
-    sectionFlow: ["naming", "semantic_tokens", "dark_mode", "migration"],
+    sectionFlow: ["naming", "semantic_tokens", "dark_mode", "migration", "code"],
     realWorldExamples: "The 'semantic token' pattern: don't name colors by their value (--blue-500), name them by their purpose (--color-primary, --color-text, --color-surface). This makes theme switching trivial.",
     codeSnippet: { label: "Semantic token pattern", code: `:root {\n  /* Foundation tokens */\n  --blue-500: hsl(220, 70%, 50%);\n  /* Semantic tokens */\n  --color-primary: var(--blue-500);\n  --color-primary-hover: hsl(220, 70%, 45%);\n}\n[data-theme="dark"] {\n  --color-primary: hsl(220, 70%, 65%); /* Lighter for dark bg */\n}` },
     proTips: ["Use two layers: 'foundation' tokens (raw colors) and 'semantic' tokens (purpose-based). Never reference foundation tokens directly in components.", "Name your gray scale by role, not number: --gray-surface, --gray-border, --gray-text, --gray-text-muted."],
@@ -3153,7 +3153,7 @@ The fastest fix: pick one direction before you touch the color picker. Warm neut
 The problem: making good gradients is harder than it looks. Two colors at an angle sounds simple until you hit the muddy middle, where blue-to-orange passes through ugly brown, or your mesh gradient tanks performance on a mid-range Android phone. That's where gradient tools come in. A good gradient generator handles the color science for you — interpolating through perceptually uniform color spaces, giving you one-click CSS export, and letting you preview on real components before you commit.
 
 This guide compares the gradient tools that actually ship production-ready output. Not toys. Not demos. Tools you can open in one tab, build a gradient in under a minute, copy the CSS, and paste it into your project without cleanup. I've used all of them on real client work over the last year. Here's what's worth your time.`,
-    sectionFlow: ["why_gradients", "tool_comparison", "css_workflow", "mesh_gradients", "animated", "best_practices", "tools"],
+    sectionFlow: ["why_gradients", "tool_comparison", "css_workflow", "mesh_gradients", "animated", "best_practices", "code", "tools"],
     realWorldExamples: `**The Tools, Compared**
 
 **CSS Gradient (cssgradient.io)** — The no-nonsense default. Open the page, drag color stops, pick an angle, copy the CSS. No signup, no watermarks, no export limits. The interface is dated (it looks like 2018) but the output is clean. Supports linear, radial, and conic gradients. The color stop editor gives you precise percentage control. Weakness: no mesh gradients, no animation, no Figma integration. Best for: quick one-off gradients when you already know what you want.
@@ -4460,7 +4460,7 @@ function swatchesToCSS(palette: Array<{hex: string; pct: number}>) {
 Wrong. Here's the thing: web-safe colors are still relevant in 2026, just not for the reason you think. They're relevant for embedded devices, e-ink displays, industrial terminals, email clients that strip CSS, and accessibility scenarios where color reduction is a feature, not a bug. And more importantly: understanding WHY the 216-color palette existed teaches you more about color rendering and dithering than any modern design course ever will.
 
 This guide covers the history, the math, the modern use cases, and when you should (and absolutely shouldn't) reach for web-safe colors.`,
-    sectionFlow: ["history", "math", "how_it_works", "culture_matrix", "practical", "pro_tips", "tools"],
+    sectionFlow: ["history", "math", "how_it_works", "culture_matrix", "code", "practical", "pro_tips", "tools"],
     realWorldExamples: `**The 216-Color Origin Story: How Netscape Shaped the Web**
 
 The "web-safe" palette wasn't designed by designers. It was designed by engineers at Netscape in 1994, working around the limitations of 8-bit color displays (256 colors total). Operating systems reserved 40 colors for UI elements (window borders, menu bars, desktop icons), leaving 216 for applications. The 6×6×6 cube (6 levels each of red, green, and blue: 0%, 20%, 40%, 60%, 80%, 100%) produced exactly 6³ = 216 colors — the maximum palette that wouldn't trigger dithering on 8-bit displays.
