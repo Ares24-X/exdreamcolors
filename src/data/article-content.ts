@@ -276,7 +276,7 @@ I timed the full audit workflow on 25 production design systems. Teams that run 
 This guide covers exactly how to use a contrast checker effectively: what to input, how to read the output, which thresholds apply to which elements, how to batch-test an entire token set, and how to integrate contrast checking into CI so failures never reach production again.
 
 Start checking now with the [Contrast Checker](/contrast-checker/). For the underlying WCAG rules, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/) and [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the full accessibility resource set, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    sectionFlow: ["workflow", "thresholds", "batch_audit", "ci_integration", "common_mistakes", "pro_tips", "tools"],
+    sectionFlow: ["workflow", "testing_methods", "code", "pro_tips", "tools"],
     realWorldExamples: `**How contrast checking fits into a real design-to-deploy pipeline:**
 
 I surveyed 30 design teams (SaaS, fintech, e-commerce) on where they run contrast checks. The teams with zero accessibility regressions in production ALL share one trait: they check contrast at the token definition stage, not after components are built.
@@ -1709,7 +1709,7 @@ This guide skips the theory and focuses on the stuff that actually breaks palett
 The cost of ignoring color accessibility is no longer theoretical. EAA fines hit €2.3M total across 14 EU enforcement actions in Q2 2026. In the US, average settlement cost for a single ADA web lawsuit reached $85,000 in 2025, up from $55,000 in 2022. Meanwhile, a proactive accessibility audit costs $5,000-$15,000 and a design system fix costs one sprint. The math is obvious.
 
 WCAG 2.2 defines measurable color contrast requirements for text (4.5:1), UI components (3:1), and focus indicators (3:1 + 2px area). WCAG 3.0 (Working Draft, updated Q1 2026) introduces APCA with weight-aware and polarity-aware thresholds. This guide gives you the exact numbers, the legal timelines, and the fix patterns. Start testing now with the [Contrast Checker](/contrast-checker/). For the complete resource set, see the [Color Accessibility Hub](/color-accessibility-hub/). For text-specific ratios and font-weight budgets, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/). For button states, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/).`,
-    sectionFlow: ["why_it_matters", "wcag_levels", "testing_methods", "fixing_issues", "pro_tips", "tools"],
+    sectionFlow: ["why_it_matters", "wcag_levels", "code", "fixing_issues", "pro_tips", "tools"],
     realWorldExamples: `**Cost of non-compliance vs proactive compliance (2026 data):**
 
 | Scenario | Cost | Timeline | Risk level |

@@ -3,6 +3,7 @@ import ArticleSeoLinks from "@/components/ArticleSeoLinks";
 import { articleDatabase, articleSlugs } from "@/data/article-database";
 import { articleContent, getDefaultContent, type ContentBlock } from "@/data/article-content";
 import { renderMarkdown, renderInlineMarkdown, renderTipMarkdown } from "@/lib/markdown";
+import { resolveSectionFlow } from "@/lib/sections";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -60,7 +61,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       </div>
 
       {/* Dynamic section flow — NOT the same for every article */}
-      {content.sectionFlow.map((section, idx) => (
+      {resolveSectionFlow(content.sectionFlow, content).map((section, idx) => (
         <SectionRenderer key={section} type={section} content={content} index={idx} />
       ))}
 
