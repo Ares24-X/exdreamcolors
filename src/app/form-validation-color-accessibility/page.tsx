@@ -40,6 +40,20 @@ const tokenPairs = [
   { state: "Success (dark)", text: "#6CE9A6", bg: "#1C1917", ratio: "11.5:1", level: "AAA", cues: "Text + check icon (never green alone)" },
 ];
 
+const tintDrift = [
+  { role: "Error", token: "#B91C1C", white: "6.5:1", tint: "5.9:1", tintBg: "#FEF2F2", deep: "5.3:1", deepBg: "#FEE2E2", loss: "−18.1%", aaa: "#991B1B" },
+  { role: "Success", token: "#047857", white: "5.5:1", tint: "5.2:1", tintBg: "#ECFDF5", deep: "4.8:1", deepBg: "#D1FAE5", loss: "−11.8%", aaa: "#065F46" },
+  { role: "Warning", token: "#92400E", white: "7.1:1", tint: "6.8:1", tintBg: "#FFFBEB", deep: "6.4:1", deepBg: "#FEF3C7", loss: "−10.2%", aaa: "#78350F" },
+  { role: "Info", token: "#1E40AF", white: "8.7:1", tint: "8.0:1", tintBg: "#EFF6FF", deep: "7.1:1", deepBg: "#DBEAFE", loss: "−18.0%", aaa: "#1E3A8A" },
+];
+
+const tintCrossers = [
+  { token: "#DC2626 (red-600)", white: "4.8:1", tint: "4.4:1", deep: "4.0:1", outcome: "Passes on white, fails both tints" },
+  { token: "#D72C0D (Polaris red)", white: "4.9:1", tint: "4.5:1", deep: "4.0:1", outcome: "Passes on white, fails the deep tint" },
+  { token: "#2563EB (blue-600)", white: "5.2:1", tint: "4.7:1", deep: "4.2:1", outcome: "Passes on white, fails the deep tint" },
+  { token: "#B45309 (amber-700)", white: "5.0:1", tint: "4.8:1", deep: "4.5:1", outcome: "Lands exactly on the AA line" },
+];
+
 const checklistItems = [
   { num: 1, check: "Error uses ≥2 non-color signals (text + icon/border/position)", sc: "1.4.1", priority: "Critical" },
   { num: 2, check: "Error text contrast ≥4.5:1 on its background surface", sc: "1.4.3", priority: "Critical" },
@@ -403,6 +417,73 @@ export default function FormValidationColorAccessibilityPage() {
         </div>
         <p className="text-sm text-slate-500">
           For the full token architecture and implementation guide, see <Link href="/accessible-color-token-system/" className="text-blue-600 hover:underline">Accessible Color Token System</Link> and <Link href="/accessibility-form-error-colors/" className="text-blue-600 hover:underline">Accessible Form Error Colors</Link>. Test any custom token pairs with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link> before deploying.
+        </p>
+      </section>
+
+      {/* Tint drift */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold text-slate-900 mb-4">Tint drift: what each status token loses on its own banner</h2>
+        <p className="text-slate-700 mb-6">
+          Validation palettes get specified on white and then used almost exclusively on a tinted banner. Nobody re-measures after that move, because the tint is a near-white and looks harmless. It is not free. Every token below was measured against white, its light tint, and the deeper tint teams switch to for emphasis.
+        </p>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 mb-6">
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="border border-slate-300 px-4 py-3 text-left font-semibold">Role</th>
+                <th className="border border-slate-300 px-4 py-3 text-left font-semibold">Token</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">On white</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">On light tint</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">On deep tint</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">Loss</th>
+                <th className="border border-slate-300 px-4 py-3 text-left font-semibold">7:1 alternative</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tintDrift.map((row, i) => (
+                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
+                  <td className="border border-slate-300 px-4 py-3 font-medium text-slate-900">{row.role}</td>
+                  <td className="border border-slate-300 px-4 py-3"><code className="text-xs font-mono text-slate-700">{row.token}</code></td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-slate-700">{row.white}</td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-slate-700">{row.tint} <span className="text-slate-400">on {row.tintBg}</span></td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-slate-700">{row.deep} <span className="text-slate-400">on {row.deepBg}</span></td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-amber-700">{row.loss}</td>
+                  <td className="border border-slate-300 px-4 py-3"><code className="text-xs font-mono text-slate-700">{row.aaa}</code></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-slate-700 mb-6">
+          All four stay above AA, so this drift is survivable. The reason to measure it anyway is the AAA line: error red at 6.5:1 on white is already below 7:1 before any tint is applied. A team that believes its error token is AAA-grade is wrong on white and further wrong on the banner. If you need 7:1 on the tint, the token has to change, not the background — <code className="text-xs font-mono">#991B1B</code> holds 7.6:1 on <code className="text-xs font-mono">#FEF2F2</code>.
+        </p>
+        <h3 className="text-xl font-semibold text-slate-900 mb-3">Where the same move actually crosses the AA line</h3>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 mb-6">
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="border border-slate-300 px-4 py-3 text-left font-semibold">Token</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">On white</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">Light tint</th>
+                <th className="border border-slate-300 px-4 py-3 text-right font-semibold">Deep tint</th>
+                <th className="border border-slate-300 px-4 py-3 text-left font-semibold">What happens</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tintCrossers.map((row, i) => (
+                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
+                  <td className="border border-slate-300 px-4 py-3"><code className="text-xs font-mono text-slate-700">{row.token}</code></td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-slate-700">{row.white}</td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-slate-700">{row.tint}</td>
+                  <td className="border border-slate-300 px-4 py-3 text-right font-mono text-red-700">{row.deep}</td>
+                  <td className="border border-slate-300 px-4 py-3 text-xs text-slate-600">{row.outcome}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-slate-700">
+          Red-600 is the important row. It is the default error color in most utility frameworks, it passes on white by 0.3 points, and it fails on the error banner it was designed to sit inside. The margin on white is what misleads: any token under roughly 5.5:1 on white has no room left for a tint, because the deep-tint move alone costs 10–18%. The rule that falls out of this: specify status tokens against the darkest surface they will ever sit on, then the white case is free. Check both directions in the <Link href="/contrast-checker/" className="text-blue-700 hover:underline font-medium">Contrast Checker</Link>, and see <Link href="/color-accessibility-guidelines/" className="text-blue-700 hover:underline font-medium">Color Accessibility Guidelines</Link> for the per-hue step floors these tokens come from.
         </p>
       </section>
 

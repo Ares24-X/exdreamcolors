@@ -1856,6 +1856,60 @@ Every compliance failure can be traced to a missing owner. This matrix assigns e
 - Post-launch contrast regressions drop 80%+ because each role owns their check at the right stage
 
 For the full token system architecture that supports this DRI model, see [Accessible Color Token System](/accessible-color-token-system/). For the enforcement and legal landscape behind the urgency, see [Color Accessibility Hub](/color-accessibility-hub/).`,
+    testingMethods: `**The step floor: which shade of each hue is the first one you are allowed to put text in.**
+
+Every contrast question on a real project reduces to the same one: *which step of this color ramp is safe?* Teams answer it per-component, forget, and answer it differently next sprint. Measure it once per hue family instead. I computed every common ramp step against white and recorded the first step that clears each threshold. Values below are the Tailwind default ramps (gray, red, blue, purple, emerald, amber), measured on #FFFFFF:
+
+| Hue family | 500 | 600 | 700 | 800 | First AA (4.5:1) | First AAA (7:1) |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| Gray | 4.8:1 | 7.6:1 | 10.3:1 | 14.7:1 | 500 | 600 |
+| Red | 3.8:1 | 4.8:1 | 6.5:1 | 8.3:1 | 600 | 800 |
+| Blue | 3.7:1 | 5.2:1 | 6.7:1 | 8.7:1 | 600 | 800 |
+| Purple | 4.0:1 | 5.4:1 | 7.0:1 | 8.7:1 | 600 | 800 |
+| Emerald | 2.5:1 | 3.8:1 | 5.5:1 | 7.7:1 | 700 | 800 |
+| Amber | 2.2:1 | 3.2:1 | 5.0:1 | 7.1:1 | 700 | 800 |
+
+One caveat on the Purple row: purple-700 computes to 6.98:1, which prints as 7.0:1 but does not actually clear the 7:1 AAA threshold. That is why its first true AAA step is 800, not 700 — a useful reminder to compare against the unrounded value whenever you land within 0.05 of a boundary.
+
+Substitute your own hexes if your ramp is custom; the *shape* of the table transfers, not the exact numbers. One trap worth naming: Tailwind's green ramp is not emerald. Every green step is darker (green-700 is 5.0:1, not 5.5:1), so confirm which one your config actually ships before copying a floor.
+
+Read the last two columns as your standing rule. Gray is safe two steps earlier than emerald or amber, which is why gray-500 body text passes and the success text beside it at the same step does not. **The step number carries no contrast meaning across hues** — 500 is not a level, it is a position in a ramp whose luminance depends entirely on the hue. Most "but we used the same step" bugs are this.
+
+The practical consequence: emerald and amber have no usable text token before 700, so a success message and a warning message cannot be built from the same step as your neutral body copy. If your design system exposes only one "status" step, it is wrong for two of the four statuses.
+
+**Non-text elements (SC 1.4.11, 3:1) shift the floor again:**
+
+| Hue family | 400 | 500 | 600 | First 3:1 on white |
+| --- | ---: | ---: | ---: | --- |
+| Gray | 2.5:1 | 4.8:1 | 7.6:1 | 500 |
+| Red | 2.8:1 | 3.8:1 | 4.8:1 | 500 |
+| Blue | 2.5:1 | 3.7:1 | 5.2:1 | 500 |
+| Emerald | 1.9:1 | 2.5:1 | 3.8:1 | 600 |
+| Amber | 1.7:1 | 2.2:1 | 3.2:1 | 600 |
+
+Borders, input outlines, and icons can drop one step relative to text — but not two, and not at all for emerald and amber. Gray-300 (1.5:1) is the single most common border failure on the web: it is the default "subtle border" in most systems and it misses the 3:1 requirement by half.
+
+**The same ramp inverts on dark surfaces (measured on #111827):**
+
+| Hue family | 400 | 500 | 600 |
+| --- | ---: | ---: | ---: |
+| Gray | 7.0:1 | 3.7:1 | 2.4:1 |
+| Red | 6.4:1 | 4.7:1 | 3.7:1 |
+| Blue | 7.0:1 | 4.8:1 | 3.4:1 |
+| Emerald | 9.2:1 | 7.0:1 | 4.7:1 |
+| Amber | 10.6:1 | 8.3:1 | 5.6:1 |
+
+The ordering flips completely. On white, emerald and amber are the *worst* families and need step 700; on dark, they are the *best* and pass comfortably at 400 while gray-600 fails at 2.4:1. This is why inverting a light theme never works: the relative safety of your hues is a property of the background, not of the palette. Dark themes need their own floors, derived the same way. Full dark stack in [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/).
+
+**How to run this for your own ramp (15 minutes, once):**
+
+1. List your hue families and every step you actually ship.
+2. Measure each step against your lightest surface and your darkest surface — two numbers per step in the [Contrast Checker](/contrast-checker/).
+3. Record the first step clearing 4.5:1 (text), 3:1 (borders/icons), and 7:1 (AAA body) for each family and each theme.
+4. Publish that table next to your tokens. It is six rows and it ends the per-component debate permanently.
+5. Re-run it only when the ramp changes, not when components change.
+
+The output is a lookup table, not a workflow. That is the point: contrast decisions should be answered by reading a row, not by re-measuring during code review. For per-criterion audit steps, see [WCAG Color Accessibility](/wcag-color-accessibility/). For the text-specific font-weight budget layered on top of these floors, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/).`,
     codeSnippet: {
       label: "CI/CD color accessibility gate — GitHub Actions + axe-core (blocks PRs on contrast failures)",
       code: `# .github/workflows/a11y-contrast.yml
@@ -1954,7 +2008,7 @@ console.table(failures);`
       "When brand colors fail contrast, create a 'reading variant' token: same hue family, adjusted lightness to hit 7:1. Brand color stays for logos and large accents; reading variant goes on text. See [Color Blind Friendly Palettes](/color-blind-friendly-palettes/) for hue-safe construction.",
       "The EAA 5% revenue penalty is calculated per product, not per company. A company with three non-compliant digital products faces three separate fine calculations. Audit each product separately.",
       "Prepare for WCAG 3.0 now: use APCA Lc 75+ for body text, Lc 60+ for large headings, Lc 45+ for non-text elements. These targets are stricter than WCAG 2 AA but will save emergency rework when the standard finalizes. See [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/) for the full APCA font-weight budget.",
-      "Framework-specific safe defaults that pass WCAG AA without thinking:\n\n| UI Role | Tailwind class | CSS custom property | Measured ratio |\n| --- | --- | --- | ---: |\n| Body text | text-gray-800 (#1f2937) | --text-primary: #1f2937 | 14.5:1 |\n| Muted text | text-gray-600 (#4b5563) | --text-muted: #4b5563 | 7.0:1 |\n| Placeholder | placeholder:text-gray-500 (#6b7280) | --text-placeholder: #6b7280 | 4.6:1 |\n| Input border | border-gray-500 (#6b7280) | --border-input: #6b7280 | 4.6:1 |\n| Focus ring | ring-2 ring-blue-600 ring-offset-2 | outline: 3px solid #2563eb | 4.6:1 |\n| Error text | text-red-700 (#b91c1c) | --text-error: #b91c1c | 7.8:1 |\n| Link text | text-blue-700 (#1d4ed8) | --text-link: #1d4ed8 | 6.4:1 |\n\nAll measured on #ffffff. Verify your actual surface with the [Contrast Checker](/contrast-checker/). For dark mode equivalents, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full token system approach, see [Accessible Color Token System](/accessible-color-token-system/).",
+      "Framework-specific safe defaults that pass WCAG AA without thinking:\n\n| UI Role | Tailwind class | CSS custom property | Measured on #FFFFFF |\n| --- | --- | --- | ---: |\n| Body text | text-gray-800 (#1f2937) | --text-primary: #1f2937 | 14.7:1 |\n| Muted text | text-gray-600 (#4b5563) | --text-muted: #4b5563 | 7.6:1 |\n| Placeholder | placeholder:text-gray-500 (#6b7280) | --text-placeholder: #6b7280 | 4.8:1 |\n| Input border | border-gray-500 (#6b7280) | --border-input: #6b7280 | 4.8:1 |\n| Focus ring | ring-2 ring-blue-600 ring-offset-2 | outline: 3px solid #2563eb | 5.2:1 |\n| Error text | text-red-700 (#b91c1c) | --text-error: #b91c1c | 6.5:1 |\n| Link text | text-blue-700 (#1d4ed8) | --text-link: #1d4ed8 | 6.7:1 |\n\nEvery row clears AA on white, but only body text, muted text, and error text clear it with room to spare. Placeholder and input border sit at 4.8:1 — they pass on white and fail on any tinted input surface, so do not reuse them on gray-50 or a colored form background. Note that error text at 6.5:1 is AA, not AAA; the commonly repeated claim that red-700 is a 7:1 token is wrong by 0.5 points. Verify your actual surface with the [Contrast Checker](/contrast-checker/). For dark mode equivalents, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full token system approach, see [Accessible Color Token System](/accessible-color-token-system/).",
     ],
     keyStat: "96.3% of the top 1 million homepages have detectable WCAG failures in 2026 (WebAIM Million), with 84.1% failing on low-contrast text — 57.2 errors per page on average. Color contrast is the single most common defect for the seventh consecutive year. As of August 2026, EAA market surveillance is active across 10+ EU member states (up from 2 in Q1) and total EAA fines exceeded €3.1M. US ADA web lawsuits are tracking toward 5,800+ for 2026, with 78% citing color contrast (UsableNet H1 2026). The Q4 2026 fine wave is the highest-risk window for EU-selling products not yet compliant.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
@@ -3907,7 +3961,7 @@ Good validation color is not just red for wrong and green for right. It is contr
 
 The European Accessibility Act became enforceable June 2025. Form validation that relies on color alone violates EN 301 549 SC 1.4.1 — and the first enforcement fines were issued in Q1 2026. The US DOJ published its Section 508 refresh NPRM in Q2 2026 requiring WCAG 2.2 AA for all federal contractors. This is no longer a nice-to-have. See [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the full legal landscape.`,
     sectionFlow: ["real_world", "audit_data", "testing_methods", "code", "pro_tips", "tools"],
-    realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (7.8:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
+    realWorldExamples: `**Stripe checkout forms** layer four signals on every invalid field: a 2px left border in #b91c1c (6.5:1 on white), an inline error message below the field, a warning icon inside the input, and a shake animation on submit. Removing any one signal still leaves three others. That redundancy is what passes SC 1.4.1.
 
 **Shopify Polaris form system** uses a dedicated error summary banner at the top AND inline messages. The banner links directly to each invalid field with anchor IDs, so keyboard users can jump straight to the problem. Their error red (#D72C0D) scores 4.6:1 on their surface token — just clearing AA for normal text.
 
@@ -3954,20 +4008,20 @@ Use the [Contrast Checker](/contrast-checker/) to verify your own brand error co
       label: "Accessible form validation — full pattern with ARIA and contrast-safe tokens",
       code: `/* ═══════════════════════════════════════════════════════
    Accessible Form Validation Color System
-   Tested ratios: error 7.8:1, success 5.1:1, focus 4.6:1
+   Tested ratios: error 6.5:1, success 5.5:1, focus 5.2:1
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* Error: #b91c1c on white = 7.8:1 (AAA) */
+  /* Error: #b91c1c on white = 6.5:1 (AA — 7:1 AAA needs #991b1b) */
   --field-error: #b91c1c;
   --field-error-bg: #fef2f2;
   --field-error-border: #b91c1c;
 
-  /* Success: #047857 on white = 5.1:1 (AA) */
+  /* Success: #047857 on white = 5.5:1 (AA) */
   --field-success: #047857;
   --field-success-bg: #ecfdf5;
 
-  /* Warning: #92400e on white = 5.5:1 (AA) */
+  /* Warning: #92400e on white = 7.1:1 (AAA) */
   --field-warning: #92400e;
   --field-warning-bg: #fffbeb;
 
@@ -4101,6 +4155,34 @@ Gray-500 (#6B7280), the most common choice for muted helper text, barely clears 
 
 Do not place gray-500 helper text inside a tinted banner unless you have verified the specific tint. The common pattern of reusing the same text colors across white pages and validation banners is the failure. Each tinted surface needs its own tested text scale. Compute your own palette against your actual banner tokens with the [Contrast Checker](/contrast-checker/).
 
+---
+
+**Tint drift: how much contrast each status token loses on its own background.**
+
+The validation palette above is specified on white, then used almost exclusively on a tinted banner. Nobody re-measures after that move, because the tint is a near-white and looks harmless. It is not free. I measured every status token against white, its light tint, and its deeper tint (the fill most teams switch to for emphasis):
+
+| Role | Token | On white | On light tint | On deep tint | Loss, white → deep |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Error | #B91C1C | 6.5:1 | 5.9:1 on #FEF2F2 | 5.3:1 on #FEE2E2 | −18.1% |
+| Success | #047857 | 5.5:1 | 5.2:1 on #ECFDF5 | 4.8:1 on #D1FAE5 | −11.8% |
+| Warning | #92400E | 7.1:1 | 6.8:1 on #FFFBEB | 6.4:1 on #FEF3C7 | −10.2% |
+| Info | #1E40AF | 8.7:1 | 8.0:1 on #EFF6FF | 7.1:1 on #DBEAFE | −18.0% |
+
+All four stay above AA, so the drift is survivable here. The reason to measure it anyway is the AAA line: error red at 6.5:1 on white is already below 7:1 before any tint is applied. A team that believes its error token is AAA-grade is wrong on white and further wrong on the banner. If you need 7:1 on the tint, the token has to change, not the background — #991B1B holds 7.6:1 on #FEF2F2 and 6.8:1 on #FEE2E2.
+
+**Where the same move actually crosses the AA line:**
+
+| Token | On white | On light tint | On deep tint | What happens |
+| --- | ---: | ---: | ---: | --- |
+| #DC2626 (red-600) | 4.8:1 | 4.4:1 on #FEF2F2 | 4.0:1 on #FEE2E2 | Passes on white, fails both tints |
+| #D72C0D (Polaris red) | 4.9:1 | 4.5:1 on #FEF2F2 | 4.0:1 on #FEE2E2 | Passes on white, fails the deep tint |
+| #2563EB (blue-600) | 5.2:1 | 4.8:1 on #EFF6FF | 4.2:1 on #DBEAFE | Passes on white, fails the deep tint |
+| #B45309 (amber-700) | 5.0:1 | 4.8:1 on #FFFBEB | 4.5:1 on #FEF3C7 | Lands exactly on the AA line |
+
+Red-600 is the important row. It is the default error color in most utility frameworks, it passes on white by 0.3 points, and it fails on the error banner it was designed to sit inside. The margin on white is what misleads: any token under roughly 5.5:1 on white has no room left for a tint, because the deep-tint move alone costs 10–18%.
+
+**Rule that falls out of this data:** specify status tokens against the darkest surface they will ever sit on, not against white. Then the white case is free. Doing it the other way around means every emphasis state is an unmeasured regression. Both directions are one check each in the [Contrast Checker](/contrast-checker/) — the failure is procedural, not technical.
+
 **One more scenario most audits miss: labels that become placeholders during validation.**
 
 | Technique | What it looks like | Failure mode | Fix |
@@ -4113,14 +4195,14 @@ Do not place gray-500 helper text inside a tinted banner unless you have verifie
 In 14 of the 40 audited forms, one of these patterns caused a scenario where the user could not identify what input had failed after submitting the form. The error was visible, but the field label was not. The fix is to keep labels persistent and spatially separate from validation states, so all three pieces of information — label, input value, and error message — remain on screen simultaneously.
 
 For button-specific focus ring patterns, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the dark-mode version of these same validation tokens, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For the full WCAG ruleset, start at [Color Accessibility Guidelines](/color-accessibility-guidelines/).`,
-        testingMethods: `**Color-blind safe validation palette — works for protanopia, deuteranopia, and tritanopia:**
+    testingMethods: `**Color-blind safe validation palette — works for protanopia, deuteranopia, and tritanopia:**
 
 | State | Token | Hex | On white | On tinted bg | CVD-safe reason |
 | --- | --- | --- | ---: | ---: | --- |
-| Error | --validation-error | #B91C1C | 7.8:1 | 7.1:1 on #FEF2F2 | High luminance contrast; icon + text redundancy |
-| Warning | --validation-warning | #92400E | 5.5:1 | 5.0:1 on #FFFBEB | Orange-brown stays distinct from red under deuteranopia |
-| Success | --validation-success | #047857 | 5.1:1 | 4.7:1 on #ECFDF5 | Blue-shifted green; pair with checkmark icon |
-| Info | --validation-info | #1E40AF | 8.9:1 | 8.2:1 on #EFF6FF | Blue is unaffected by red-green CVD |
+| Error | --validation-error | #B91C1C | 6.5:1 | 5.9:1 on #FEF2F2 | High luminance contrast; icon + text redundancy |
+| Warning | --validation-warning | #92400E | 7.1:1 | 6.8:1 on #FFFBEB | Orange-brown stays distinct from red under deuteranopia |
+| Success | --validation-success | #047857 | 5.5:1 | 5.2:1 on #ECFDF5 | Blue-shifted green; pair with checkmark icon |
+| Info | --validation-info | #1E40AF | 8.7:1 | 8.0:1 on #EFF6FF | Blue is unaffected by red-green CVD |
 
 Key: Never rely on the red/green distinction alone. Protanopia and deuteranopia users cannot separate these hues. The combination of distinct lightness levels + icon shapes + text messages makes each state identifiable without color.
 
@@ -4174,7 +4256,7 @@ One caution on the darker tint values (#450A0A, #022C22, #451A03, #172554): they
 For button-specific focus and contrast guidance, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For color-blind palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token architecture that handles validation states across light and dark mode, see [Accessible Color Token System](/accessible-color-token-system/).`,
     proTips: [
       "Pair color with text and an icon. Red alone is not a validation system — it fails SC 1.4.1 (Use of Color). See the full [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the complete rule set.",
-      "Test error colors on your actual error background tint, not just white. #b91c1c drops from 7.8:1 on white to 7.1:1 on #fef2f2. Use the [Contrast Checker](/contrast-checker/) with your real surface tokens.",
+      "Test error colors on your actual error background tint, not just white. #b91c1c drops from 6.5:1 on white to 5.9:1 on #fef2f2 — enough to erase any AAA headroom you thought you had. If you need 7:1 on the tint, use #991b1b (7.6:1). Use the [Contrast Checker](/contrast-checker/) with your real surface tokens.",
       "Add a 4px left border on the field group, not just the input. This gives a spatial landmark that works in forced-colors mode and under [color blindness simulations](/color-blind-friendly-palettes/).",
       "Move focus to the error summary or first invalid field after submit. Without this, keyboard users cannot find what broke. See [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/) for focus ring contrast requirements.",
       "Do not remove helper text when an error appears. Stack the error below the helper so users can reference both.",

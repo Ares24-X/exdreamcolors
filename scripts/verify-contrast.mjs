@@ -164,6 +164,194 @@ function auditTokenComments(source) {
 }
 
 /**
+ * Audit cells that carry their own background inline, e.g.
+ *
+ *   | Error | --validation-error | #B91C1C | 7.8:1 | 7.1:1 on #FEF2F2 |
+ *
+ * The other passes all skip this shape. auditSource() bails because the row has
+ * two ratio cells; auditPairCellRows() bails because no single cell holds two
+ * hexes; auditMatrixRows() bails because there is no hex-bearing header row.
+ * That left per-state token tables — the exact tables that carry our headline
+ * accessibility claims — completely unguarded.
+ *
+ * Here the background is unambiguous: it is named inside the ratio cell itself.
+ * The foreground is the row's other hex (the token being documented).
+ *
+ * A ratio cell with no "on <surface>" suffix is resolved from its column header
+ * when that header names a known surface ("On white"), and skipped otherwise.
+ */
+function auditOnSurfaceCells(source) {
+  const lines = source.split("\n");
+  const findings = [];
+  let headerSurfaces = null;
+
+  const surfaceFromHeader = (cell) => {
+    const hex = (cell.match(HEX) || [])[0];
+    if (hex) return hex;
+    const named = cell.match(/\bon\s+(white|base|raised|overlay|highest)\b/i);
+    return named ? NAMED_SURFACES[named[1].toLowerCase()] : null;
+  };
+
+  lines.forEach((line, index) => {
+    if ((line.match(/\|/g) || []).length < 3) {
+      headerSurfaces = null;
+      return;
+    }
+
+    const cells = line.split("|");
+
+    // Markdown separator row (| --- | ---: |) sits between the header and the
+    // data. It names no surfaces and must not clear the remembered header.
+    if (/^[\s|:-]+$/.test(line)) return;
+
+    // Header rows carry no measurements; remember any surfaces they name.
+    if (!/\d+(?:\.\d+)?:1/.test(line)) {
+      headerSurfaces = cells.map(surfaceFromHeader);
+      return;
+    }
+
+    const rowHexes = [
+      ...new Set((line.match(HEX) || []).map((h) => h.toLowerCase())),
+    ];
+
+    // Any hex introduced as a background ("7.1:1 on #FEF2F2") is a surface for
+    // this row, never the token being measured. Without this, a row that names
+    // one tint inline leaves two foreground candidates and gets skipped.
+    const inlineSurfaces = new Set(
+      [...line.matchAll(/:1\s*on\s*(#[0-9A-Fa-f]{6})\b/g)].map((m) =>
+        m[1].toLowerCase(),
+      ),
+    );
+
+    cells.forEach((cell, col) => {
+      const inline = cell.match(/(\d+(?:\.\d+)?):1\s*on\s*(#[0-9A-Fa-f]{6})\b/);
+      const bg = inline
+        ? inline[2].toLowerCase()
+        : (headerSurfaces?.[col] || "").toLowerCase() || null;
+      if (!bg) return;
+
+      const printedRaw = inline
+        ? inline[1]
+        : (cell.match(/^\s*(\d+(?:\.\d+)?):1\s*$/) || [])[1];
+      if (!printedRaw) return;
+
+      // The token under test is the row's hex that is not a background.
+      const candidates = rowHexes.filter(
+        (h) => h !== bg && !inlineSurfaces.has(h),
+      );
+      if (candidates.length !== 1) return;
+
+      const printed = parseFloat(printedRaw);
+      const actual = contrastRatio(candidates[0], bg);
+      if (Math.abs(printed - actual) <= TOLERANCE) return;
+
+      findings.push({
+        line: index + 1,
+        column: col,
+        pair: `${candidates[0]} on ${bg}`,
+        printed: `${printedRaw}:1`,
+        corrected: printOneDecimal(actual),
+        raw: line,
+      });
+    });
+  });
+
+  return findings;
+}
+
+/**
+ * Audit table rows that live inside single-line JavaScript strings, where the
+ * markdown newlines are escaped ("| Error | #b91c1c | 7.8:1 |\\n| Link | ...").
+ *
+ * Every other pass in this file splits on real newlines, so an entire table
+ * written inside one `proTips` entry was invisible to all of them — which is
+ * how a 7.8:1 claim for #b91c1c survived in the framework-defaults table long
+ * after the same figure was corrected elsewhere.
+ *
+ * Rows are re-split on the literal two-character escape, audited with the same
+ * rules as real rows, and fixes are applied by rewriting the row substring
+ * inside its physical line.
+ */
+function auditEscapedRows(source) {
+  const lines = source.split("\n");
+  const findings = [];
+
+  lines.forEach((line, index) => {
+    if (!line.includes("\\n|")) return;
+
+    const rows = line.split("\\n");
+    let surfaces = null;
+
+    for (const row of rows) {
+      if ((row.match(/\|/g) || []).length < 3) continue;
+      if (/^[\s|:-]+$/.test(row)) continue;
+
+      const cells = row.split("|");
+
+      if (!/\d+(?:\.\d+)?:1/.test(row)) {
+        surfaces = cells.map((cell) => {
+          const hex = (cell.match(HEX) || [])[0];
+          if (hex) return hex;
+          const named = cell.match(/\bon\s+(white|base|raised|overlay|highest)\b/i);
+          return named ? NAMED_SURFACES[named[1].toLowerCase()] : null;
+        });
+        continue;
+      }
+
+      const rowHexes = [
+        ...new Set((row.match(HEX) || []).map((h) => h.toLowerCase())),
+      ];
+      const inlineSurfaces = new Set(
+        [...row.matchAll(/:1\s*on\s*(#[0-9A-Fa-f]{6})\b/g)].map((m) =>
+          m[1].toLowerCase(),
+        ),
+      );
+
+      cells.forEach((cell, col) => {
+        const inline = cell.match(/(\d+(?:\.\d+)?):1\s*on\s*(#[0-9A-Fa-f]{6})\b/);
+        const bg = inline
+          ? inline[2].toLowerCase()
+          : (surfaces?.[col] || "").toLowerCase() || null;
+        if (!bg) return;
+
+        const printedRaw = inline
+          ? inline[1]
+          : (cell.match(/^\s*(\d+(?:\.\d+)?):1\s*$/) || [])[1];
+        if (!printedRaw) return;
+
+        const candidates = rowHexes.filter(
+          (h) => h !== bg && !inlineSurfaces.has(h),
+        );
+        if (candidates.length !== 1) return;
+
+        const printed = parseFloat(printedRaw);
+        const actual = contrastRatio(candidates[0], bg);
+        if (Math.abs(printed - actual) <= TOLERANCE) return;
+
+        const fixedCell = cell.replace(
+          `${printedRaw}:1`,
+          printOneDecimal(actual),
+        );
+        const fixedCells = [...cells];
+        fixedCells[col] = fixedCell;
+
+        findings.push({
+          line: index + 1,
+          pair: `${candidates[0]} on ${bg}`,
+          printed: `${printedRaw}:1`,
+          corrected: printOneDecimal(actual),
+          rowText: row,
+          rowFixed: fixedCells.join("|"),
+          raw: row,
+        });
+      });
+    }
+  });
+
+  return findings;
+}
+
+/**
  * Audit rows that pair threshold columns with one measured column, e.g.
  * `| Body text | 4.5:1 | 7:1 | #374151 on #FFFFFF | 10.3:1 | ... |`
  *
@@ -255,6 +443,12 @@ function applyFixes(source, findings) {
   for (const finding of findings) {
     const i = finding.line - 1;
 
+    // Rows inside escaped single-line strings: rewrite the row substring.
+    if (finding.rowText) {
+      lines[i] = lines[i].replace(finding.rowText, finding.rowFixed);
+      continue;
+    }
+
     // Matrix findings carry a column index: rewrite only that cell, because the
     // same printed ratio can legitimately appear more than once in one row.
     if (typeof finding.column === "number") {
@@ -283,6 +477,8 @@ for (const file of targetFiles()) {
     ...auditTokenComments(source),
     ...auditMatrixRows(source),
     ...auditPairCellRows(source),
+    ...auditOnSurfaceCells(source),
+    ...auditEscapedRows(source),
   ].sort((a, b) => a.line - b.line);
 
   if (findings.length === 0) continue;

@@ -823,7 +823,7 @@ export default function ColorAccessibilityHubPage() {
                 <p className="text-sm font-semibold text-green-800 mb-2">✓ After (fixed)</p>
                 <div className="space-y-2 text-sm">
                   <p><strong>Triple signal:</strong> 4px left border + error text below input + warning icon</p>
-                  <p><strong>Error text:</strong> #B91C1C on white = 7.8:1 (AAA)</p>
+                  <p><strong>Error text:</strong> #B91C1C on white = 6.5:1 (AA; use #991B1B for 8.3:1 AAA)</p>
                   <p><strong>WCAG verdict:</strong> Pass SC 1.4.1 + 1.4.3</p>
                   <p><strong>CVD test:</strong> Passes all three simulations (deuteranopia, protanopia, tritanopia)</p>
                   <p><strong>Result:</strong> Multi-submit abandonment dropped to 1.1% — 86% improvement</p>

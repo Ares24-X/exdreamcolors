@@ -352,7 +352,7 @@ export default function AccessibilityFormErrorColorsPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold text-slate-900 mb-4">Brand Examples Worth Studying</h2>
         <div className="space-y-4 text-slate-700 leading-relaxed">
-          <p><strong>Stripe</strong> layers four signals on every invalid field: 2px left border (#b91c1c, 7.8:1), inline error text below the field, warning icon inside the input, and a subtle shake on submit. Remove any one and three others remain.</p>
+          <p><strong>Stripe</strong> layers four signals on every invalid field: 2px left border (#b91c1c, 6.5:1 on white), inline error text below the field, warning icon inside the input, and a subtle shake on submit. Remove any one and three others remain.</p>
           <p><strong>Gov.uk</strong> is the gold standard: red left border on the field group (not just input), bold error text above input, page-top error summary with jump links, and page title prefixed &quot;Error:&quot; for immediate screen reader announcement.</p>
           <p><strong>Shopify Polaris</strong> uses both an error summary banner at the top AND inline messages. The banner links to each invalid field via anchor IDs, making keyboard navigation instant. Their error red (#D72C0D) scores 4.6:1 on their card surface token.</p>
         </div>
