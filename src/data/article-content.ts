@@ -911,8 +911,92 @@ if (!colorOnlyLinkIsPossible(bodyHex)) {
 
 The right move is to treat dark mode as its own contrast system with a dedicated token set. Body text needs a stronger reading lane (aim for 7:1, not just 4.5:1), surfaces need a clear lift hierarchy (at least 3 distinct elevation levels), and accent colors should stay energetic without glowing like warning signs. Use the [Contrast Checker](/contrast-checker/) to validate every token pair against your actual dark surface — do not trust Figma previews on a bright monitor.
 
-This guide provides the exact ratios, tested color pairs, APCA polarity analysis, surface elevation specs, and a pre-ship checklist for dark mode contrast. For the full accessibility picture, see the [Color Accessibility Hub](/color-accessibility-hub/). For the 2026 legal enforcement timeline, see [Color Accessibility Guidelines](/color-accessibility-guidelines/).`,
-    sectionFlow: ["real_world", "testing_methods", "code", "pro_tips"],
+This guide provides the exact ratios, tested color pairs, APCA polarity analysis, surface elevation specs, the composited numbers for semi-transparent overlay surfaces, and a pre-ship checklist for dark mode contrast. For the full accessibility picture, see the [Color Accessibility Hub](/color-accessibility-hub/). For the 2026 legal enforcement timeline, see [Color Accessibility Guidelines](/color-accessibility-guidelines/).`,
+    sectionFlow: ["real_world", "audit_data", "testing_methods", "code", "pro_tips"],
+    auditHeading: "Semi-Transparent Surfaces: The Numbers Your Token File Does Not Contain",
+    chartAudit: `Every dark-mode audit above assumes opaque surfaces. Most real dark modes are not opaque. MUI, Material 3, Radix, Chakra, and every Tailwind dark theme built with \`bg-white/5\` construct their elevation stack from **white at low alpha over the page background**. That means the surface a token actually lands on does not exist anywhere in your token file — the browser computes it at paint time, and no contrast checker can read a value that was never declared.
+
+This section supplies those missing values. Every figure below is the source-over composite \`alpha x foreground + (1 - alpha) x background\` in gamma sRGB — what the browser actually does — then run through the WCAG relative-luminance formula. Verify any of them in the [Contrast Checker](/contrast-checker/) by pasting the composited hex, not the rgba declaration.
+
+**Step 1: what the common overlay declarations actually resolve to on a #111827 page.**
+
+| Overlay declaration | Ships in | Composited surface | Surface vs page base |
+| --- | --- | --- | ---: |
+| \`rgba(255,255,255,0.04)\` | Ant Design dark container | #1B2130 | 1.1:1 on #111827 |
+| \`rgba(255,255,255,0.05)\` | MUI dark paper elevation 1, Tailwind \`bg-white/5\` | #1D2432 | 1.1:1 on #111827 |
+| \`rgba(255,255,255,0.07)\` | Radix translucent panel | #222836 | 1.2:1 on #111827 |
+| \`rgba(255,255,255,0.08)\` | Material 3 surface-container, Chakra \`whiteAlpha.200\` | #242A38 | 1.2:1 on #111827 |
+| \`rgba(255,255,255,0.10)\` | Tailwind \`bg-white/10\` | #292F3D | 1.3:1 on #111827 |
+| \`rgba(255,255,255,0.11)\` | MUI dark elevation 8 | #2B313F | 1.4:1 on #111827 |
+| \`rgba(255,255,255,0.16)\` | Tailwind \`bg-white/[0.16]\` | #373D4A | 1.6:1 on #111827 |
+| \`rgba(255,255,255,0.20)\` | Tailwind \`bg-white/20\` | #414652 | 1.9:1 on #111827 |
+
+None of these clears the 3:1 that SC 1.4.11 asks of a component boundary, which is the same finding as the opaque elevation stack — translucent elevation is not an accessible boundary either. The reason to compute them is what happens to the text on top.
+
+**Step 2: every text token measured against the composited surfaces, not the page background.**
+
+| Token | base #111827 | #1D2432 | #242A38 | #292F3D | #373D4A |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| text.primary #F9FAFB | 17.0:1 | 14.9:1 | 13.7:1 | 12.8:1 | 10.4:1 |
+| text.secondary #D1D5DB | 12.0:1 | 10.6:1 | 9.7:1 | 9.1:1 | 7.4:1 |
+| link #93C5FD | 9.8:1 | 8.6:1 | 8.0:1 | 7.4:1 | 6.0:1 |
+| error #FCA5A5 | 9.3:1 | 8.2:1 | 7.6:1 | 7.1:1 | 5.7:1 |
+| text.muted #9CA3AF | 7.0:1 | 6.1:1 | 5.7:1 | 5.3:1 | 4.3:1 |
+| text.disabled #6B7280 | 3.7:1 | 3.2:1 | 3.0:1 | 2.8:1 | 2.3:1 |
+
+\`text.muted\` reads 7.0:1 in every checker you point at your token file, and 4.3:1 in a \`bg-white/[0.16]\` panel. Nothing declared changed. **The failure is invisible to token-level auditing by construction**, because the failing background is a paint-time artifact. This is the mechanism behind the muted-text failures in the audit above, not a separate problem.
+
+**Step 3: nesting, where translucent stacks diverge from opaque ones.** An opaque \`bg-slate-800\` inside another \`bg-slate-800\` is still #1E293B. A \`bg-white/5\` inside a \`bg-white/5\` is not:
+
+| Nesting depth | Composited surface | vs page base |
+| ---: | --- | ---: |
+| 1 (card) | #1D2432 | 1.1:1 on #111827 |
+| 2 (panel in card) | #282F3C | 1.3:1 on #111827 |
+| 3 (row in panel) | #333946 | 1.5:1 on #111827 |
+| 4 (chip in row) | #3D434F | 1.8:1 on #111827 |
+
+| Token | depth 1 #1D2432 | depth 2 #282F3C | depth 3 #333946 | depth 4 #3D434F |
+| --- | ---: | ---: | ---: | ---: |
+| text.secondary #D1D5DB | 10.6:1 | 9.1:1 | 7.9:1 | 6.7:1 |
+| text.muted #9CA3AF | 6.1:1 | 5.3:1 | 4.6:1 | 3.9:1 |
+| text.disabled #6B7280 | 3.2:1 | 2.8:1 | 2.4:1 | 2.1:1 |
+
+The same class applied four levels deep drops muted text from 6.1:1 to 3.9:1 — an AA failure produced entirely by component nesting, with no design decision anywhere in the chain. A shared \`<Card>\` that renders \`bg-white/5\` and is used inside itself is the usual culprit, and it fails only in the deep instances, which is why it survives review.
+
+**Step 4: translucent text over translucent surfaces, where both sides move.** Material's \`text-primary: rgba(255,255,255,0.87)\` / \`text-secondary: rgba(255,255,255,0.60)\` convention is still widely copied:
+
+| Declaration | Composited on base | Ratio | Composited on #242A38 card | Ratio |
+| --- | --- | ---: | --- | ---: |
+| \`text-white/38\` | #6B7079 | 3.6:1 on #111827 | #777B84 | 3.4:1 on #242A38 |
+| \`text-white/50\` | #888C93 | 5.3:1 on #111827 | #92959C | 4.8:1 on #242A38 |
+| \`text-white/60\` | #A0A3A9 | 7.0:1 on #111827 | #A7AAAF | 6.2:1 on #242A38 |
+| \`text-white/70\` | #B8BABE | 9.1:1 on #111827 | #BDBFC3 | 7.8:1 on #242A38 |
+| \`text-white/87\` | #E0E1E3 | 13.6:1 on #111827 | #E3E3E5 | 11.2:1 on #242A38 |
+
+Note the direction: raising the surface lifts the composited text hex too, so the loss is milder than for an opaque token (\`text-white/60\` loses 0.8, opaque #9CA3AF loses 1.3 over the same move). Translucent text partially self-corrects. It also destroys any hope of auditing from source, since neither the foreground nor the background hex exists in the stylesheet. \`text-white/50\` at 4.8:1 on a card is the pair to watch — it is 0.3 above AA and one nesting level from failing.
+
+**Step 5: borders. Low-alpha white borders cannot reach 3:1 at any alpha teams actually use.**
+
+| Surface | \`border-white/10\` | \`/20\` | \`/30\` | \`/40\` | Alpha needed for 3:1 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| page base #111827 | 1.3:1 | 1.9:1 | 2.7:1 | 3.8:1 | white/34 = #626770 |
+| white/5 card #1D2432 | 1.4:1 | 1.9:1 | 2.7:1 | 3.7:1 | white/34 = #6A6E78 |
+| white/8 card #242A38 | 1.4:1 | 1.9:1 | 2.7:1 | 3.6:1 | white/35 = #71757E |
+| white/10 card #292F3D | 1.4:1 | 1.9:1 | 2.6:1 | 3.5:1 | white/35 = #747881 |
+| white/16 raised #373D4A | 1.3:1 | 1.8:1 | 2.4:1 | 3.2:1 | white/38 = #83878F |
+
+\`border-white/10\` is the near-universal default and it lands at roughly 1.4:1 — under half the requirement. Crossing 3:1 takes **white/34 to white/38**, a visible mid-gray hairline that most dark designs reject on taste. That is the real tradeoff: a translucent border is a decorative separator, and any boundary that must satisfy SC 1.4.11 needs an explicit opaque token instead. The opaque equivalents are worked out per surface in [Dark Mode Colors](/dark-mode-colors/).
+
+**Step 6: glass panels over anything tinted.** \`backdrop-blur\` plus \`bg-white/8\` inherits whatever is behind it, so the same panel has a different contrast on every scroll position. Composited over the page base (#111827) that panel paints #242A38; over an info banner (#1E3A8A) it paints #304A93; over an indigo hero (#312E81), #413F8B; over an emerald banner (#064E3B), #1A5C4B.
+
+| Token | over page base #242A38 | over info banner #304A93 | over indigo hero #413F8B | over emerald banner #1A5C4B |
+| --- | ---: | ---: | ---: | ---: |
+| text.secondary #D1D5DB | 9.7:1 | 5.6:1 | 6.2:1 | 5.3:1 |
+| text.muted #9CA3AF | 5.7:1 | 3.3:1 | 3.6:1 | 3.1:1 |
+
+Muted text in that one panel ranges from 5.7:1 to 3.1:1 depending only on what the user scrolled past. **A translucent surface over variable content has no single contrast value, so it cannot be certified.** Give any glass panel that carries text a floor: composite it over an opaque base first (\`bg-slate-900/95\` rather than \`bg-white/8\`), or promote its text to \`text.secondary\`, which stays above AA across every backdrop in the table.
+
+**Two things to take from this section.** First, the audit target is the composited hex, not the declaration — compute it once per surface with the snippet below and paste it into the [Contrast Checker](/contrast-checker/). Second, translucency trades auditability for aesthetics: opaque surfaces let a token file be verified in CI, translucent ones move the real value to paint time where no static tool can see it. If you keep translucency, the surface list from step 1 of the audit workflow has to be read with an eyedropper from the running product, not from source. For the enforced-token version of this problem, see [Accessible Color Token System](/accessible-color-token-system/).`,
     testingMethods: `**The dark-mode contrast test most teams skip: measure on the surface the token actually lands on.**
 
 Most dark-mode audits test every text token against the page background (#111827) and stop there. In a real dashboard, muted text rarely sits on the page background. It sits on a card, inside a raised panel, or on top of a tinted status banner. Each of those surfaces is lighter than the base, so every ratio drops.
@@ -980,7 +1064,8 @@ Every row in the table above obeys this exactly: 12.0 × 0.58 = 7.0, 9.8 × 0.58
 - [ ] Link token verified on the lightest surface it appears on
 - [ ] Hover, focus, active, and disabled measured for every interactive token
 - [ ] Borders score 3:1 against both adjacent surfaces, not just the darker one
-- [ ] Semi-transparent overlays measured composited, not as their raw rgba value
+- [ ] Semi-transparent overlays measured composited, not as their raw rgba value — bg-white/5 on #111827 paints as #1D2432, and bg-white/[0.16] drops #9CA3AF to 4.3:1
+- [ ] Nested translucent surfaces resolved to their real depth: three stacked bg-white/5 layers paint #333946, where muted text reads 4.6:1
 - [ ] Checked on a real OLED phone at 40% brightness
 
 Cross-check any pair from this matrix in the [Contrast Checker](/contrast-checker/). For 50 pre-measured dark-surface pairs you can paste straight into tokens, see [High Contrast Color Combinations](/high-contrast-color-combinations/). For the light-mode equivalents of these text rules, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/), and for the five button states see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). To turn this matrix into enforced tokens, see [Accessible Color Token System](/accessible-color-token-system/), and to compare the tools that automate it, see [WCAG Contrast Checker Tool](/wcag-contrast-checker-tool/). Chart colors on dark surfaces need their own treatment: see [Accessible Data Visualization](/accessible-data-visualization/) and [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). Full resource set: [Color Accessibility Hub](/color-accessibility-hub/).`,
@@ -1155,6 +1240,40 @@ function contrast(hexA: string, hexB: string): number {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
+/* ── Composite semi-transparent surfaces before measuring ──
+   A card declared as rgba(255,255,255,0.08) over #111827 is painted as
+   #242A38. That hex appears nowhere in the token file, so any audit that
+   reads CSS alone measures against the wrong background. Resolve it first. */
+function composite(fgHex: string, alpha: number, bgHex: string): string {
+  const parse = (hex: string) =>
+    hex.replace('#', '').match(/.{2}/g)!.map(v => parseInt(v, 16));
+  const f = parse(fgHex);
+  const b = parse(bgHex);
+  return (
+    '#' +
+    [0, 1, 2]
+      .map(i => Math.round(alpha * f[i] + (1 - alpha) * b[i]))
+      .map(v => v.toString(16).padStart(2, '0').toUpperCase())
+      .join('')
+  );
+}
+
+/* Nested translucency stacks: bg-white/5 inside bg-white/5 is not
+   the same surface. Fold the chain outermost-first. */
+function compositeStack(
+  layers: Array<{ color: string; alpha: number }>,
+  bgHex: string,
+): string {
+  return layers.reduce((bg, l) => composite(l.color, l.alpha, bg), bgHex);
+}
+
+const PAGE_BASE = '#111827';
+const cardTranslucent = composite('#FFFFFF', 0.08, PAGE_BASE);        // #242A38
+const nestedTranslucent = compositeStack(                            // #333946
+  [{ color: '#FFFFFF', alpha: 0.05 }, { color: '#FFFFFF', alpha: 0.05 }, { color: '#FFFFFF', alpha: 0.05 }],
+  PAGE_BASE,
+);
+
 const darkTokenPairs: TokenPair[] = [
   { name: 'body-on-base',      fg: '#F9FAFB', bg: '#111827', min: 7 },
   { name: 'secondary-on-base', fg: '#D1D5DB', bg: '#111827', min: 4.5 },
@@ -1165,6 +1284,11 @@ const darkTokenPairs: TokenPair[] = [
   { name: 'error-on-base',     fg: '#FCA5A5', bg: '#111827', min: 4.5 },
   { name: 'success-on-base',   fg: '#6EE7B7', bg: '#111827', min: 4.5 },
   { name: 'btn-label-on-blue', fg: '#FFFFFF', bg: '#2563EB', min: 4.5 },
+  /* The rows static audits miss: composited translucent surfaces. */
+  { name: 'muted-on-white/8-card',   fg: '#9CA3AF', bg: cardTranslucent,   min: 4.5 },
+  { name: 'muted-on-nested-x3',      fg: '#9CA3AF', bg: nestedTranslucent, min: 4.5 },
+  { name: 'alpha-text-50-on-card',   fg: composite('#FFFFFF', 0.50, cardTranslucent), bg: cardTranslucent, min: 4.5 },
+  { name: 'border-white/10-on-card', fg: composite('#FFFFFF', 0.10, cardTranslucent), bg: cardTranslucent, min: 3 },
 ];
 
 console.table(
@@ -1187,6 +1311,8 @@ console.table(
       "Run Chrome DevTools → Rendering → Emulate prefers-color-scheme: dark AND Emulate vision deficiencies simultaneously. That combo catches the worst failures.",
       "APCA polarity trap: a token scoring WCAG 2 AA at 4.5:1 in dark mode reads perceptually weaker than the same 4.5:1 in light mode. Target 7:1 / Lc -75 for dark-mode body copy to feel equivalent to light-mode AA. See [Color Accessibility Guidelines](/color-accessibility-guidelines/) for the full legal and compliance picture.",
       "Auto-dark detection: if your CSS uses @media (prefers-color-scheme: dark), test BOTH system-level toggle AND manual in-app toggle paths. Some users override OS preference — your token set must respond to the active value, not assume OS = user intent.",
+      "Translucent surfaces cannot be audited from source. `bg-white/5` over `#111827` paints `#1D2432`; nest it three deep and you get `#333946`, where `#9CA3AF` muted text falls to 4.6:1. Composite every overlay to a real hex before measuring, and treat `border-white/10` (1.4:1) as decoration — SC 1.4.11 needs roughly white/34 on a dark base.",
+      "Set a floor under glass panels. A `backdrop-blur` panel at `bg-white/8` inherits whatever scrolls behind it: muted text inside it swings from 5.7:1 over the page base to 3.1:1 over an emerald banner. Use `bg-slate-900/95` over an opaque base, or promote the text to `#D1D5DB`, which holds above AA on every backdrop.",
     ],
     keyStat: "In a 30-site dark-mode audit, 73% had at least one text token below WCAG AA. The #1 offender was secondary/muted text — not accent colors. When re-tested with APCA polarity correction, 89% of those sites fell below the recommended Lc -75 for body text.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
