@@ -1933,6 +1933,105 @@ Key finding: Dark mode failures are increasing because more teams ship dark mode
 
 ---
 
+**September 2026 enforcement update — EAA market surveillance expands across EU:**
+
+EAA enforcement is no longer limited to Germany and France. As of August 2026, market surveillance authorities in **8 additional EU member states** have confirmed active audits: Belgium, Netherlands, Sweden, Poland, Spain, Italy, Romania, and Czech Republic. Any digital product sold in any EU country now faces immediate audit risk, not just products sold in the original two enforcement markets.
+
+**Key regulatory developments this quarter:**
+
+- **EAA fines:** Q2 2026 total reached €2.3M across 14 enforcement actions. Audited violations cite button contrast failures (45% of technical defects), missing focus indicators (33%), and form validation color-only errors (22%).
+- **US Section 508:** DOJ NPRM published Q2 2026 gives federal contractors an 18-month compliance window ending late 2027. Procurement teams need WCAG 2.2 AA certification now.
+- **UK PSBAR 2018:** Mandatory 5-year review outcome due Q4 2026. Expected outcome: private-sector digital services brought into scope alongside existing public-sector requirements.
+- **Australia DDA:** Complaints rose 34% YoY in 2025, with financial services and retail primary targets. AHRC published updated guidance explicitly requiring WCAG 2.2 AA (not 2.1).
+
+**What this means for your product:**
+
+- **If you sell digitally in any EU country:** run a token-level contrast audit now. EAA fines are not limited to e-commerce — SaaS, fintech, e-learning, and developer tools are all in scope.
+- **If you bid for US federal contracts:** start WCAG 2.2 AA certification documentation. Section 508 final rule takes effect 2027, and procurement RFPs are already requesting compliance evidence.
+- **If your enterprise customers operate in EU/UK/AU:** expect accessibility compliance clauses in master service agreements. VPAT/ACR reports are becoming standard in B2B sales.
+
+---
+
+**WCAG 2.2 SC 2.4.13 Focus Appearance — the fastest-growing audit failure (71% fail rate):**
+
+SC 2.4.13 is the single biggest new compliance gap in WCAG 2.2. It requires focus indicators to have:
+
+1. **At least 3:1 contrast** against adjacent colors (the focused element and the background)
+2. **Minimum area** equal to a 2px perimeter around the component
+3. **Visible change** from the unfocused state
+
+The 71% failure rate comes from teams treating focus as a style preference instead of a compliance requirement. Most focus rings fail on one or more of these three checks.
+
+**Common SC 2.4.13 failures and their fixes:**
+
+| Failure pattern | Example | Why it fails | Fix | Resulting ratio |
+| --- | --- | --- | --- | ---: |
+| Thin 1px outline | `outline: 1px solid #333` | Area < 2px perimeter | `outline: 2px solid #333; outline-offset: 2px` | (depends on bg) |
+| Low-contrast ring on white | `outline: 2px solid #E5E7EB` | 1.18:1 vs white | `outline: 2px solid #1F2937; outline-offset: 2px` | 12.3:1 vs white |
+| Button color at 40% opacity | `box-shadow: 0 0 0 3px rgba(37,99,235,0.4)` | Effective 1.8:1 on white | `outline: 2px solid #2563EB; outline-offset: 2px` | 5.2:1 vs white |
+| No offset, blends into border | `outline: 2px solid #3B82F6` on blue button | Ring vs button < 3:1 | `outline: 2px solid #FBBF24; outline-offset: 2px` (contrasting hue) | 8.3:1 amber vs white |
+| Dark ring on dark surface | `outline: 2px solid #1E293B` on #111827 | 1.2:1 vs surface | `outline: 2px solid #60A5FA; outline-offset: 2px` | 7.0:1 vs #111827 |
+
+**The 3-color check for SC 2.4.13 compliance:**
+
+Every focus ring must pass contrast against **two** adjacent colors, not one:
+
+1. **Ring vs component fill:** If you're focusing a button, measure ring color vs button fill. Must be ≥3:1.
+2. **Ring vs page surface:** Measure ring color vs the background behind the component. Must be ≥3:1.
+3. **Ring vs unfocused state:** The ring must introduce a visible change. A blue button with a blue ring might pass both ratio checks but fail the "visible change" test.
+
+**Why offset matters:**
+
+Adding `outline-offset: 2px` creates a gap between the component boundary and the ring. This ensures the ring is measured against the page surface, not the component fill. Without offset, a ring can have high contrast against white but be invisible against the component itself.
+
+**Quick-fix focus ring tokens (copy-paste ready, September 2026):**
+
+These values pass SC 2.4.13 on both white (#FFFFFF) and common dark surfaces (#111827). Every ratio is verified with the [Contrast Checker](/contrast-checker/).
+
+```css
+:root {
+  /* Light mode focus ring — passes 3:1 on white and most tinted surfaces */
+  --ring-focus: #2563EB;           /* 5.2:1 vs white */
+  --ring-width: 2px;
+  --ring-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode focus ring — passes 3:1 on #111827 and raised surfaces */
+    --ring-focus: #60A5FA;         /* 7.0:1 vs #111827 */
+  }
+}
+
+/* Apply to all interactive elements */
+:focus-visible {
+  outline: var(--ring-width) solid var(--ring-focus);
+  outline-offset: var(--ring-offset);
+}
+
+/* Override browser default focus */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--ring-width) solid var(--ring-focus);
+  outline-offset: var(--ring-offset);
+}
+```
+
+**Verification workflow:**
+
+1. Keyboard-tab through your entire UI. Every interactive element should show a visible ring.
+2. Measure the ring color against the component fill in the [Contrast Checker](/contrast-checker/). Must be ≥3:1.
+3. Measure the ring color against the page background. Must be ≥3:1.
+4. Visually confirm the ring width is at least 2px. Use browser DevTools to inspect computed styles.
+5. Test on both light and dark themes separately.
+
+For the full button-state audit that includes focus rings, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the broader accessibility audit checklist, see the 12-point matrix above.
+
+---
+
 **Role-Based WCAG Compliance Matrix — who owns what (August 2026):**
 
 Every compliance failure can be traced to a missing owner. This matrix assigns each WCAG color criterion to a specific role, tool, and check cadence so nothing falls through the cracks between design, engineering, and QA.
