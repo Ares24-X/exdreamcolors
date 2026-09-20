@@ -14,7 +14,7 @@
 import type { ContentBlock } from "@/data/article-content";
 
 /** The ContentBlock field a section renders from. */
-export type SectionSource = "rwe" | "testing" | "chart" | "code" | "tips" | "media";
+export type SectionSource = "rwe" | "testing" | "chart" | "code" | "tips" | "media" | "icon_buttons";
 
 /**
  * Explicit section-name -> content-field map. Any name absent from this map
@@ -47,6 +47,9 @@ const SECTION_SOURCE: Record<string, SectionSource> = {
   // Sections backed by `overMedia`
   over_media: "media",
   text_over_image: "media",
+
+  // Sections backed by `iconButtonsData`
+  icon_buttons: "icon_buttons",
 };
 
 export function sectionSource(type: string): SectionSource {
@@ -65,6 +68,8 @@ function hasContent(source: SectionSource, content: ContentBlock): boolean {
       return Boolean(content.proTips?.length);
     case "media":
       return Boolean(content.overMedia?.trim());
+    case "icon_buttons":
+      return Boolean(content.iconButtonsData?.trim());
     case "rwe":
     default:
       return Boolean(content.realWorldExamples?.trim());

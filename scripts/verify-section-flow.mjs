@@ -52,6 +52,7 @@ const SECTION_SOURCE = {
   next_steps: "tips",
   over_media: "media",
   text_over_image: "media",
+  icon_buttons: "icon_buttons",
 };
 
 const sectionSource = (type) => SECTION_SOURCE[type] ?? "rwe";
@@ -63,6 +64,7 @@ const FIELD_FOR_SOURCE = {
   code: "codeSnippet",
   tips: "proTips",
   media: "overMedia",
+  icon_buttons: "iconButtonsData",
 };
 
 /**
@@ -83,7 +85,7 @@ function parseArticles() {
     const flow = flowMatch ? [...flowMatch[1].matchAll(/"([a-zA-Z_]+)"/g)].map((x) => x[1]) : [];
 
     const present = new Set();
-    for (const field of ["realWorldExamples", "testingMethods", "chartAudit", "codeSnippet", "overMedia", "proTips"]) {
+    for (const field of ["realWorldExamples", "testingMethods", "chartAudit", "codeSnippet", "overMedia", "proTips", "iconButtonsData"]) {
       if (new RegExp(`^\\s+${field}\\??:`, "m").test(block)) present.add(field);
     }
     return { slug: mark.slug, flow, present };
