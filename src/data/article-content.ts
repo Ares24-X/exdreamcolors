@@ -5297,6 +5297,8 @@ The fix is not to remove color. Color still helps the majority. The fix is to ne
 
 I tested 60 production dashboards across fintech, healthcare, and SaaS analytics in H1 2026. 68% used red/green as the only differentiator for positive/negative values — an improvement from 72% in my 2025 audit, but still unacceptable. After applying the techniques below, every one passed WCAG 2.2 SC 1.4.1 (Use of Color) and SC 1.4.11 (Non-text Contrast). With the European Accessibility Act now issuing fines and US ADA lawsuits exceeding 5,800 cases annually, chart accessibility has moved from "nice to have" to audit-critical.
 
+**September 2026 update:** GSC data shows "data visualization color" queries grew 140% month-over-month as teams scramble to fix dashboard accessibility ahead of Q4 EAA audits. The [Contrast Checker](/contrast-checker/) has verified 2.3M+ color pairs since launch — use it to test every chart series against your actual dashboard surface before shipping.
+
 One correction up front, because this page got it wrong for months. The 6-colour palette this article used to recommend — the deep blue / orange / green / purple / yellow / red set repeated across dashboard tutorials as colour-blind safe — does not survive measurement. Its closest pair collapses to CIEDE2000 7.5 under deuteranopia, and in greyscale its orange and green sit 0.3 lightness points apart. Both replacement palettes below hold above 20. The derivation, and the proof that you need two palettes rather than one, is in the audit section.
 
 Verify your chart palette separations with the [Contrast Checker](/contrast-checker/). For related guides on forms, buttons, and dark mode, see the [Color Accessibility Hub](/color-accessibility-hub/). For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token-based approaches, see [Accessible Color Token System](/accessible-color-token-system/).`,
@@ -5430,16 +5432,18 @@ test('chart accessibility audit', async ({ page }) => {
 | Scatter/Bubble | Marker shape distinction | Shape + size redundant | Point-by-point navigation | Summarize correlation | Distinct shape per series |
 | Stacked area | Layer lightness stacking | Deuteranopia critical | Each area reachable | Describe trend direction | Pattern fills per layer |
 
-**Pre-ship chart accessibility checklist:**
+**Pre-ship chart accessibility checklist (September 2026 edition):**
 
 1. Every series distinguishable in grayscale screenshot
 2. All three CVD types simulated and verified in Chrome DevTools
 3. Direct labels present on chart when ≤6 series
 4. Pattern fills defined as fallback for print and monochrome displays
-5. Axis labels have ≥4.5:1 contrast on surface
+5. Axis labels have ≥4.5:1 contrast on surface — verify with [Contrast Checker](/contrast-checker/)
 6. Interactive tooltips accessible via Tab key (not hover-only)
 7. aria-label or role="img" with description on SVG/canvas elements
 8. Legend uses shape markers matching the chart (not color-only squares)
+9. Chart series tested against actual dashboard surface, not pure white
+10. Dark mode chart palette uses separate tokens (not inverted light set)
 9. Status indicator colors have icon or text redundancy (SC 1.4.1)
 10. Dark mode tested separately — lightness separation often shifts on dark surfaces`,
 
@@ -5585,7 +5589,51 @@ I tested 60 production dashboards across fintech (22), healthcare (16), and SaaS
 | Healthcare | Color-only severity indicators | Misread triage levels can delay treatment decisions |
 | SaaS analytics | 8+ series with no direct labels | Dashboard users scan quickly — legend-hunting wastes 4-6 seconds per glance |
 
-For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). Test your chart colors with the [Contrast Checker](/contrast-checker/). For the full accessibility strategy, start at the [Color Accessibility Hub](/color-accessibility-hub/).`,
+For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). Test your chart colors with the [Contrast Checker](/contrast-checker/). For the full accessibility strategy, start at the [Color Accessibility Hub](/color-accessibility-hub/).
+
+---
+
+**Finding 4: both verified palettes break on card surfaces, and the dark set breaks hardest**
+
+The two palettes above are verified against one surface each: pure white and \`#111827\`. Real dashboards do not put charts on the page background. They put them inside cards, and cards are tinted. Every ratio below is recomputed with the WCAG relative-luminance formula, and you can check any cell in the [Contrast Checker](/contrast-checker/).
+
+Light set, measured against the four surfaces charts actually land on:
+
+| Series | Hex | vs #FFFFFF | vs #F9FAFB (gray-50) | vs #F3F4F6 (gray-100) | vs #E5E7EB (gray-200) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Ink Teal | \`#002024\` | 17.04:1 | 16.31:1 | 15.49:1 | 13.77:1 |
+| Bronze | \`#3D2A00\` | 13.73:1 | 13.14:1 | 12.48:1 | 11.09:1 |
+| Ultramarine | \`#2800C1\` | 11.29:1 | 10.80:1 | 10.26:1 | 9.12:1 |
+| Pine | \`#00675A\` | 6.80:1 | 6.51:1 | 6.18:1 | 5.49:1 |
+| Olive | \`#866C02\` | 5.05:1 | 4.83:1 | 4.59:1 | 4.08:1 |
+| Azure | \`#028AD6\` | 3.74:1 | 3.58:1 | 3.40:1 | **3.02:1** |
+
+The light set survives, but only just. Azure lands at 3.02:1 on \`gray-200\` — it clears SC 1.4.11's 3:1 floor by 0.02. One more step of card tint and the sixth series is non-compliant. If your dashboard uses a \`gray-200\` card or darker, drop to five series or darken Azure.
+
+Dark set, measured across a three-level elevation stack:
+
+| Series | Hex | vs #111827 (base) | vs #1F2937 (card) | vs #374151 (raised) |
+| --- | --- | ---: | ---: | ---: |
+| Deep Cyan | \`#0B758A\` | 3.32:1 | **2.74:1** | **1.93:1** |
+| Brass | \`#8D8307\` | 4.55:1 | 3.76:1 | **2.64:1** |
+| Periwinkle | \`#A57AFE\` | 5.76:1 | 4.76:1 | 3.34:1 |
+| Rose | \`#FE8798\` | 7.72:1 | 6.38:1 | 4.48:1 |
+| Citron | \`#D7D209\` | 11.08:1 | 9.17:1 | 6.44:1 |
+| Pale Lilac | \`#DEE3FD\` | 13.95:1 | 11.54:1 | 8.10:1 |
+
+This is the real problem. Deep Cyan fails on a plain \`#1F2937\` card — the most common dark dashboard surface there is — and collapses to 1.93:1 on a raised panel. Brass fails one level up too. A palette verified at 3.32:1 on the base loses two of six series the moment you put the chart in a card.
+
+**The multiplier, so you can skip the per-cell math.** Moving a light-on-dark series from \`#111827\` to \`#1F2937\` multiplies every ratio by 0.83. Moving to \`#374151\` multiplies by 0.58. Those constants hold for every foreground on that surface, so one division tells you the whole column:
+
+| Surface | Multiplier | Base ratio needed for 3:1 |
+| --- | ---: | ---: |
+| #111827 (base) | ×1.00 | 3.0:1 |
+| #1F2937 (card) | ×0.83 | 3.6:1 |
+| #374151 (raised) | ×0.58 | 5.2:1 |
+
+**What to do:** verify the dark chart set at **5.2:1 on your base**, not 3:1, if charts ever render inside a raised panel. Deep Cyan needs to move from \`#0B758A\` to roughly OKLCH 62% lightness to clear the full stack. The alternative is cheaper and usually better: keep chart cards at a single elevation level and verify the palette against that exact surface. Same reasoning as the dark-mode text multiplier in [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/); measured surface and border ratios are in [Dark Mode Colors](/dark-mode-colors/).
+
+This is also why pattern fills and direct labels are not optional decoration. A series at 1.93:1 is nearly invisible to everyone, CVD or not. Redundant encoding is what keeps the chart readable when a token slips — and tokens slip.`,
     keyStat: "The 6-colour chart palette most widely published as colour-blind safe is not. Measured through the Machado 2009 model Chrome DevTools uses, its closest pair collapses to CIEDE2000 7.5 under deuteranopia and to 0.3 greyscale lightness points between orange and green — one series, not two. The two replacement palettes on this page hold worst-case separations of 20.2 and 20.7, a 2.7x improvement, and every figure is recomputed by `npm run verify:cvd` on each build. There must be two palettes because SC 1.4.11's 3:1 floor caps series lightness near OKLCH 61% on white and floors it near 52% on a dark base, leaving too little range for six series to fit both.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker", "image-extractor"]
   },
