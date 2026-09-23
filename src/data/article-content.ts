@@ -308,7 +308,7 @@ I surveyed 30 design teams (SaaS, fintech, e-commerce) on where they run contras
 | --- | --- | ---: | --- | --- |
 | Body text | <18px, weight 400 | 4.5:1 | SC 1.4.3 | Testing against white when bg is gray-50 |
 | Body text | <18px, weight 300 | 4.5:1 (target 7:1) | SC 1.4.3 | Thin weight needs more contrast perceptually |
-| Large text | >=18px regular OR >=14px bold | 3:1 | SC 1.4.3 | Assuming all headings are "large" |
+| Large text | >=24px regular OR >=18.66px bold | 3:1 | SC 1.4.3 | Assuming all headings are "large" (the boundary is 18pt/14pt = 24px/18.66px, not 18px/14px) |
 | Button label | Typically 14-16px, weight 500+ | 4.5:1 | SC 1.4.3 | Only checking default, ignoring hover/disabled |
 | Button boundary | Border or fill vs adjacent surface | 3:1 | SC 1.4.11 | Forgetting ghost/outline button variants |
 | Icon (informational) | Conveys meaning without text | 3:1 | SC 1.4.11 | Decorative icons get a pass; functional ones do not |
@@ -461,7 +461,7 @@ auditTokenMatrix(textTokens, surfaceTokens);`
       "Use the APCA Lc column as a future-proofing signal. If a pair passes WCAG 2 at 4.5:1 but scores below Lc 75, it will likely fail under WCAG 3.0. Fix it now while the cost is low.",
       "Build a contrast matrix, not spot checks. Every text token x every surface it can appear on = one matrix. Audit the matrix quarterly. New tokens get added to the matrix before they ship.",
       "Integrate contrast into your PR template. Add a checkbox: All new/changed color tokens pass contrast audit. This single line catches 80% of regressions because it forces the developer to actually check.",
-      "Keep a restricted-tokens list. Some tokens pass only for large text (3:1 to 4.49:1). Document them with a usage constraint: fg-muted: minimum 18px or 14px bold. Never use for body copy. The design system enforces this.",
+      "Keep a restricted-tokens list. Some tokens pass only for large text (3:1 to 4.49:1). Document them with a usage constraint: fg-muted: minimum 24px, or 18.66px bold. Never use for body copy. WCAG defines large text in points (18pt/14pt bold), which is 24px/18.66px in CSS — not 18px/14px, a misreading that hands the relaxed ratio to sizes needing 4.5:1. The design system enforces this.",
       "Run automated checks on EVERY page, not just the homepage. In my 25-site audit, 60% of failures were on secondary pages (settings, help docs, empty states) that nobody manually reviewed."
     ],
     keyStat: "84% of accessibility lawsuits cite color contrast as a primary or contributing failure (UsableNet 2025 report). A single contrast checker run on your token set catches the exact issue type behind the majority of legal complaints.",
@@ -586,7 +586,7 @@ Validate your own token pairs with the [Contrast Checker](/contrast-checker/). F
 | UI role | Minimum | Better target | Token example | Measured ratio | Notes |
 | --- | ---: | ---: | --- | ---: | --- |
 | Body text (>2 lines) | 4.5:1 | 7:1 | #374151 on #FFFFFF | 10.3:1 | Most critical — readers spend the bulk of their time here |
-| Large heading (≥18px) | 3:1 | 4.5:1 | #1F2937 on #FFFFFF | 14.7:1 | Thin weights (300) need higher ratio to compensate |
+| Large heading (≥24px) | 3:1 | 4.5:1 | #1F2937 on #FFFFFF | 14.7:1 | Thin weights (300) need higher ratio to compensate; 18-23px is NOT large text |
 | Secondary/muted text | 4.5:1 | 5.5:1 | #6B7280 on #FFFFFF | 4.8:1 | Danger zone — clears AA on white by 0.3, fails on #E5E7EB |
 | Caption/timestamp | 4.5:1 | 5:1 | #6B7280 on #F9FAFB | 4.6:1 | Passes on gray-50, drops to 4.4:1 on gray-100 — test actual bg |
 | Button text | 4.5:1 | 7:1 | #FFFFFF on #2563EB | 5.2:1 | Check hover, active, disabled, and focus states |
@@ -1981,8 +1981,8 @@ WCAG 2.2 defines measurable color contrast requirements for text (4.5:1), UI com
 
 | Success criterion | Element type | AA minimum | AAA target | Test method | Common failures |
 | --- | --- | ---: | ---: | --- | --- |
-| SC 1.4.3 | Normal text (<18px / <14px bold) | 4.5:1 | 7:1 | axe-core, Lighthouse | Muted gray body text (82% of sites) |
-| SC 1.4.3 | Large text (≥18px or ≥14px bold) | 3:1 | 4.5:1 | axe-core, Lighthouse | Thin-weight colored headings |
+| SC 1.4.3 | Normal text (<24px / <18.66px bold) | 4.5:1 | 7:1 | axe-core, Lighthouse | Muted gray body text (82% of sites) |
+| SC 1.4.3 | Large text (≥24px or ≥18.66px bold) | 3:1 | 4.5:1 | axe-core, Lighthouse | Thin-weight colored headings; 18-23px wrongly treated as large |
 | SC 1.4.11 | UI components (borders, icons) | 3:1 | — | Manual + axe-core 4.8+ | Form borders on gray backgrounds |
 | SC 1.4.11 | Graphical objects (charts, maps) | 3:1 | — | Manual CVD simulation | Adjacent bar chart colors |
 | SC 2.4.13 | Focus indicators | 3:1 + 2px area | — | Manual keyboard test | Thin 1px outlines, no offset |
@@ -2008,7 +2008,7 @@ WCAG 2.2 defines measurable color contrast requirements for text (4.5:1), UI com
 | # | Check | WCAG SC | Priority | Automated? | Tool |
 | ---: | --- | --- | --- | --- | --- |
 | 1 | All body text tokens ≥4.5:1 on actual backgrounds | 1.4.3 | Critical | Yes | axe-core, Lighthouse |
-| 2 | Large text (≥18px/14px bold) ≥3:1 | 1.4.3 | Critical | Yes | axe-core |
+| 2 | Large text (≥24px / 18.66px bold) ≥3:1 | 1.4.3 | Critical | Yes | axe-core |
 | 3 | UI borders and icons ≥3:1 against adjacent color | 1.4.11 | High | Partial | axe-core 4.8+ |
 | 4 | Focus ring ≥3:1 + ≥2px perimeter area | 2.4.13 | High | No | Manual keyboard test |
 | 5 | No information conveyed by color alone | 1.4.1 | High | No | Grayscale screenshot |
@@ -3183,8 +3183,8 @@ A single CSS color function — color-mix() — can replace an entire Sass color
   "color-contrast-ratio": {
     intro: "Contrast ratio is a single number that determines whether your text is readable or your buttons are invisible. Yet most developers have never calculated one manually. Understand this number — 4.5 — and you understand the line between accessible and broken.",
     sectionFlow: ["math", "testing", "fixing", "tools"],
-    realWorldExamples: "WCAG 2.1 requires 4.5:1 for normal text and 3:1 for large text (18px+ or 14px bold). AA vs AAA: 4.5 vs 7 for normal text. The difference between passing and failing is often just 5% more lightness on your text color.",
-    proTips: ["Large text (18px+) only needs 3:1 — use this to your advantage with headings.", "Pure black (#000) on pure white (#FFF) has a 21:1 ratio. Great for accessibility, terrible for eye strain. Target 7-12:1 for long-form reading."],
+    realWorldExamples: "WCAG 2.1 requires 4.5:1 for normal text and 3:1 for large text. Large text means 18pt regular or 14pt bold, which is 24px and 18.66px in CSS — not 18px, a common unit slip that relaxes the requirement on sizes that still need 4.5:1. AA vs AAA: 4.5 vs 7 for normal text. The difference between passing and failing is often just 5% more lightness on your text color.",
+    proTips: ["Large text only needs 3:1, but the boundary is 24px regular (18pt) or 18.66px bold (14pt) — not 18px. Use the relaxed ratio on genuine display headings; 18-23px regular still needs 4.5:1.", "Pure black (#000) on pure white (#FFF) has a 21:1 ratio. Great for accessibility, terrible for eye strain. Target 7-12:1 for long-form reading."],
     toolsMention: ["contrast-checker"],
   },
 

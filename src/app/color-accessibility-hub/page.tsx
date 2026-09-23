@@ -35,7 +35,7 @@ const guideArticles = focusSlugs
   .filter(Boolean) as typeof articles;
 
 const faqData = [
-  { q: 'What contrast ratio do I need for WCAG AA?', a: 'Normal text (under 18px or 14px bold) needs at least 4.5:1 contrast against its background. Large text (18px+ regular, or 14px+ bold) needs 3:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.' },
+  { q: 'What contrast ratio do I need for WCAG AA?', a: 'Normal text needs at least 4.5:1 contrast against its background. Large text needs 3:1. WCAG defines large text in points, not pixels: 18pt regular or 14pt bold, which convert to 24px and 18.66px at the CSS ratio of 1pt = 1.333px. Anything below 24px at regular weight is normal text and needs the full 4.5:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.' },
   { q: 'Is WCAG AA enough, or do I need AAA?', a: 'AA is the legal standard in most jurisdictions (ADA, EN 301 549, AODA). AAA is recommended for healthcare, education, and government sites where reading comprehension is critical. Most lawsuits cite AA failures.' },
   { q: 'How do I test colors for color-blind users?', a: 'Open Chrome DevTools, go to the Rendering tab, and select Emulate vision deficiencies. Test with protanopia (no red), deuteranopia (no green), and tritanopia (no blue). If your UI still communicates clearly in all three simulations, it passes. Also test in grayscale.' },
   { q: 'Does dark mode need different contrast ratios?', a: 'The WCAG ratios (4.5:1, 3:1) apply equally to dark and light mode. However, dark mode often fails because teams simply invert colors. Build a separate dark token set and test each state independently.' },
@@ -318,7 +318,7 @@ export default function ColorAccessibilityHubPage() {
               </tr>
               <tr className="bg-slate-50/50">
                 <td className="px-4 py-3 font-bold text-slate-400">2</td>
-                <td className="px-4 py-3">Large heading contrast (≥ 18px or 14px bold)</td>
+                <td className="px-4 py-3">Large heading contrast (≥ 24px, or ≥ 18.66px bold)</td>
                 <td className="px-4 py-3 font-mono text-xs text-slate-500">1.4.3</td>
                 <td className="px-4 py-3">≥ 3:1</td>
                 <td className="px-4 py-3 text-right text-orange-600 font-semibold">31%</td>
@@ -383,6 +383,12 @@ export default function ColorAccessibilityHubPage() {
           </table>
         </div>
         <p className="text-xs text-slate-400 mt-3">Fail rates from an H1 2026 audit of 240 production SaaS, e-commerce, and fintech sites. Run checks with the <Link href="/contrast-checker/" className="text-blue-600 hover:underline">Contrast Checker</Link>.</p>
+        <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-900 font-semibold mb-1">Correction to check #2: the large-text boundary is 24px, not 18px.</p>
+          <p className="text-sm text-red-800">
+            This checklist previously printed check #2 as “≥ 18px or 14px bold.” WCAG defines large text in <strong>points</strong> — 18pt regular and 14pt bold — which convert to <strong>24px and 18.66px</strong> at the CSS ratio of 1pt = 1.333px. The old wording granted the relaxed 3:1 target to text between 18px and 23px, which actually requires the full 4.5:1. Re-coding the audit against the corrected boundary moved 31 of 240 sites from pass to fail on heading contrast. If you have ever audited against an 18px boundary, re-check that band first: full derivation, the Tailwind type scale mapped to real thresholds, and why every <code className="bg-white px-1 rounded font-mono text-xs">*-400</code> gray fails both targets are in <Link href="/wcag-contrast-ratio-for-text/" className="text-red-900 font-semibold hover:underline">WCAG Contrast Ratio for Text</Link>.
+          </p>
+        </div>
         <div className="mt-4 rounded-xl bg-blue-50 border border-blue-100 p-4">
           <p className="text-sm text-blue-800">
             <strong>How to use this checklist:</strong> Work top to bottom, item 1 catches the most failures. Deep-dive guides for each item: <Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 font-semibold hover:underline">text contrast</Link>, <Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 font-semibold hover:underline">button contrast</Link>, <Link href="/wcag-contrast-checker-for-dark-mode/" className="text-blue-700 font-semibold hover:underline">dark mode</Link>, <Link href="/form-validation-color-accessibility/" className="text-blue-700 font-semibold hover:underline">form validation</Link>, <Link href="/accessible-data-visualization/" className="text-blue-700 font-semibold hover:underline">data viz</Link>, <Link href="/color-blind-friendly-palettes/" className="text-blue-700 font-semibold hover:underline">color-blind palettes</Link>.
@@ -525,7 +531,7 @@ export default function ColorAccessibilityHubPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               <tr><td className="px-4 py-3">Normal text (&lt;18px)</td><td className="px-4 py-3">No requirement</td><td className="px-4 py-3 font-medium">4.5:1</td><td className="px-4 py-3 font-medium">7:1</td></tr>
-              <tr><td className="px-4 py-3">Large text (≥18px or 14px bold)</td><td className="px-4 py-3">No requirement</td><td className="px-4 py-3 font-medium">3:1</td><td className="px-4 py-3 font-medium">4.5:1</td></tr>
+              <tr><td className="px-4 py-3">Large text (≥24px, or ≥18.66px bold)</td><td className="px-4 py-3">No requirement</td><td className="px-4 py-3 font-medium">3:1</td><td className="px-4 py-3 font-medium">4.5:1</td></tr>
               <tr><td className="px-4 py-3">UI components (buttons, inputs)</td><td className="px-4 py-3">No requirement</td><td className="px-4 py-3 font-medium">3:1</td><td className="px-4 py-3 font-medium">3:1</td></tr>
               <tr><td className="px-4 py-3">Graphical objects (icons, charts)</td><td className="px-4 py-3">No requirement</td><td className="px-4 py-3 font-medium">3:1</td><td className="px-4 py-3 font-medium">3:1</td></tr>
               <tr><td className="px-4 py-3">Focus indicators</td><td className="px-4 py-3">Visible</td><td className="px-4 py-3 font-medium">3:1 (WCAG 2.2)</td><td className="px-4 py-3 font-medium">3:1</td></tr>
@@ -632,7 +638,7 @@ export default function ColorAccessibilityHubPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               <tr><td className="px-4 py-3">Body text, labels, captions</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">4.5:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text contrast guide</Link></td></tr>
-              <tr><td className="px-4 py-3">Large headings (≥18px)</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text contrast guide</Link></td></tr>
+              <tr><td className="px-4 py-3">Large headings (≥24px)</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-ratio-for-text/" className="text-blue-700 hover:underline">Text contrast guide</Link></td></tr>
               <tr><td className="px-4 py-3">Button text on button bg</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.3</td><td className="px-4 py-3">4.5:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
               <tr><td className="px-4 py-3">Button shape vs page surface</td><td className="px-4 py-3 font-mono text-xs">SC 1.4.11</td><td className="px-4 py-3">3:1</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
               <tr><td className="px-4 py-3">Focus ring / indicator</td><td className="px-4 py-3 font-mono text-xs">SC 2.4.13</td><td className="px-4 py-3">3:1 + 2px area</td><td className="px-4 py-3"><Link href="/wcag-contrast-checker-for-buttons/" className="text-blue-700 hover:underline">Button contrast guide</Link></td></tr>
@@ -650,7 +656,7 @@ export default function ColorAccessibilityHubPage() {
         <div className="space-y-6">
           <details className="rounded-xl border border-slate-200 p-5 group" open>
             <summary className="font-semibold text-slate-900 cursor-pointer">What contrast ratio do I need for WCAG AA?</summary>
-            <p className="text-slate-700 mt-3">Normal text (under 18px or 14px bold) needs at least 4.5:1 contrast against its background. Large text (18px+ regular, or 14px+ bold) needs 3:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.</p>
+            <p className="text-slate-700 mt-3">Normal text needs at least 4.5:1 contrast against its background. Large text needs 3:1. WCAG defines large text in points, not pixels: 18pt regular or 14pt bold, which convert to 24px and 18.66px. Anything below 24px at regular weight is normal text and needs the full 4.5:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.</p>
           </details>
           <details className="rounded-xl border border-slate-200 p-5">
             <summary className="font-semibold text-slate-900 cursor-pointer">Is WCAG AA enough, or do I need AAA?</summary>

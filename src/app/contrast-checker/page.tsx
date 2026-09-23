@@ -168,13 +168,13 @@ export default function ContrastCheckerPage() {
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between">
-                      <span>Normal Text (under 18px):</span>
+                      <span>Normal Text (under 24px):</span>
                       <span className={wcag.AA.normal ? 'text-green-600' : 'text-red-600'}>
                         {wcag.AA.normal ? '✓ Pass (4.5:1+)' : '✗ Fail (need 4.5:1)'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Large Text (18px+ or 14px bold):</span>
+                      <span>Large Text (24px+ or 18.66px bold):</span>
                       <span className={wcag.AA.large ? 'text-green-600' : 'text-red-600'}>
                         {wcag.AA.large ? '✓ Pass (3:1+)' : '✗ Fail (need 3:1)'}
                       </span>
