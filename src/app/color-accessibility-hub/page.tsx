@@ -18,6 +18,8 @@ const focusSlugs = [
   'wcag-contrast-ratio-for-text',
   'wcag-contrast-checker-for-buttons',
   'wcag-contrast-checker-for-dark-mode',
+  'contrast-checker-guide',
+  'wcag-contrast-checker-tool',
   'wcag-color-accessibility',
   'color-accessibility-guidelines',
   'color-blind-friendly-palettes',
@@ -36,6 +38,7 @@ const guideArticles = focusSlugs
 
 const faqData = [
   { q: 'What contrast ratio do I need for WCAG AA?', a: 'Normal text needs at least 4.5:1 contrast against its background. Large text needs 3:1. WCAG defines large text in points, not pixels: 18pt regular or 14pt bold, which convert to 24px and 18.66px at the CSS ratio of 1pt = 1.333px. Anything below 24px at regular weight is normal text and needs the full 4.5:1. UI components like buttons and form inputs also need 3:1 against adjacent colors.' },
+  { q: 'My checker says exactly 4.5:1. Does that pass?', a: 'You cannot tell from that display. WCAG requires a ratio of at least 4.5:1 and does not round, but nearly every checker prints one decimal place, which hides up to 0.05 of error. #777777 on white measures 4.4781:1 — a real SC 1.4.3 failure — and displays as 4.5. Sweeping every neutral gray against eight common light surfaces, five of the eight have a failing gray hidden behind a 4.5 readout. The worst case is #707070 on gray-100 at 4.4998:1, which fails and still rounds to 4.50 at two decimals. Two rules fix this permanently: compute at four decimal places in your audit script, and set a team shipping floor of 4.60:1 for normal text (3.10:1 for large text and non-text, 7.10:1 for AAA) so no display rounding can ever hide a violation.' },
   { q: 'Is WCAG AA enough, or do I need AAA?', a: 'AA is the legal standard in most jurisdictions (ADA, EN 301 549, AODA). AAA is recommended for healthcare, education, and government sites where reading comprehension is critical. Most lawsuits cite AA failures.' },
   { q: 'How do I test colors for color-blind users?', a: 'Open Chrome DevTools, go to the Rendering tab, and select Emulate vision deficiencies. Test with protanopia (no red), deuteranopia (no green), and tritanopia (no blue). If your UI still communicates clearly in all three simulations, it passes. Also test in grayscale.' },
   { q: 'Does dark mode need different contrast ratios?', a: 'The WCAG ratios (4.5:1, 3:1) apply equally to dark and light mode. However, dark mode often fails because teams simply invert colors. Build a separate dark token set and test each state independently.' },
@@ -174,8 +177,8 @@ export default function ColorAccessibilityHubPage() {
       </section>
 
       <section className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 p-6">
-        <h2 className="text-xl font-bold text-slate-900 mb-3">Two results that change how you set muted text and links</h2>
-        <p className="text-slate-700 mb-4">Both are derived from the WCAG relative-luminance formula, and both stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time with the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-3">Three results that change how you set muted text and links</h2>
+        <p className="text-slate-700 mb-4">All three are derived from the WCAG relative-luminance formula, and all three stay hidden if you only test tokens against a white background. Every contrast ratio published across this site is recomputed from its hex values at build time with the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</p>
         <ul className="space-y-3 text-slate-700">
           <li className="flex gap-3">
             <span className="text-amber-700 font-bold flex-shrink-0">1.</span>
@@ -184,6 +187,10 @@ export default function ColorAccessibilityHubPage() {
           <li className="flex gap-3">
             <span className="text-amber-700 font-bold flex-shrink-0">2.</span>
             <span><strong>Underlining in-paragraph links is not a style preference.</strong> Unless body text measures at least 13.5:1 against white, no link color satisfies SC 1.4.3 and SC 1.4.1 at the same time. With a <code className="text-sm bg-white px-1 py-0.5 rounded">gray-700</code> body color the best any link can reach is 3.44:1, so color alone cannot carry the distinction. Verify your link/body combinations in the <Link href="/contrast-checker/" className="text-blue-700 font-semibold hover:underline">Contrast Checker</Link>.</span>
+          </li>
+          <li className="flex gap-3">
+            <span className="text-amber-700 font-bold flex-shrink-0">3.</span>
+            <span><strong>A displayed &ldquo;4.5&rdquo; is not proof of a pass.</strong> WCAG requires <em>at least</em> 4.5:1 and does not round, but almost every checker prints one decimal place. <code className="text-sm bg-white px-1 py-0.5 rounded">#777777</code> on white is really 4.4781:1 &mdash; a genuine SC 1.4.3 failure that displays as <code className="text-sm bg-white px-1 py-0.5 rounded">4.5</code>. Sweeping the full neutral gray range against eight common light surfaces, 5 of the 8 have a failing gray hidden behind a <code className="text-sm bg-white px-1 py-0.5 rounded">4.5</code> readout; the worst is <code className="text-sm bg-white px-1 py-0.5 rounded">#707070</code> on <code className="text-sm bg-white px-1 py-0.5 rounded">gray-100</code> at 4.4998:1, which still rounds to 4.50 at two decimals. Set a shipping floor of 4.60:1 so the display can never mislead you. Full per-surface boundary table and the framework tokens that sit on the cliff are in the <Link href="/contrast-checker-guide/" className="text-blue-700 font-semibold hover:underline">Contrast Checker Guide</Link>.</span>
           </li>
         </ul>
       </section>

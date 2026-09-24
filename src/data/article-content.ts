@@ -274,10 +274,107 @@ if (failures) {
 
 I timed the full audit workflow on 25 production design systems. Teams that run a contrast checker per-token during design review fix issues in 3 minutes average. Teams that discover the same issues in QA spend 2.4 hours per fix — 48x slower — because the color is already baked into components, documentation, and production CSS.
 
-This guide covers exactly how to use a contrast checker effectively: what to input, how to read the output, which thresholds apply to which elements, how to batch-test an entire token set, and how to integrate contrast checking into CI so failures never reach production again.
+There is a failure mode nobody warns you about, and it has nothing to do with skipping the check. It is reading the result correctly and still shipping a violation. WCAG requires a ratio of *at least* 4.5:1 and does not round. Nearly every checker displays one decimal place. So #777777 on white measures 4.4781:1 — a real SC 1.4.3 failure — and prints as \`4.5\`. I swept the full neutral gray range against eight common light surfaces at four decimal places and found this trap on five of the eight. The numbers are in the audit section below.
+
+This guide covers exactly how to use a contrast checker effectively: what to input, how to read the output, which thresholds apply to which elements, where the display rounding will lie to you, how to batch-test an entire token set, and how to integrate contrast checking into CI so failures never reach production again.
 
 Start checking now with the [Contrast Checker](/contrast-checker/). For the underlying WCAG rules, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/) and [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the full accessibility resource set, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    sectionFlow: ["workflow", "testing_methods", "code", "pro_tips", "tools"],
+    sectionFlow: ["workflow", "audit_data", "testing_methods", "code", "pro_tips", "tools"],
+    auditHeading: "The Precision Cliff: Why \"4.5:1\" On Your Screen Can Still Be A Failure",
+    chartAudit: `Almost every contrast checker, including most browser devtools, prints the ratio to one decimal place. WCAG does not round. SC 1.4.3 requires a ratio of *at least* 4.5:1, so 4.4781:1 is a failure — but it renders as \`4.5\` in any one-decimal readout, and a developer reading that display marks the token as passing.
+
+I swept every neutral gray from #404040 to #B0B0B0 against eight common light surfaces and recomputed each ratio at four decimal places. Below is the exact boundary for each surface: the lightest gray that genuinely passes, and the very next gray, which fails while displaying as a pass.
+
+**The AA boundary per surface, measured to 4 decimal places:**
+
+| Surface | Lightest gray that truly passes | Real ratio | First failing gray | Real ratio | What a 1-decimal tool shows |
+| --- | --- | ---: | --- | ---: | ---: |
+| #FFFFFF white | #767676 | 4.54:1 | #777777 | 4.48:1 | 4.5:1 |
+| #F9FAFB gray-50 | #737373 | 4.54:1 | #747474 | 4.47:1 | 4.5:1 |
+| #F3F4F6 gray-100 | #6F6F6F | 4.57:1 | #707070 | 4.50:1 | 4.5:1 |
+| #E5E7EB gray-200 | #686868 | 4.50:1 | #696969 | 4.43:1 | 4.4:1 |
+| #EFF6FF blue-50 | #707070 | 4.55:1 | #717171 | 4.48:1 | 4.5:1 |
+| #FEF2F2 red-50 | #707070 | 4.53:1 | #717171 | 4.46:1 | 4.5:1 |
+| #ECFDF5 green-50 | #737373 | 4.50:1 | #747474 | 4.44:1 | 4.4:1 |
+| #FFFBEB amber-50 | #747474 | 4.51:1 | #757575 | 4.44:1 | 4.4:1 |
+
+Five of the eight surfaces have a failing gray that displays as \`4.5\`. The worst case is #707070 on gray-100: the true ratio is 4.4998:1, which fails by two ten-thousandths and rounds to 4.50 even at two decimals. On gray-200, green-50, and amber-50 the rounding happens to fall the safe way and the display reads 4.4 — but that is luck, not a property you can rely on.
+
+**#707070 on #F3F4F6 is the single most deceptive pair in the neutral range.** It fails SC 1.4.3, and no amount of decimal places short of four will tell you.
+
+---
+
+**The same cliff at the 3:1 and 7:1 thresholds:**
+
+SC 1.4.11 (non-text contrast) uses 3:1 and SC 1.4.6 (AAA text) uses 7:1. Both have identical rounding traps.
+
+| Threshold | Pair | Real ratio | Shown at 1 decimal | Verdict |
+| --- | --- | ---: | ---: | --- |
+| 3:1 non-text | #959595 on #FFFFFF | 3.00:1 | 3.0:1 | Fails by 0.005 |
+| 3:1 non-text | #8E8E8E on #F3F4F6 | 2.98:1 | 3.0:1 | Fails |
+| 3:1 non-text | #929292 on #F9FAFB | 2.98:1 | 3.0:1 | Fails |
+| 3:1 non-text | #858585 on #E5E7EB | 2.98:1 | 3.0:1 | Fails |
+| 7:1 AAA | #535353 on #F3F4F6 | 6.99:1 | 7.0:1 | Fails by 0.010 |
+| 7:1 AAA | #545454 on #EFF6FF | 6.96:1 | 7.0:1 | Fails |
+| 7:1 AAA | #565656 on #ECFDF5 | 6.97:1 | 7.0:1 | Fails |
+| 7:1 AAA | #575757 on #FFFBEB | 6.97:1 | 7.0:1 | Fails |
+
+#959595 on white is the cleanest illustration: 2.9953:1 against a 3:1 requirement. It is a genuine SC 1.4.11 failure for an input border or icon, and it displays as a perfect \`3.0\`.
+
+---
+
+**Where real framework tokens land on this cliff:**
+
+This is not a theoretical problem. Four widely-shipped default tokens sit inside 0.11 of the AA line on pure white, and every one of them drops below 4.5:1 the moment the surface is tinted even slightly.
+
+| System | Token | Hex | On #FFFFFF | On #F9FAFB | On #F3F4F6 | Surface where it breaks |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| Bootstrap 5 | \`$primary\` | #0D6EFD | 4.50:1 | 4.31:1 | 4.09:1 | gray-50 |
+| Bootstrap 5 | \`$danger\` | #DC3545 | 4.53:1 | 4.33:1 | 4.11:1 | gray-50 |
+| Bootstrap 5 | \`$success\` | #198754 | 4.53:1 | 4.34:1 | 4.12:1 | gray-50 |
+| Bootstrap 5 | \`.text-muted\` | #6C757D | 4.69:1 | 4.49:1 | 4.26:1 | gray-50 |
+| Material | \`blue 700\` | #1976D2 | 4.60:1 | 4.40:1 | 4.18:1 | gray-50 |
+| Tailwind | \`pink-600\` | #DB2777 | 4.60:1 | 4.40:1 | 4.18:1 | gray-50 |
+| Tailwind | \`gray-500\` | #6B7280 | 4.83:1 | 4.63:1 | 4.39:1 | gray-100 |
+| Tailwind | \`slate-500\` | #64748B | 4.76:1 | 4.55:1 | 4.32:1 | gray-100 |
+| Tailwind | \`neutral-500\` | #737373 | 4.74:1 | 4.54:1 | 4.31:1 | gray-100 |
+| Tailwind | \`red-600\` | #DC2626 | 4.83:1 | 4.62:1 | 4.39:1 | gray-100 |
+| Chakra UI | \`gray.500\` | #718096 | 4.02:1 | 3.84:1 | 3.65:1 | fails on white |
+| Bulma | \`$grey\` | #7A7A7A | 4.29:1 | 4.11:1 | 3.90:1 | fails on white |
+
+**Bootstrap's \`$primary\` passes AA on pure white by 0.001.** At 4.5014:1 it clears the bar, and it is the token used for every default link and every \`.btn-link\` label in the framework. Put that same link inside a \`.card\` with a tinted body, or on the \`bg-light\` utility, and it fails. Two Bootstrap defaults, \`$danger\` and \`$success\`, clear the line by under 0.04 and behave the same way.
+
+Ant Design's \`colorTextDescription\` is worth calling out separately because no declared-value tool measures it correctly at all. It ships as \`rgba(0,0,0,0.45)\`, not a hex. Composited on white it resolves to #8C8C8C, which is **3.36:1** — a clear AA failure for description text. On gray-50 it resolves to #89898A at 3.34:1. Any checker that reads the declared \`#000000\` reports 21:1.
+
+---
+
+**The fix: pick tokens by surface, not by palette step**
+
+Stop asking "is gray-500 accessible?" The question has no answer without a surface. Here is the lightest Tailwind neutral that clears 4.5:1 on each common surface.
+
+| Surface | gray-500 #6B7280 | gray-600 #4B5563 | gray-700 #374151 | Lightest safe choice |
+| --- | ---: | ---: | ---: | --- |
+| #FFFFFF white | 4.83:1 | 7.56:1 | 10.31:1 | gray-500 |
+| #F9FAFB gray-50 | 4.63:1 | 7.23:1 | 9.86:1 | gray-500 |
+| #F3F4F6 gray-100 | 4.39:1 | 6.87:1 | 9.37:1 | gray-600 |
+| #E5E7EB gray-200 | 3.90:1 | 6.10:1 | 8.33:1 | gray-600 |
+| #EFF6FF blue-50 | 4.44:1 | 6.94:1 | 9.47:1 | gray-600 |
+| #FEF2F2 red-50 | 4.42:1 | 6.91:1 | 9.42:1 | gray-600 |
+| #ECFDF5 green-50 | 4.59:1 | 7.17:1 | 9.78:1 | gray-500 |
+| #FFFBEB amber-50 | 4.66:1 | 7.29:1 | 9.94:1 | gray-500 |
+
+gray-500 survives white, gray-50, green-50, and amber-50. It fails on gray-100, gray-200, blue-50, and red-50. Since a helper line under a form field commonly sits on a tinted panel, and an error hint sits on red-50 by definition, **gray-600 (#4B5563) is the correct default for muted text in any system with tinted surfaces.** It clears 4.5:1 on all eight surfaces with a margin of at least 1.6, which leaves room for a brand refresh to shift a surface without silently breaking compliance.
+
+**Margin targets to adopt:**
+
+| Requirement | Do not ship below | Reason |
+| --- | ---: | --- |
+| SC 1.4.3 normal text | 4.60:1 | Absorbs 1-decimal display error and minor surface drift |
+| SC 1.4.3 large text | 3.10:1 | Same, at the 3:1 threshold |
+| SC 1.4.11 non-text | 3.10:1 | Borders and icons shift with theme tweaks |
+| SC 1.4.6 AAA text | 7.10:1 | Same, at the 7:1 threshold |
+
+Verify any row above in the [Contrast Checker](/contrast-checker/). For the point-based large-text boundary that interacts with these thresholds, see [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/). For the same analysis applied to dark surfaces, see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/). For per-state button tokens, see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For error-state tokens on red-50, see [Form Validation Color Accessibility](/form-validation-color-accessibility/). The full cluster starts at the [Color Accessibility Hub](/color-accessibility-hub/).`,
     realWorldExamples: `**How contrast checking fits into a real design-to-deploy pipeline:**
 
 I surveyed 30 design teams (SaaS, fintech, e-commerce) on where they run contrast checks. The teams with zero accessibility regressions in production ALL share one trait: they check contrast at the token definition stage, not after components are built.
@@ -375,12 +472,33 @@ WCAG 2 uses a single ratio. APCA (for WCAG 3.0) uses Lc (Lightness Contrast) whi
 | Eyedropping colors from a screenshot | JPEG compression shifts colors by 2-5 points | Copy the hex from code/Figma, not a screenshot |
 | Checking only light mode | Dark mode has different surfaces | Run the full matrix for both themes |
 | Testing one state only | Hover/focus/disabled can fail while default passes | Check every interactive state separately |
-| Ignoring adjacent-color contrast | Links need 3:1 vs surrounding text, not just vs bg | Check link color against body text color too |`,
+| Ignoring adjacent-color contrast | Links need 3:1 vs surrounding text, not just vs bg | Check link color against body text color too |
+| Trusting a 1-decimal display at the threshold | 4.4781:1 prints as \`4.5\` and fails SC 1.4.3 | Compute to 4 decimals, or ship only above 4.60:1 |
+| Measuring an alpha token as its declared hex | \`rgba(0,0,0,0.45)\` is #8C8C8C on white (3.36:1), not 21:1 | Composite the layer, then measure the result |
+
+---
+
+**Step 6: Kill the rounding ambiguity (2 min, one-time)**
+
+Add a precision guard to whatever script or hook runs your token audit. The rule is one line: reject any pair whose computed ratio is below the threshold plus 0.1. That single margin absorbs both one-decimal display error and the small surface drift that comes from a brand refresh.
+
+| Requirement | Raw WCAG threshold | Ship floor to enforce |
+| --- | ---: | ---: |
+| SC 1.4.3 normal text | 4.5:1 | 4.60:1 |
+| SC 1.4.3 large text (≥24px / ≥18.66px bold) | 3:1 | 3.10:1 |
+| SC 1.4.11 non-text | 3:1 | 3.10:1 |
+| SC 1.4.6 AAA text | 7:1 | 7.10:1 |
+
+Without this margin, a token at 4.4998:1 passes your review because the readout said 4.5, and the violation ships. With it, the same token is rejected at commit time.`,
     codeSnippet: {
-      label: "Automated contrast matrix audit — test every token pair in your design system",
+      label: "Contrast matrix auditor — 4-decimal precision, alpha compositing, and a ship-floor margin",
       code: `// Contrast matrix auditor — run against your design system tokens
-// Checks every foreground token against every surface it could appear on
-// Output: pass/fail table + specific fix suggestions
+// Checks every foreground token against every surface it could appear on.
+//
+// Three things this does that most checkers do not:
+//   1. Compares at full float precision, never a rounded display value
+//   2. Composites alpha tokens before measuring them
+//   3. Enforces a ship floor above the raw WCAG threshold
 
 interface Token { name: string; hex: string; role: 'text' | 'surface' | 'border'; minSize?: string }
 
@@ -427,29 +545,68 @@ function contrastRatio(fg: string, bg: string): number {
 }
 
 function auditTokenMatrix(texts: Token[], surfaces: Token[]) {
-  const results: { pair: string; ratio: string; aa: string; aaa: string; fix?: string }[] = [];
-  
+  // WCAG requires "at least" the threshold and does not round. A one-decimal
+  // readout hides up to 0.05 of error, so #777777 on white (4.4781:1) displays
+  // as 4.5 and fails. MARGIN pushes the accept line clear of that ambiguity.
+  const AA = 4.5, AA_LARGE = 3, AAA = 7, MARGIN = 0.1;
+  const results: { pair: string; ratio: string; aa: string; aaa: string; ship: string; fix?: string }[] = [];
+
   for (const text of texts) {
     for (const surface of surfaces) {
       const ratio = contrastRatio(text.hex, surface.hex);
-      const aa = ratio >= 4.5 ? 'PASS' : ratio >= 3 ? 'LARGE ONLY' : 'FAIL';
-      const aaa = ratio >= 7 ? 'PASS' : 'FAIL';
-      const fix = ratio < 4.5 
-        ? \`Darken \${text.name} or lighten \${surface.name} — need \${(4.5 - ratio).toFixed(1)} more ratio\`
+      // Compare the raw float. Never compare a toFixed() string.
+      const aa = ratio >= AA ? 'PASS' : ratio >= AA_LARGE ? 'LARGE ONLY' : 'FAIL';
+      const aaa = ratio >= AAA ? 'PASS' : 'FAIL';
+      const ship = ratio >= AA + MARGIN ? 'OK' : ratio >= AA ? 'TOO CLOSE' : 'BLOCK';
+      const fix = ratio < AA + MARGIN
+        ? \`Darken \${text.name} or lighten \${surface.name} — need \${(AA + MARGIN - ratio).toFixed(4)} more ratio\`
         : undefined;
       results.push({
         pair: \`\${text.name} on \${surface.name}\`,
-        ratio: ratio.toFixed(2) + ':1',
-        aa, aaa, fix
+        ratio: ratio.toFixed(4) + ':1',   // 4 decimals, not 2
+        aa, aaa, ship, fix
       });
     }
   }
-  
-  console.table(results.filter(r => r.aa !== 'PASS'));
-  console.log(\`\\n\${results.filter(r => r.aa === 'PASS').length}/\${results.length} pairs pass AA\`);
-  console.log(\`\${results.filter(r => r.aa === 'FAIL').length} pairs FAIL — fix these before shipping\\n\`);
+
+  const blocked = results.filter(r => r.ship === 'BLOCK');
+  const tooClose = results.filter(r => r.ship === 'TOO CLOSE');
+
+  console.table(results.filter(r => r.ship !== 'OK'));
+  console.log(\`\\n\${results.filter(r => r.aa === 'PASS').length}/\${results.length} pairs pass raw AA\`);
+  console.log(\`\${blocked.length} pairs FAIL — fix before shipping\`);
+  console.log(\`\${tooClose.length} pairs pass but sit inside \${MARGIN} of the line — these are the ones a rounded display will lie about\\n\`);
   return results;
 }
+
+// --- Alpha tokens must be composited before measuring ---
+// Ant Design ships colorTextDescription as rgba(0,0,0,0.45). Measured as its
+// declared #000000 it reports 21:1. Composited on white it is #8C8C8C = 3.36:1,
+// a clear SC 1.4.3 failure for description text.
+function composite(overlayHex: string, alpha: number, backdropHex: string): string {
+  const o = hexToRgb(overlayHex);
+  const b = hexToRgb(backdropHex);
+  const mix = o.map((c, i) => Math.round(c * alpha + b[i] * (1 - alpha)));
+  return '#' + mix.map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+const alphaTokens = [
+  { name: 'antd colorTextDescription', overlay: '#000000', alpha: 0.45, on: '#FFFFFF' },
+  { name: 'antd colorTextDescription', overlay: '#000000', alpha: 0.45, on: '#F9FAFB' },
+];
+
+console.table(alphaTokens.map(t => {
+  const effective = composite(t.overlay, t.alpha, t.on);
+  const real = contrastRatio(effective, t.on);
+  return {
+    token: t.name,
+    surface: t.on,
+    composited: effective,
+    declaredReports: contrastRatio(t.overlay, t.on).toFixed(2) + ':1',
+    realRatio: real.toFixed(4) + ':1',
+    verdict: real >= 4.5 ? 'AA pass' : 'AA FAIL',
+  };
+}));
 
 // Run the audit
 auditTokenMatrix(textTokens, surfaceTokens);`
@@ -462,9 +619,13 @@ auditTokenMatrix(textTokens, surfaceTokens);`
       "Build a contrast matrix, not spot checks. Every text token x every surface it can appear on = one matrix. Audit the matrix quarterly. New tokens get added to the matrix before they ship.",
       "Integrate contrast into your PR template. Add a checkbox: All new/changed color tokens pass contrast audit. This single line catches 80% of regressions because it forces the developer to actually check.",
       "Keep a restricted-tokens list. Some tokens pass only for large text (3:1 to 4.49:1). Document them with a usage constraint: fg-muted: minimum 24px, or 18.66px bold. Never use for body copy. WCAG defines large text in points (18pt/14pt bold), which is 24px/18.66px in CSS — not 18px/14px, a misreading that hands the relaxed ratio to sizes needing 4.5:1. The design system enforces this.",
-      "Run automated checks on EVERY page, not just the homepage. In my 25-site audit, 60% of failures were on secondary pages (settings, help docs, empty states) that nobody manually reviewed."
+      "Run automated checks on EVERY page, not just the homepage. In my 25-site audit, 60% of failures were on secondary pages (settings, help docs, empty states) that nobody manually reviewed.",
+      "Never accept a displayed 4.5 as a pass. One decimal place hides up to 0.05 of error, and WCAG does not round. #777777 on white reads 4.5 and is really 4.4781:1 — a failure. Set your team's shipping floor at 4.60:1 so the display can never mislead you.",
+      "Compute alpha tokens before you measure them. Ant Design ships description text as rgba(0,0,0,0.45), which composites to #8C8C8C on white and scores 3.36:1 — a clear AA failure. Any tool reading the declared #000000 reports 21:1. Flatten first, measure second.",
+      "Audit tokens per surface, never in isolation. Tailwind gray-500 passes on white (4.83:1) and fails on gray-100 (4.39:1). 'Is this token accessible?' has no answer without naming the background. Use gray-600 (#4B5563) as the muted default; it clears 4.5:1 on all eight common light surfaces.",
+      "Re-audit after any surface change, not just text changes. Bootstrap's $primary passes on white by 0.001 (4.5014:1). Move that link onto bg-light and it fails. Lightening a text token is obvious; tinting a panel is the change that breaks compliance silently."
     ],
-    keyStat: "84% of accessibility lawsuits cite color contrast as a primary or contributing failure (UsableNet 2025 report). A single contrast checker run on your token set catches the exact issue type behind the majority of legal complaints.",
+    keyStat: "Sweeping every neutral gray against eight common light surfaces at 4-decimal precision, 5 of the 8 surfaces have a gray that fails SC 1.4.3 while displaying as 4.5:1 in a one-decimal readout. The worst is #707070 on #F3F4F6 at 4.4998:1 — it fails by two ten-thousandths and still rounds to 4.50 at two decimals.",
     toolsMention: ["contrast-checker", "color-picker", "palette-generator"],
   },
 
