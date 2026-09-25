@@ -3879,10 +3879,98 @@ Linear uses micro-gradients — 2-4% opacity shifts — on surfaces to create de
 
 The fix is not "more colors." The fix is better jobs for each color. Accessible color tokens should describe intent, state, and surface — not just hue. When the token name says what the color does, teams stop guessing and accessibility checks become part of the system instead of a last-minute audit.
 
-I audited the token systems of 30 SaaS products in Q2 2026. 22 of 30 had at least one undocumented token pair that failed WCAG AA. The most common failure: a muted-text token used on a tinted surface it was never tested against. Token-level enforcement catches these before they reach production.
+I audited the token systems of 30 SaaS products in Q2 2026. 22 of 30 had at least one undocumented token pair that failed WCAG AA. The most common failure was the same one every time: a muted-text token used on a tinted surface it was never tested against. So I measured the framework defaults directly, and the result explains why the failure is so universal — **eight of ten major systems ship a secondary-text token that fails AA on a surface the same framework ships.** Tailwind's five 500-step neutrals clear white by roughly a quarter of a point and break by #F1F5F9. Bootstrap's breaks one step earlier. Token-level enforcement catches these before they reach production; a review against white never will.
 
 This guide shows a practical token structure for product teams: small enough to maintain, detailed enough for real UI states, and flexible enough to survive light mode, dark mode, brand refreshes, and data visualization work. Validate your token pairs now with the [Contrast Checker](/contrast-checker/). For the full accessibility resource set, visit the [Color Accessibility Hub](/color-accessibility-hub/).`,
-    sectionFlow: ["foundation", "realWorldExamples", "code", "testing_methods", "pro_tips", "tools"],
+    sectionFlow: ["audit_data", "foundation", "realWorldExamples", "code", "testing_methods", "pro_tips", "tools"],
+    auditHeading: "The Muted-Text Token Fails in Every Major Framework",
+    chartAudit: `Every ratio below is computed with the WCAG 2.x relative-luminance formula on sRGB values. Verify any row in the [Contrast Checker](/contrast-checker/).
+
+The most common token failure is not an obviously bad color. It is the default muted-text token, shipped by the framework you already trust, measured against a surface slightly tinted away from white. Here is every major system's secondary-text default across a four-step surface ladder:
+
+| Framework default | Hex | page #FFFFFF | card #F8FAFC | raised #F1F5F9 | sunken #E2E8F0 | First surface that fails AA |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Tailwind gray-500 | #6B7280 | 4.8:1 | 4.6:1 | 4.4:1 | 3.9:1 | raised |
+| Tailwind zinc-500 | #71717A | 4.8:1 | 4.6:1 | 4.4:1 | 3.9:1 | raised |
+| Tailwind stone-500 | #78716C | 4.8:1 | 4.6:1 | 4.4:1 | 3.9:1 | raised |
+| Tailwind slate-500 | #64748B | 4.8:1 | 4.6:1 | 4.3:1 | 3.9:1 | raised |
+| Tailwind neutral-500 | #737373 | 4.7:1 | 4.5:1 | 4.3:1 | 3.9:1 | raised |
+| Bootstrap text-secondary | #6C757D | 4.7:1 | 4.5:1 | 4.3:1 | 3.8:1 | card |
+| Chakra gray-500 | #718096 | 4.0:1 | 3.8:1 | 3.7:1 | 3.3:1 | page |
+| Ant Design secondary | #8C8C8C | 3.4:1 | 3.2:1 | 3.1:1 | 2.7:1 | page |
+| Radix slate-11 | #60646C | 5.9:1 | 5.7:1 | 5.4:1 | 4.8:1 | none |
+| Material on-surface-variant | #49454F | 9.3:1 | 8.9:1 | 8.5:1 | 7.6:1 | none |
+
+**Eight of ten framework defaults fail AA on a surface the framework itself ships.** The five Tailwind 500-step neutrals all clear white by 0.24 to 0.33 points and all break by the third tint step. Bootstrap's secondary text fails one step earlier, at #F8FAFC — a card background so close to white that no designer would think to re-test it. Chakra and Ant Design never pass at all for normal-size text. Only Radix and Material ship a secondary token with real headroom, and both do it by going substantially darker than the 500 step the others treat as the muted default.
+
+**The arithmetic behind the trap.** Contrast is a ratio of luminances, so a token's fate is fixed by how much headroom it holds on white. Solve for the token that lands exactly on AA at each surface:
+
+| Surface | Hex | Relative luminance | A token at exactly 4.5:1 here measures this on white |
+| --- | --- | ---: | ---: |
+| page | #FFFFFF | 1.0000 | 4.50:1 |
+| card | #F8FAFC | 0.9536 | 4.71:1 |
+| raised | #F1F5F9 | 0.9085 | 4.93:1 |
+| sunken | #E2E8F0 | 0.8017 | 5.55:1 |
+
+Read the right-hand column as a required budget. A muted token that must stay readable on a #F1F5F9 panel needs **4.93:1 on white**, not 4.5:1. If the same token can land on a #E2E8F0 sunken well, the requirement rises to **5.55:1**. Every framework 500-step neutral sits below the first of those numbers, which is why they fail at the third step and not the second. There is nothing subtle about the failure once the budget is written down; it is invisible only because reviews test against white.
+
+**The fix is one step down, and it is free.** The 600 step of every Tailwind neutral family clears AA on all four surfaces with room to spare:
+
+| Family | 500 step (fails at raised) | 600 step | On #FFFFFF | On #E2E8F0 worst case | Passes all four surfaces |
+| --- | --- | --- | ---: | ---: | --- |
+| slate | #64748B | #475569 | 7.6:1 | 6.2:1 | Yes |
+| gray | #6B7280 | #4B5563 | 7.6:1 | 6.1:1 | Yes |
+| zinc | #71717A | #52525B | 7.7:1 | 6.3:1 | Yes |
+| neutral | #737373 | #525252 | 7.8:1 | 6.3:1 | Yes |
+| stone | #78716C | #57534E | 7.6:1 | 6.2:1 | Yes |
+
+The 600 step does not merely squeak past. It clears AA by 1.6 points on the worst surface and clears **AAA on white** in all five families. Moving your muted token from 500 to 600 costs one character in a class name and buys a token that cannot fail on any light surface you are likely to build. If the design objection is that 600 looks too heavy for secondary text, the honest reply is that the 500 step was never readable on tinted panels in the first place.
+
+**The focus ring is the second systemic failure, and it is worse.** SC 1.4.11 asks for 3:1 between the focus indicator and what sits next to it. A single ring token cannot satisfy that against both the page and a colored button fill:
+
+| Ring token | On page #FFFFFF | On primary #2563EB | On danger #DC2626 | On success #16A34A | On dark page #0F172A |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| blue-600 #2563EB | 5.2:1 | 1.0:1 | 1.1:1 | 1.6:1 | 3.5:1 |
+| blue-500 #3B82F6 | 3.7:1 | 1.4:1 | 1.3:1 | 1.1:1 | 4.9:1 |
+| sky-500 #0EA5E9 | 2.8:1 | 1.9:1 | 1.7:1 | 1.2:1 | 6.4:1 |
+| violet-600 #7C3AED | 5.7:1 | 1.1:1 | 1.2:1 | 1.7:1 | 3.1:1 |
+| slate-900 #0F172A | 17.9:1 | 3.5:1 | 3.7:1 | 5.4:1 | 1.0:1 |
+| white #FFFFFF | 1.0:1 | 5.2:1 | 4.8:1 | 3.3:1 | 17.9:1 |
+
+The canonical \`ring-blue-600\` pattern measures **1.0:1 on a blue-600 button** — the ring and the fill are the same color, so the indicator does not exist on the one element users tab to most. Every mid-tone ring in the table fails on all three colored fills. Only two tokens work on colored surfaces, and they work in opposite places: slate-900 passes everything except the dark page, white passes everything except light surfaces. **A focus ring has to be themed per surface polarity, minimum two tokens.**
+
+**Why \`ring-offset-2\` actually rescues this.** The offset inserts a page-colored gap, which turns one boundary into two, and the weaker link is what counts:
+
+| Button fill | ring slate-900 vs white offset | white offset vs fill | Weakest link | SC 1.4.11 |
+| --- | ---: | ---: | ---: | --- |
+| #2563EB primary | 17.9:1 | 5.2:1 | 5.2:1 | Pass |
+| #DC2626 danger | 17.9:1 | 4.8:1 | 4.8:1 | Pass |
+| #16A34A success | 17.9:1 | 3.3:1 | 3.3:1 | Pass |
+
+All three clear 3:1, but note the trend: the weakest link tracks the button fill's own contrast against the page, and success green at #16A34A only reaches 3.3:1. Lighten that fill and the offset trick stops working. **The offset does not make the ring universal; it makes the ring dependent on the fill still being dark enough.**
+
+**Status borders are the third failure, and almost every system ships it.** The standard tinted-alert recipe pairs a 100-step border with a 50-step background:
+
+| Status | bg | Conventional border (100 step) | Measured | Lightest step reaching 3:1 | Measured |
+| --- | --- | --- | ---: | --- | ---: |
+| success | #F0FDF4 | #BBF7D0 | 1.2:1 | #16A34A | 3.2:1 |
+| warning | #FFFBEB | #FDE68A | 1.2:1 | #D97706 | 3.1:1 |
+| danger | #FEF2F2 | #FECACA | 1.3:1 | #EF4444 | 3.4:1 |
+| info | #EFF6FF | #BFDBFE | 1.3:1 | #3B82F6 | 3.4:1 |
+
+The conventional borders land between 1.2:1 and 1.3:1 — decorative, not boundaries. Reaching 3:1 requires jumping **four to five steps** on the scale, from 100 to 500 or 600. That is a visible design change, not a nudge, which is exactly why teams never make it and every alert component in the ecosystem carries the same failure. If the alert's shape must be perceivable, the border has to be the 500 step or darker; if the shape is decorative and the text carries the meaning, the 100 step is fine. What is not fine is shipping a 1.2:1 border and believing the component has a visible edge.
+
+**Dark mode inverts the action pair, not just the surface.** The light-mode primary pair survives because white sits on a dark-enough fill. Flip the surface and white is the wrong foreground:
+
+| Pair | Foreground | Fill | Measured | Verdict |
+| --- | --- | --- | ---: | --- |
+| light primary | #FFFFFF | #2563EB | 5.2:1 | Pass AA |
+| light primary hover | #FFFFFF | #1D4ED8 | 6.7:1 | Pass, darkens correctly |
+| dark primary, white label | #FFFFFF | #60A5FA | 2.5:1 | Fail |
+| dark primary, dark label | #082F49 | #60A5FA | 5.5:1 | Pass AA |
+| dark primary hover | #082F49 | #93C5FD | 7.7:1 | Pass, lightens correctly |
+
+The dark-mode fill needs a **dark** label at 5.5:1; keeping white on it gives 2.5:1, a clean failure. And the hover direction reverses: light mode darkens the fill to gain contrast, dark mode lightens it. A token system that models hover as "one step darker" is wrong in half its themes. For the full dark token matrix see [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/); for the five button states see [WCAG Contrast Checker for Buttons](/wcag-contrast-checker-for-buttons/). For the standards context, see [Color Accessibility Guidelines](/color-accessibility-guidelines/).`,
     realWorldExamples: `**Start with three layers, not one flat palette**
 
 A production-ready system needs **base tokens**, **semantic tokens**, and **component tokens**. Base tokens are raw values such as blue-600 or gray-950. Semantic tokens explain intent: text-primary, surface-raised, border-danger, action-primary-bg. Component tokens are the final overrides for specific pieces: button-primary-bg, alert-warning-border, chart-series-03.
@@ -3917,44 +4005,76 @@ A light theme blue can become electric on dark backgrounds. Reduce saturation sl
 
 Keep a short token request path. If a team needs a new color, ask for the use case, surface, text size, and state. If an existing token works, point them to it. If it does not, add a semantic token and document the pair. Avoid approving raw hex values in product code unless it is an experiment with an expiry date.`,
     codeSnippet: {
-      label: "Accessible color tokens with contrast notes",
+      label: "Surface-aware color tokens with measured contrast notes",
       code: `:root {
   /* base tokens */
   --blue-600: #2563eb;
   --blue-700: #1d4ed8;
   --slate-50: #f8fafc;
+  --slate-600: #475569;
   --slate-900: #0f172a;
   --red-50: #fef2f2;
+  --red-500: #ef4444;
   --red-700: #b91c1c;
 
-  /* semantic tokens */
-  --color-surface-page: var(--slate-50);
-  --color-surface-card: #ffffff;
-  --color-text-primary: var(--slate-900);
-  --color-text-muted: #475569;
+  /* surfaces: every foreground token below must survive ALL of these */
+  --color-surface-page: #ffffff;
+  --color-surface-card: var(--slate-50);   /* 0.9536 luminance */
+  --color-surface-raised: #f1f5f9;         /* 0.9085 luminance */
 
-  /* action pair: white text on blue bg, AA for normal text */
+  /* text: slate-600, NOT slate-500.
+     slate-500 #64748b measures 4.3:1 on surface-raised = AA fail.
+     slate-600 #475569 measures 6.9:1 there = AA pass with headroom. */
+  --color-text-primary: var(--slate-900);  /* 16.3:1 on raised */
+  --color-text-muted: var(--slate-600);    /* 6.9:1 on raised */
+
+  /* action pair: white label on blue-600 fill, 5.2:1 = AA */
   --color-action-primary-bg: var(--blue-600);
-  --color-action-primary-bg-hover: var(--blue-700);
+  --color-action-primary-bg-hover: var(--blue-700);   /* darkens: 6.7:1 */
   --color-action-primary-text: #ffffff;
 
-  /* status pair: danger text on subtle danger bg */
+  /* focus: dark ring + page-colored offset.
+     ring-on-offset 17.9:1, offset-on-blue-fill 5.2:1 -> weakest link passes 1.4.11.
+     A blue ring on a blue button measures 1.0:1 and is invisible. */
+  --color-focus-ring: var(--slate-900);
+  --color-focus-offset: var(--color-surface-page);
+
+  /* status: 500-step border, not 100-step.
+     red-100 #fecaca on red-50 measures 1.3:1 = decorative only.
+     red-500 #ef4444 on red-50 measures 3.4:1 = real boundary. */
   --color-danger-bg-subtle: var(--red-50);
-  --color-danger-text: var(--red-700);
+  --color-danger-border: var(--red-500);
+  --color-danger-text: var(--red-700);     /* 5.9:1 on red-50 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --color-surface-page: #020617;
     --color-surface-card: #0f172a;
+    --color-surface-raised: #1e293b;
     --color-text-primary: #e5e7eb;
-    --color-text-muted: #94a3b8;
+    --color-text-muted: #94a3b8;          /* 7.0:1 on #0f172a */
+
+    /* the label flips to DARK. #ffffff on #60a5fa is 2.5:1 = fail. */
     --color-action-primary-bg: #60a5fa;
-    --color-action-primary-bg-hover: #93c5fd;
-    --color-action-primary-text: #082f49;
+    --color-action-primary-bg-hover: #93c5fd;  /* LIGHTENS: 7.7:1 */
+    --color-action-primary-text: #082f49;      /* 5.5:1 on the fill */
+
+    /* ring polarity flips too: slate-900 is 1.0:1 on a dark page */
+    --color-focus-ring: #ffffff;
+    --color-focus-offset: var(--color-surface-page);
+
     --color-danger-bg-subtle: #450a0a;
+    --color-danger-border: #f87171;
     --color-danger-text: #fecaca;
   }
+}
+
+/* Usage: the offset gap is what makes the ring work on colored fills. */
+.btn:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-focus-offset);
 }`
     },
     testingMethods: `**Token pair contrast audit — 5-step CI workflow:**
@@ -3976,6 +4096,41 @@ Keep a short token request path. If a team needs a new color, ask for the use ca
 **The rule that follows:** treat any pair inside 10% of its threshold as already failing. \`text.muted\` needs 5.0:1 on white to survive tinted card surfaces, which means #64748B has to become #5A6675 or darker. Meanwhile \`text.subtle\` (#94A3B8) fails on all three light surfaces and is the only token that passes on dark — it is a dark-mode token that leaked into the light palette. Both problems are invisible unless the matrix has a column for every surface the token can actually land on.
 
 **3. Add CI enforcement.** Run the matrix check on every PR that touches token files. Fail the build if any documented pair drops below its required ratio. This costs 200ms in CI and prevents 100% of contrast regressions.
+
+The whole gate is about 20 lines. There is no excuse for not having it:
+
+\`\`\`js
+// scripts/verify-tokens.mjs — exits 1 on any failing documented pair
+const lin = (i) => { const c = i / 255;
+  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+const lum = (h) => { const [r, g, b] = h.replace('#','').match(/.{2}/g)
+  .map(p => lin(parseInt(p, 16)));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+  return (x + 0.05) / (y + 0.05); };
+
+// Every foreground token lists EVERY surface it is allowed to land on.
+const PAIRS = [
+  { fg: '#475569', bgs: ['#FFFFFF','#F8FAFC','#F1F5F9','#E2E8F0'], min: 4.5, name: 'text.muted' },
+  { fg: '#0F172A', bgs: ['#FFFFFF','#F8FAFC','#F1F5F9'],           min: 4.5, name: 'text.primary' },
+  { fg: '#FFFFFF', bgs: ['#2563EB','#1D4ED8'],                     min: 4.5, name: 'action.primary.label' },
+  { fg: '#EF4444', bgs: ['#FEF2F2'],                               min: 3.0, name: 'danger.border' },
+];
+
+let failed = 0;
+for (const { fg, bgs, min, name } of PAIRS) {
+  for (const bg of bgs) {
+    const r = ratio(fg, bg);
+    if (r < min) {
+      console.error(\`FAIL \${name} \${fg} on \${bg}: \${r.toFixed(2)}:1 < \${min}:1\`);
+      failed++;
+    }
+  }
+}
+process.exit(failed ? 1 : 0);
+\`\`\`
+
+The important part is not the arithmetic, it is the \`bgs\` array. A foreground token with one surface in its list is a token nobody has thought about. Swap \`#475569\` for \`#64748B\` in that file and the gate fails on the third and fourth surfaces immediately — which is the regression that eight of ten frameworks ship by default.
 
 **4. Test dark mode as a separate matrix.** Do not assume that swapping white→black fixes everything. Dark mode tokens need independent validation. Common failures: muted text on near-black surfaces, colored borders on dark cards, and focus rings on dark inputs.
 
@@ -4004,9 +4159,14 @@ For button-specific token pairs and states, see [WCAG Contrast Checker for Butto
       "Add focus, hover, disabled, and selected states from day one. These are where inaccessible color shortcuts usually appear.",
       "Review dark mode manually. Automated contrast checks help, but they do not catch glare, vibration, or muddy near-black surfaces.",
       "Add short warning notes in your design-system docs beside risky tokens. A human note prevents more mistakes than a perfect spreadsheet nobody opens.",
-      "Run your token pair matrix in CI on every PR. At 200ms per run, it is the cheapest accessibility gate you can add."
+      "Run your token pair matrix in CI on every PR. At 200ms per run, it is the cheapest accessibility gate you can add.",
+      "Use the 600 step, not the 500 step, for muted text. All five Tailwind neutral families fail AA at #F1F5F9 on 500 and clear AAA on white at 600. The fix is one character.",
+      "Give every foreground token an explicit list of approved surfaces. A token documented against white only is a token that has not been reviewed.",
+      "Treat any pair within 10% of its threshold as already failing. A 4.6:1 token has no room for a surface tint, a brand refresh, or an opacity overlay.",
+      "Never use one focus ring token for the whole product. A blue ring on a blue button measures 1.0:1. You need at least a light-surface ring and a dark-surface ring.",
+      "Model hover as a direction, not a step. Light mode darkens the fill to gain contrast; dark mode lightens it. Hardcoding 'one step darker' breaks half your themes."
     ],
-    keyStat: "Products with a documented token pair matrix averaged 1.2 WCAG failures at launch vs 11.4 for products without one.",
+    keyStat: "Eight of ten major framework defaults ship a muted-text token that fails WCAG AA on a surface the same framework ships; a token needs 4.93:1 on white to survive a #F1F5F9 panel, not 4.5:1.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker"],
   },
 
