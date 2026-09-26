@@ -5622,6 +5622,8 @@ I tested 60 production dashboards across fintech, healthcare, and SaaS analytics
 
 One correction up front, because this page got it wrong for months. The 6-colour palette this article used to recommend — the deep blue / orange / green / purple / yellow / red set repeated across dashboard tutorials as colour-blind safe — does not survive measurement. Its closest pair collapses to CIEDE2000 7.5 under deuteranopia, and in greyscale its orange and green sit 0.3 lightness points apart. Both replacement palettes below hold above 20. The derivation, and the proof that you need two palettes rather than one, is in the audit section.
 
+One more result worth knowing before you pick a palette: if your dark charts render inside cards or raised panels rather than directly on the page background, six series is not achievable. The surface floor compresses the usable lightness range until no six-hue set stays separable, and the elevation-safe palette tops out at five. Finding 5 has the numbers and the set.
+
 Verify your chart palette separations with the [Contrast Checker](/contrast-checker/). For related guides on forms, buttons, and dark mode, see the [Color Accessibility Hub](/color-accessibility-hub/). For safe palette construction, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/). For token-based approaches, see [Accessible Color Token System](/accessible-color-token-system/).`,
     sectionFlow: ["real_world", "code", "testing_methods", "chart_audit", "pro_tips", "tools"],
     realWorldExamples: `**Google Maps stopped relying on red/green pins for traffic.** They shifted to a red-yellow-green gradient with distinct lightness steps, and added line thickness changes on routes. A deuteranopic user can still distinguish heavy traffic from light traffic by brightness alone. Google reported a 23% improvement in correct route selection among colorblind beta testers after the redesign.
@@ -5640,7 +5642,7 @@ Verify your chart palette separations with the [Contrast Checker](/contrast-chec
 | Shape markers | Line charts, scatter plots | Markers overlap at high density |
 | Redundant encoding (size + color) | Bubble charts, maps | Size differences are too subtle |`,
     codeSnippet: {
-      label: "Two CVD-verified chart palettes (light and dark surface) + pattern fallback (SVG/D3)",
+      label: "Three CVD-verified chart palettes (light, dark base, dark elevated) + pattern fallback (SVG/D3)",
       code: `/* Chart palettes verified by scripts/verify-cvd-palette.mjs.
    Every pair stays >=20 CIEDE2000 apart under protanopia, deuteranopia and
    tritanopia (Machado 2009, severity 1.0 - the model Chrome DevTools uses),
@@ -5658,7 +5660,10 @@ const chartPaletteLight = [
   { hex: '#028AD6', label: 'Azure',       oklch: 'oklch(61% 0.150 244)' },
 ];
 
-/* Use on dark surfaces (#111827 base). Min ratio vs #111827 = 3.32:1 */
+/* Use on dark surfaces (#111827 base). Min ratio vs #111827 = 3.32:1
+   WARNING: verified against the BASE surface only. Inside a #1F2937 card this
+   set drops to 2.74:1 and on a #374151 raised panel to 1.93:1 - two of the six
+   series stop clearing SC 1.4.11. Use it only if charts stay on the base. */
 const chartPaletteDark = [
   { hex: '#0B758A', label: 'Deep Cyan',   oklch: 'oklch(52% 0.090 216)' },
   { hex: '#8D8307', label: 'Brass',       oklch: 'oklch(60% 0.125 104)' },
@@ -5668,14 +5673,41 @@ const chartPaletteDark = [
   { hex: '#DEE3FD', label: 'Pale Lilac',  oklch: 'oklch(92% 0.035 276)' },
 ];
 
-/* Pick the palette from the rendered surface, never hardcode one set. */
-const chartPalette = (isDarkSurface: boolean) =>
-  isDarkSurface ? chartPaletteDark : chartPaletteLight;
+/* Elevation-safe alternative: clears 3:1 on #374151, and therefore on #1F2937
+   and #111827 too. One palette for every dark surface. It has FIVE series, not
+   six - the raised-panel floor compresses the usable lightness range until no
+   six-hue set holds CIEDE2000 20. Worst case here is 20.2. See Finding 5. */
+const chartPaletteElevated = [
+  { hex: '#879F07', label: 'Moss',   oklch: 'oklch(66% 0.155 120)' },
+  { hex: '#70ADFE', label: 'Sky',    oklch: 'oklch(74% 0.135 256)' },
+  { hex: '#FEA5A5', label: 'Blush',  oklch: 'oklch(81% 0.105 20)'  },
+  { hex: '#BDF107', label: 'Lime',   oklch: 'oklch(89% 0.220 124)' },
+  { hex: '#FCEBFE', label: 'Mist',   oklch: 'oklch(96% 0.030 324)' },
+];
 
-/* Truncate from the END when you need fewer series. Both palettes are ordered
-   by ascending lightness, so any leading slice keeps its lightness spacing. */
-const seriesColors = (n: number, dark: boolean) =>
-  chartPalette(dark).slice(0, n).map((c) => c.hex);
+/* Pick by the surface the chart actually renders on, never hardcode one set.
+   'base' = charts sit directly on the page background.
+   'elevated' = charts sit in cards, panels or modals at varying depth. */
+type ChartSurface = 'light' | 'base' | 'elevated';
+
+const chartPalette = (surface: ChartSurface) =>
+  surface === 'light' ? chartPaletteLight
+  : surface === 'base' ? chartPaletteDark
+  : chartPaletteElevated;
+
+/* Truncate from the END when you need fewer series. All three palettes are
+   ordered by ascending lightness, so any leading slice keeps its spacing.
+   Guard the ceiling: the elevated set only has five verified series. */
+const seriesColors = (n: number, surface: ChartSurface) => {
+  const p = chartPalette(surface);
+  if (n > p.length) {
+    throw new Error(
+      \`\${surface} palette holds \${p.length} verified series; \${n} requested. \` +
+      'Use small multiples instead of inventing a sixth colour.'
+    );
+  }
+  return p.slice(0, n).map((c) => c.hex);
+};
 
 /* SVG pattern definitions for print/grayscale fallback */
 function createPatterns(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
@@ -5763,10 +5795,10 @@ test('chart accessibility audit', async ({ page }) => {
 6. Interactive tooltips accessible via Tab key (not hover-only)
 7. aria-label or role="img" with description on SVG/canvas elements
 8. Legend uses shape markers matching the chart (not color-only squares)
-9. Chart series tested against actual dashboard surface, not pure white
-10. Dark mode chart palette uses separate tokens (not inverted light set)
-9. Status indicator colors have icon or text redundancy (SC 1.4.1)
-10. Dark mode tested separately — lightness separation often shifts on dark surfaces`,
+9. Chart series tested against the actual surface the chart renders on — the card or panel hex, not the page background
+10. Dark mode chart palette uses separate tokens (not inverted light set), and is verified at 5.2:1 on the base if charts appear in raised panels
+11. Status indicator colors have icon or text redundancy (SC 1.4.1)
+12. Series count checked against the palette's verified ceiling — five, not six, if the palette must survive multiple dark elevations`,
 
     proTips: [
       "Simulate your charts through protanopia, deuteranopia, and tritanopia filters before shipping. Chrome DevTools has a built-in CVD simulator under Rendering > Emulate vision deficiencies. For palette construction guidance, see [Color Blind Friendly Palettes](/color-blind-friendly-palettes/).",
@@ -5776,6 +5808,7 @@ test('chart accessibility audit', async ({ page }) => {
       "For traffic-light status indicators (red/yellow/green), always add a secondary signal: icon shape, text label, or position. Never let a standalone colored dot carry critical meaning. See [Form Validation Color Accessibility](/form-validation-color-accessibility/) for the same principle applied to form states.",
       "Split chart series tokens by surface, because no single 6-colour palette clears SC 1.4.11's 3:1 on both white and a dark base. Light surfaces cap series lightness near OKLCH 61%; dark surfaces floor it near 52%; six series need ~39 points of range. Verified light set: oklch(22% 0.045 204), oklch(30% 0.065 84), oklch(38% 0.245 272), oklch(46% 0.085 180), oklch(54% 0.110 92), oklch(61% 0.150 244). Verified dark set: oklch(52% 0.090 216), oklch(60% 0.125 104), oklch(68% 0.190 296), oklch(76% 0.145 12), oklch(84% 0.180 108), oklch(92% 0.035 276). Worst-case CIEDE2000 under all three dichromacies: 20.2 and 20.7. Check any pair against your real surface with the [Contrast Checker](/contrast-checker/).",
       "Pre-ship chart accessibility checklist: (1) Every series distinguishable in grayscale screenshot (2) Direct labels present when ≤6 series (3) Pattern fills available for print/monochrome (4) Legend uses shape markers matching the chart (5) Axis labels have ≥4.5:1 contrast (6) Interactive tooltips accessible via keyboard (7) aria-label or aria-describedby on SVG/canvas (8) Tested in Chrome CVD simulator for all three types (9) Status colors have icon or text redundancy (10) Dark mode tested separately with adjusted lightness values. Full contrast reference: [WCAG Contrast Ratio for Text](/wcag-contrast-ratio-for-text/).",
+      "Count your chart's elevations before you count its series. A six-series dark palette verified on the page background loses two series inside a `#1F2937` card and four on a `#374151` panel, because every ratio scales by 0.83 and 0.58 respectively. Either pin charts to one surface and verify against that exact hex, or switch to the five-series elevation-safe set: oklch(66% 0.155 120), oklch(74% 0.135 256), oklch(81% 0.105 20), oklch(89% 0.220 124), oklch(96% 0.030 324). Worst-case CIEDE2000 20.2, clears 3:1 on every dark surface. Six series at that floor does not exist — the best six-hue solution reaches only 16.4. Check any pair in the [Contrast Checker](/contrast-checker/).",
       "For React/D3 projects, export your accessible palette as design tokens: store hex, OKLCH, and pattern-id together so engineers can't accidentally use color without its pattern pair. See [Accessible Color Token System](/accessible-color-token-system/) for the full token architecture.",
       "Dashboard-specific guidance: chart colors must also work alongside form validation colors, alerts, and status badges. See [Dashboard Color Palette Guide](/dashboard-color-palette-guide/) for the full system approach. For the broader accessibility picture, start at the [Color Accessibility Hub](/color-accessibility-hub/).",
       "In 2026, the EU began fining companies for inaccessible data visualizations under the European Accessibility Act. Three fintech dashboards in my audit received formal compliance notices citing WCAG SC 1.4.1 failures in charts. Retrofitting accessible patterns cost \u20ac15K\u201340K per dashboard. Building them correctly from the start would have cost \u20ac2K\u20135K incremental. Factor chart accessibility into sprint planning, not post-launch audits."
@@ -5952,10 +5985,45 @@ This is the real problem. Deep Cyan fails on a plain \`#1F2937\` card — the mo
 | #1F2937 (card) | ×0.83 | 3.6:1 |
 | #374151 (raised) | ×0.58 | 5.2:1 |
 
-**What to do:** verify the dark chart set at **5.2:1 on your base**, not 3:1, if charts ever render inside a raised panel. Deep Cyan needs to move from \`#0B758A\` to roughly OKLCH 62% lightness to clear the full stack. The alternative is cheaper and usually better: keep chart cards at a single elevation level and verify the palette against that exact surface. Same reasoning as the dark-mode text multiplier in [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/); measured surface and border ratios are in [Dark Mode Colors](/dark-mode-colors/).
+**What to do:** verify the dark chart set at **5.2:1 on your base**, not 3:1, if charts ever render inside a raised panel. Same reasoning as the dark-mode text multiplier in [WCAG Contrast Checker for Dark Mode](/wcag-contrast-checker-for-dark-mode/); measured surface and border ratios are in [Dark Mode Colors](/dark-mode-colors/).
+
+That leaves the obvious question: what palette actually clears the whole stack? Finding 5 answers it, and the answer costs something.
+
+**Finding 5: an elevation-safe palette exists, but it holds five series, not six**
+
+I re-ran the palette search with the floor moved to \`#374151\`, the raised panel. Clearing 3:1 there implies clearing it on \`#1F2937\` and \`#111827\` too, so one palette covers every dark surface instead of one. Searching for six series, the best result the optimiser found peaks at CIEDE2000 **16.4** under tritanopia — below the 20 floor this page treats as separable without a backup signal. Dropping to five series reaches **20.2**.
+
+That is not a limitation of the search. It is the gamut. The \`#374151\` floor pushes the darkest usable series up to roughly OKLCH 66%, and sRGB runs out near 96%. That leaves about 30 points of lightness range. Six series each needing a ~6 point greyscale gap technically fit, but the hues still available inside that compressed band sit too close together in CVD space. Elevation-safety costs one series:
+
+| Target | Series | Worst CVD CIEDE2000 | Weakest series on raised panel | Verdict |
+| --- | ---: | ---: | ---: | --- |
+| Base surface only | 6 | 20.7 | Deep Cyan at 1.93:1 | Fails above the base |
+| Full stack, 6 series | 6 | 16.4 | 3.34:1 | Contrast passes, separation fails |
+| Full stack, 5 series | 5 | 20.2 | 3.43:1 | Both pass |
+
+The five-series set, verified on every dark surface:
+
+| # | Label | Hex | OKLCH | Greyscale L* | vs #111827 | vs #1F2937 | vs #374151 |
+| ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | Moss | \`#879F07\` | oklch(66% 0.155 120) | 61.6 | 5.91:1 | 4.89:1 | 3.43:1 |
+| 2 | Sky | \`#70ADFE\` | oklch(74% 0.135 256) | 69.8 | 7.69:1 | 6.36:1 | 4.47:1 |
+| 3 | Blush | \`#FEA5A5\` | oklch(81% 0.105 20) | 76.5 | 9.41:1 | 7.79:1 | 5.47:1 |
+| 4 | Lime | \`#BDF107\` | oklch(89% 0.220 124) | 88.8 | 13.30:1 | 11.01:1 | 7.73:1 |
+| 5 | Mist | \`#FCEBFE\` | oklch(96% 0.030 324) | 94.9 | 15.59:1 | 12.90:1 | 9.06:1 |
+
+Worst-case CIEDE2000 across all three dichromacies: **20.2** (protanopia, Blush/Mist). Minimum greyscale L* gap: **6.1**, so it survives desaturation. Every series clears 3:1 on the raised panel with margin, which means it also clears the card and base surfaces. Note it is deliberately useless on white — its darkest series is 3.00:1 there, so this is a dark-stack palette only, not a third general-purpose set.
+
+Reproduce it with \`node scripts/search-cvd-palette.mjs elevated 5\`, and the published figures are re-checked by \`npm run verify:cvd\` on every build.
+
+**So pick one of two strategies, and pick deliberately:**
+
+1. **Pin the elevation.** Keep every chart on one surface, and verify your six-series palette against that exact hex. Cheapest option, keeps all six series, and it is the right answer for most dashboards.
+2. **Go elevation-safe.** Use the five-series set above when charts genuinely render at multiple elevations — inside cards, expandable panels, and modals. You give up a series to buy surface independence.
+
+What does not work is the middle path most teams take by accident: verifying six series against the page background and then rendering them inside cards.
 
 This is also why pattern fills and direct labels are not optional decoration. A series at 1.93:1 is nearly invisible to everyone, CVD or not. Redundant encoding is what keeps the chart readable when a token slips — and tokens slip.`,
-    keyStat: "The 6-colour chart palette most widely published as colour-blind safe is not. Measured through the Machado 2009 model Chrome DevTools uses, its closest pair collapses to CIEDE2000 7.5 under deuteranopia and to 0.3 greyscale lightness points between orange and green — one series, not two. The two replacement palettes on this page hold worst-case separations of 20.2 and 20.7, a 2.7x improvement, and every figure is recomputed by `npm run verify:cvd` on each build. There must be two palettes because SC 1.4.11's 3:1 floor caps series lightness near OKLCH 61% on white and floors it near 52% on a dark base, leaving too little range for six series to fit both.",
+    keyStat: "The 6-colour chart palette most widely published as colour-blind safe is not. Measured through the Machado 2009 model Chrome DevTools uses, its closest pair collapses to CIEDE2000 7.5 under deuteranopia and to 0.3 greyscale lightness points between orange and green — one series, not two. The two replacement palettes on this page hold worst-case separations of 20.2 and 20.7, a 2.7x improvement, and every figure is recomputed by `npm run verify:cvd` on each build. There must be two palettes because SC 1.4.11's 3:1 floor caps series lightness near OKLCH 61% on white and floors it near 52% on a dark base, leaving too little range for six series to fit both. A third result constrains dark dashboards further: once charts render inside cards or raised panels rather than on the page background, no six-series palette holds CIEDE2000 20 — the elevation-safe set tops out at five series at 20.2.",
     toolsMention: ["contrast-checker", "palette-generator", "color-picker", "image-extractor"]
   },
 

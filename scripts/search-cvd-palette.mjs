@@ -151,21 +151,46 @@ function evaluate(hexes) {
 }
 
 /* ── Search: pick 6 hues, spread OKLCH lightness in fixed bands ─────────── */
-// MODE=light -> every series must clear 3:1 against #FFFFFF (SC 1.4.11)
-// MODE=dark  -> every series must clear 3:1 against #111827
-// MODE=free  -> no surface floor
+// MODE=light    -> every series must clear 3:1 against #FFFFFF (SC 1.4.11)
+// MODE=dark     -> every series must clear 3:1 against #111827
+// MODE=elevated -> every series must clear 3:1 against #374151, the raised
+//                  dark panel. Passing that floor implies passing #1F2937 and
+//                  #111827 too, so one palette covers the whole dark elevation
+//                  stack instead of only the base. This mode answers Finding 4
+//                  in accessible-data-visualization.
+// MODE=free     -> no surface floor
 const MODE = process.argv[2] || "free";
-const SURFACE = MODE === "dark" ? "#111827" : "#FFFFFF";
+const SURFACE =
+  MODE === "dark" ? "#111827" : MODE === "elevated" ? "#374151" : "#FFFFFF";
 const SURFACE_FLOOR = MODE === "free" ? 0 : 3.0;
 
 // Lightness bands differ per mode: a 3:1 floor on white caps how light a series
-// can be, and a 3:1 floor on a dark base caps how dark it can be.
-const BANDS =
+// can be, and a 3:1 floor on a dark base caps how dark it can be. The raised
+// panel #374151 is lighter than #111827, so its floor pushes every band up and
+// compresses the usable range against the top of the sRGB gamut.
+const BANDS_FULL =
   MODE === "light"
     ? [22, 30, 38, 46, 54, 61]
     : MODE === "dark"
       ? [52, 60, 68, 76, 84, 92]
-      : [38, 50, 58, 66, 74, 86];
+      : MODE === "elevated"
+        ? [66, 72, 78, 84, 90, 96]
+        : [38, 50, 58, 66, 74, 86];
+
+// Optional series count (argv[3]). Fewer series means each one gets a wider
+// lightness band, which is exactly the trade the elevated mode needs: the raised
+// panel floor compresses the usable range, so 6 series cannot hold the same
+// CIEDE2000 floor that 5 or 4 can. Bands are resampled evenly across the mode's
+// min..max range so a 5-series run is not just a truncated 6-series run.
+const SERIES = Number(process.argv[3] || BANDS_FULL.length);
+const BANDS =
+  SERIES === BANDS_FULL.length
+    ? BANDS_FULL
+    : Array.from({ length: SERIES }, (_, i) => {
+        const lo = BANDS_FULL[0];
+        const hi = BANDS_FULL[BANDS_FULL.length - 1];
+        return Math.round(lo + ((hi - lo) * i) / (SERIES - 1));
+      });
 const HUES = [];
 for (let h = 0; h < 360; h += 4) HUES.push(h);
 
@@ -233,12 +258,12 @@ for (let restart = 0; restart < 60; restart++) {
 }
 
 const { sel, cur } = best;
-console.log(`\n=== BEST 6-COLOUR CVD-SAFE PALETTE (mode=${MODE}, floor ${SURFACE_FLOOR}:1 on ${SURFACE}) ===\n`);
-console.log("| # | Hex | OKLCH | Greyscale L* | vs #FFFFFF | vs #111827 |");
-console.log("| ---: | --- | --- | ---: | ---: | ---: |");
+console.log(`\n=== BEST ${SERIES}-COLOUR CVD-SAFE PALETTE (mode=${MODE}, floor ${SURFACE_FLOOR}:1 on ${SURFACE}) ===\n`);
+console.log("| # | Hex | OKLCH | Greyscale L* | vs #FFFFFF | vs #111827 | vs #1F2937 | vs #374151 |");
+console.log("| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |");
 sel.forEach((c, i) => {
   console.log(
-    `| ${i + 1} | \`${c.hex}\` | oklch(${c.L}% ${c.C.toFixed(3)} ${c.H}) | ${lstar(relLum(c.hex)).toFixed(1)} | ${ratio(c.hex, "#FFFFFF").toFixed(2)}:1 | ${ratio(c.hex, "#111827").toFixed(2)}:1 |`
+    `| ${i + 1} | \`${c.hex}\` | oklch(${c.L}% ${c.C.toFixed(3)} ${c.H}) | ${lstar(relLum(c.hex)).toFixed(1)} | ${ratio(c.hex, "#FFFFFF").toFixed(2)}:1 | ${ratio(c.hex, "#111827").toFixed(2)}:1 | ${ratio(c.hex, "#1F2937").toFixed(2)}:1 | ${ratio(c.hex, "#374151").toFixed(2)}:1 |`
   );
 });
 console.log("\nWorst-case CIEDE2000:", cur.e.worst.toFixed(1), `(${cur.e.worstInfo})`);
@@ -246,9 +271,13 @@ console.log("Per type:", Object.entries(cur.e.perType).map(([k, v]) => `${k}=${v
 console.log("Min OKLCH L gap:", cur.e.minOkGap.toFixed(1));
 console.log("Min greyscale L* gap:", cur.e.minGrayGap.toFixed(1));
 console.log("Min ratio vs white:", cur.e.minWhite.toFixed(2), " vs dark:", cur.e.minDark.toFixed(2));
+for (const s of ["#111827", "#1F2937", "#374151"]) {
+  const min = Math.min(...sel.map((c) => ratio(c.hex, s)));
+  console.log(`Min ratio vs ${s}: ${min.toFixed(2)}:1${min >= 3 ? "  PASS" : "  FAIL"}`);
+}
 
-// Also report the 5-colour and 4-colour truncations (drop from the top).
-for (const n of [5, 4, 3]) {
+// Also report the truncations (drop from the top).
+for (const n of [5, 4, 3].filter((n) => n < SERIES)) {
   const sub = sel.slice(0, n);
   const e = evaluate(sub.map((c) => c.hex));
   console.log(`\nFirst ${n} series only -> worst CIEDE2000 ${e.worst.toFixed(1)} (${e.worstInfo})`);

@@ -58,6 +58,35 @@ const DARK_PALETTE = [
   { hex: "#DEE3FD", label: "Pale Lilac" },
 ];
 
+/* ELEVATED_PALETTE: the five-series set that clears 3:1 against the *raised*
+ * dark panel #374151, and therefore against #1F2937 and #111827 as well. One
+ * palette for the whole dark elevation stack.
+ *
+ * It has five series, not six, and that is the finding rather than a shortcut.
+ * The #374151 floor pushes the darkest usable series up to roughly OKLCH 66%,
+ * while the sRGB gamut ceiling sits near 96%. That leaves ~30 points of range.
+ * Six series each needing a ~6 point greyscale gap do fit geometrically, but the
+ * hues left in that compressed band cannot hold CIEDE2000 20 — the best
+ * six-series solution the search finds peaks at 16.4, below the threshold this
+ * project treats as safe without a backup signal. Five series reach 20.2.
+ * So elevation-safe charts cost one series. Derived by
+ * `node scripts/search-cvd-palette.mjs elevated 5`.
+ */
+const ELEVATED_PALETTE = [
+  { hex: "#879F07", label: "Moss" },
+  { hex: "#70ADFE", label: "Sky" },
+  { hex: "#FEA5A5", label: "Blush" },
+  { hex: "#BDF107", label: "Lime" },
+  { hex: "#FCEBFE", label: "Mist" },
+];
+
+/* The dark elevation stack the article measures against. */
+const DARK_SURFACES = [
+  { hex: "#111827", label: "base" },
+  { hex: "#1F2937", label: "card" },
+  { hex: "#374151", label: "raised" },
+];
+
 /* The palette this file previously guarded, kept so the regression stays visible.
  * Published across the web as "CVD-safe"; it is not. Orange/Red collapses to
  * CIEDE2000 7.5 under deuteranopia. Referenced by the article's failure table. */
@@ -343,6 +372,10 @@ function reportOne(name, palette) {
   console.log(`  min adjacent greyscale L* gap: ${minGrayGap(palette).toFixed(1)}`);
   console.log(`  min ratio vs #FFFFFF: ${minRatioAgainst(palette, "#FFFFFF").toFixed(2)}:1`);
   console.log(`  min ratio vs #111827: ${minRatioAgainst(palette, "#111827").toFixed(2)}:1`);
+  for (const s of DARK_SURFACES.slice(1)) {
+    const r = minRatioAgainst(palette, s.hex);
+    console.log(`  min ratio vs ${s.hex} (${s.label}): ${r.toFixed(2)}:1 ${r >= 3 ? "PASS" : "FAIL"}`);
+  }
 
   const rows = analyse(palette);
   console.log("\n### Simulated hexes per CVD type\n");
@@ -354,7 +387,8 @@ function reportOne(name, palette) {
     );
   });
 
-  console.log("\n### CIEDE2000 pairwise distances (15 pairs x 4 vision models)\n");
+  const nPairs = (palette.length * (palette.length - 1)) / 2;
+  console.log(`\n### CIEDE2000 pairwise distances (${nPairs} pairs x 4 vision models)\n`);
   console.log("| Pair | Series | Normal | Protanopia | Deuteranopia | Tritanopia | Worst CVD |");
   console.log("| --- | --- | ---: | ---: | ---: | ---: | ---: |");
   for (const [a, b, ia, ib] of pairwise(palette)) {
@@ -380,7 +414,22 @@ function reportOne(name, palette) {
 function reportPalette() {
   reportOne("LIGHT-SURFACE PALETTE (3:1 floor on #FFFFFF)", LIGHT_PALETTE);
   reportOne("DARK-SURFACE PALETTE (3:1 floor on #111827)", DARK_PALETTE);
+  reportOne("ELEVATED PALETTE (3:1 floor on #374151, 5 series)", ELEVATED_PALETTE);
   reportOne("LEGACY PALETTE (widely published, fails)", LEGACY_PALETTE);
+
+  console.log("\n\n========== DARK ELEVATION STACK ==========\n");
+  console.log("Why the dark-surface palette needs a replacement above the base surface.\n");
+  console.log("| Palette | Series | vs #111827 | vs #1F2937 | vs #374151 | Covers full stack? |");
+  console.log("| --- | ---: | ---: | ---: | ---: | --- |");
+  for (const [name, p] of [
+    ["Dark-surface", DARK_PALETTE],
+    ["Elevated", ELEVATED_PALETTE],
+  ]) {
+    const r = DARK_SURFACES.map((s) => minRatioAgainst(p, s.hex));
+    console.log(
+      `| ${name} | ${p.length} | ${r.map((v) => v.toFixed(2) + ":1").join(" | ")} | ${r.every((v) => v >= 3) ? "yes" : "no"} |`
+    );
+  }
 
   console.log("\n\n========== CROSS-SURFACE IMPOSSIBILITY ==========\n");
   console.log("| Palette | Worst CVD CIEDE2000 | Min ratio vs #FFFFFF | Min ratio vs #111827 | Serves both surfaces? |");
@@ -409,6 +458,7 @@ function verify() {
   for (const [name, palette] of [
     ["light", LIGHT_PALETTE],
     ["dark", DARK_PALETTE],
+    ["elevated", ELEVATED_PALETTE],
   ]) {
     for (const c of palette) {
       if (!src.includes(c.hex)) {
@@ -419,7 +469,7 @@ function verify() {
 
   // 2. Any "oklch(NN% ...)" annotation printed next to a palette hex must match
   //    the real OKLCH lightness of that hex.
-  for (const c of [...LIGHT_PALETTE, ...DARK_PALETTE]) {
+  for (const c of [...LIGHT_PALETTE, ...DARK_PALETTE, ...ELEVATED_PALETTE]) {
     const re = new RegExp(`${c.hex}[^\\n]*?oklch\\((\\d+(?:\\.\\d+)?)%`, "i");
     const m = src.match(re);
     if (m) {
@@ -489,6 +539,56 @@ function verify() {
         `${name} palette now clears 3:1 on BOTH surfaces, which contradicts the article's dual-palette argument`
       );
     }
+  }
+
+  // 5b. Finding 4: the dark-surface palette is verified on #111827 only, and the
+  //     article states it loses series on tinted card and raised surfaces. That
+  //     failure must stay measurable, or the article is overstating the problem.
+  const darkOnCard = minRatioAgainst(DARK_PALETTE, "#1F2937");
+  const darkOnRaised = minRatioAgainst(DARK_PALETTE, "#374151");
+  if (darkOnCard >= 3) {
+    problems.push(
+      `dark-surface palette now clears ${darkOnCard.toFixed(2)}:1 on #1F2937; the article documents it failing on card surfaces`
+    );
+  }
+  if (darkOnRaised >= 3) {
+    problems.push(
+      `dark-surface palette now clears ${darkOnRaised.toFixed(2)}:1 on #374151; the article documents it failing on raised panels`
+    );
+  }
+
+  // 5c. The elevated palette is the article's answer to Finding 4. It must clear
+  //     3:1 on every surface in the dark stack, including the raised panel, and
+  //     must still hold the CIEDE2000 20 floor the article treats as safe.
+  for (const s of DARK_SURFACES) {
+    const r = minRatioAgainst(ELEVATED_PALETTE, s.hex);
+    if (r < 3) {
+      problems.push(
+        `elevated palette drops to ${r.toFixed(2)}:1 on ${s.hex} (${s.label}), below the 3:1 SC 1.4.11 floor it is published to clear`
+      );
+    }
+  }
+  const elevatedWorst = worstCvd(ELEVATED_PALETTE);
+  if (elevatedWorst.de < 20) {
+    problems.push(
+      `elevated palette worst-case CIEDE2000 is ${elevatedWorst.de.toFixed(1)} (${elevatedWorst.type} ${elevatedWorst.pair}), below the published 20 floor`
+    );
+  }
+  const elevatedGray = minGrayGap(ELEVATED_PALETTE);
+  if (elevatedGray < 6) {
+    problems.push(
+      `elevated palette min greyscale L* gap is ${elevatedGray.toFixed(1)}, below the 6 the article publishes`
+    );
+  }
+
+  // 5d. The cost claim: the article says elevation-safety costs a series, i.e.
+  //     five is the ceiling. Adding a sixth series to the elevated palette must
+  //     not be possible while holding both floors. Guard the count so a future
+  //     edit cannot quietly publish six and keep the "costs one series" text.
+  if (ELEVATED_PALETTE.length !== 5) {
+    problems.push(
+      `elevated palette has ${ELEVATED_PALETTE.length} series; the article's finding is that the raised-panel floor caps it at 5`
+    );
   }
 
   // 6. The legacy palette must still fail, since the article's premise is that it does.
